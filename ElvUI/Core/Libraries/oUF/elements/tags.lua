@@ -743,6 +743,69 @@ local function unregisterEvents(fontstr)
 	end
 end
 
+if not oUF.isRetail then
+	local HealComm = LibStub("LibHealComm-4.0")
+	local HealComm_EVENTS = {
+		HealComm_HealStarted = true,
+		HealComm_HealUpdated = true,
+		HealComm_HealStopped = true,
+		HealComm_ModifierChanged = true,
+		HealComm_GUIDDisappeared = true
+	}
+	local function HealCommCallback(event, ...)
+		local strings = events[event]
+		if(strings) then
+			local unitGUID
+			for i = 1, select('#', ...) do
+				unitGUID = select(i, ...)
+				for _, fs in next, strings do
+					if(fs:IsVisible() and UnitGUID(fs.parent.unit) == unitGUID) then
+						fs:UpdateTag()
+					end
+				end
+			end
+		end
+	end
+
+	registerEvent = function(fontstr, event)
+		if(not events[event]) then events[event] = {} end
+
+		if HealComm_EVENTS[event] then
+			HealComm.RegisterCallback(eventFrame, event, HealCommCallback)
+			tinsert(events[event], fontstr)
+		else
+			local isOK = xpcall(eventFrame.RegisterEvent, eventFrame, event)
+			if(isOK) then
+				tinsert(events[event], fontstr)
+			end
+		end
+	end
+
+	unregisterEvents = function(fontstr)
+		for event, data in next, events do
+			local index = 1
+			local tagfsstr = data[index]
+			while tagfsstr do
+				if(tagfsstr == fontstr) then
+					if(#data == 1) then
+						if HealComm_EVENTS[event] then
+							HealComm.UnregisterCallback(eventFrame, event)
+						else
+							eventFrame:UnregisterEvent(event)
+						end
+					end
+
+					tremove(data, index)
+				else
+					index = index + 1
+				end
+
+				tagfsstr = data[index]
+			end
+		end
+	end
+end
+
 -- this bullshit is to fix texture strings not adjusting to its inherited alpha
 -- it is a blizzard issue with how texture strings are rendered
 local alphaFix = CreateFrame('Frame')

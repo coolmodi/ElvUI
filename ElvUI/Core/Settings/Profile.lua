@@ -402,6 +402,7 @@ local NP_Auras = {
 local NP_Health = {
 	enable = true,
 	healPrediction = true,
+	predictionTime = 3,
 	height = 10,
 	useClassColor = true,
 	text = {
@@ -1293,7 +1294,8 @@ local UF_HealthPrediction = {
 	enable = false,
 	absorbStyle = 'OVERFLOW',
 	anchorPoint = 'BOTTOM',
-	height = -1
+	height = -1,
+	predictionTime = 3,
 }
 
 local UF_InfoPanel = {
@@ -1785,6 +1787,7 @@ P.unitframe = {
 			power = CopyTable(UF_Power),
 			raidicon = CopyTable(UF_RaidIcon),
 			strataAndLevel = CopyTable(UF_StrataAndLevel),
+			healPrediction = CopyTable(UF_HealthPrediction),
 		},
 		focus = {
 			enable = true,

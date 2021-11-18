@@ -117,6 +117,7 @@ function NP:Update_Health(nameplate, skipUpdate)
 end
 
 local bars = { 'myBar', 'otherBar', 'absorbBar', 'healAbsorbBar' }
+if not E.Retail then table.insert(bars, 'beforeMyBar') end
 function NP:Construct_HealthPrediction(nameplate)
 	local HealthPrediction = CreateFrame('Frame', nameplate:GetName()..'HealthPrediction', nameplate)
 
@@ -138,6 +139,14 @@ function NP:Construct_HealthPrediction(nameplate)
 	HealthPrediction.myBar:SetStatusBarColor(NP.db.colors.healPrediction.personal.r, NP.db.colors.healPrediction.personal.g, NP.db.colors.healPrediction.personal.b)
 	HealthPrediction.myBar:SetMinMaxValues(0, 1)
 
+	if not E.Retail then
+		HealthPrediction.beforeMyBar:Point('LEFT', healthTexture, 'RIGHT')
+		HealthPrediction.beforeMyBar:SetFrameLevel(healthFrameLevel + 1)
+		HealthPrediction.beforeMyBar:SetStatusBarColor(NP.db.colors.healPrediction.others.r, NP.db.colors.healPrediction.others.g, NP.db.colors.healPrediction.others.b)
+		HealthPrediction.beforeMyBar:SetMinMaxValues(0, 1)
+		HealthPrediction.myBar:Point('LEFT', HealthPrediction.beforeMyBar:GetStatusBarTexture(), 'RIGHT')
+	end
+
 	HealthPrediction.otherBar:Point('LEFT', HealthPrediction.myBar:GetStatusBarTexture(), 'RIGHT')
 	HealthPrediction.otherBar:SetFrameLevel(healthFrameLevel + 1)
 	HealthPrediction.otherBar:SetStatusBarColor(NP.db.colors.healPrediction.others.r, NP.db.colors.healPrediction.others.g, NP.db.colors.healPrediction.others.b)
@@ -153,6 +162,7 @@ function NP:Construct_HealthPrediction(nameplate)
 
 	HealthPrediction.maxOverflow = 1
 	HealthPrediction.frequentUpdates = true
+	HealthPrediction.predictionTime = 3
 
 	return HealthPrediction
 end
@@ -164,11 +174,12 @@ function NP:Update_HealthPrediction(nameplate)
 		if not nameplate:IsElementEnabled('HealthPrediction') then
 			nameplate:EnableElement('HealthPrediction')
 		end
-
+		if not E.Retail then nameplate.HealthPrediction.beforeMyBar:SetStatusBarColor(NP.db.colors.healPrediction.others.r, NP.db.colors.healPrediction.others.g, NP.db.colors.healPrediction.others.b) end
 		nameplate.HealthPrediction.myBar:SetStatusBarColor(NP.db.colors.healPrediction.personal.r, NP.db.colors.healPrediction.personal.g, NP.db.colors.healPrediction.personal.b)
 		nameplate.HealthPrediction.otherBar:SetStatusBarColor(NP.db.colors.healPrediction.others.r, NP.db.colors.healPrediction.others.g, NP.db.colors.healPrediction.others.b)
 		nameplate.HealthPrediction.absorbBar:SetStatusBarColor(NP.db.colors.healPrediction.absorbs.r, NP.db.colors.healPrediction.absorbs.g, NP.db.colors.healPrediction.absorbs.b)
 		nameplate.HealthPrediction.healAbsorbBar:SetStatusBarColor(NP.db.colors.healPrediction.healAbsorbs.r, NP.db.colors.healPrediction.healAbsorbs.g, NP.db.colors.healPrediction.healAbsorbs.b)
+		nameplate.HealthPrediction.predictionTime = db.health.predictionTime
 	elseif nameplate:IsElementEnabled('HealthPrediction') then
 		nameplate:DisableElement('HealthPrediction')
 	end

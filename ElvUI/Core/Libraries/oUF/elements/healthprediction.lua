@@ -80,6 +80,8 @@ A default texture will be applied to the Texture widgets if they don't have a te
 
 local _, ns = ...
 local oUF = ns.oUF
+local isClassic = oUF.isTBC or oUF.isClassic
+local HealComm = isClassic and LibStub("LibHealComm-4.0") or nil
 
 local function Update(self, event, unit)
 	if(self.unit ~= unit) then return end
@@ -97,39 +99,110 @@ local function Update(self, event, unit)
 	end
 
 	local myIncomingHeal = UnitGetIncomingHeals(unit, 'player') or 0
-	local allIncomingHeal = UnitGetIncomingHeals(unit) or 0
 	local absorb = oUF.isRetail and UnitGetTotalAbsorbs(unit) or 0
 	local healAbsorb = oUF.isRetail and UnitGetTotalHealAbsorbs(unit) or 0
 	local health, maxHealth = UnitHealth(unit), UnitHealthMax(unit)
 	local otherIncomingHeal = 0
 	local hasOverHealAbsorb = false
+	local hasOverAbsorb = false
 
-	if(healAbsorb > allIncomingHeal) then
-		healAbsorb = healAbsorb - allIncomingHeal
-		allIncomingHeal = 0
-		myIncomingHeal = 0
+	if not isClassic then
+		local allIncomingHeal = UnitGetIncomingHeals(unit) or 0
 
-		if(health < healAbsorb) then
-			hasOverHealAbsorb = true
+		if(healAbsorb > allIncomingHeal) then
+			healAbsorb = healAbsorb - allIncomingHeal
+			allIncomingHeal = 0
+			myIncomingHeal = 0
+
+			if(health < healAbsorb) then
+				hasOverHealAbsorb = true
+			end
+		else
+			allIncomingHeal = allIncomingHeal - healAbsorb
+			healAbsorb = 0
+
+			if(health + allIncomingHeal > maxHealth * element.maxOverflow) then
+				allIncomingHeal = maxHealth * element.maxOverflow - health
+			end
+
+			if(allIncomingHeal < myIncomingHeal) then
+				myIncomingHeal = allIncomingHeal
+			else
+				otherIncomingHeal = allIncomingHeal - myIncomingHeal
+			end
+		end
+
+		if(health + allIncomingHeal + absorb >= maxHealth) and (absorb > 0) then
+			hasOverAbsorb = true
 		end
 	else
-		allIncomingHeal = allIncomingHeal - healAbsorb
-		healAbsorb = 0
+		local myGUID = UnitGUID("player")
+		local unitGUID = UnitGUID(unit)
+		local predictionTime = GetTime() + element.predictionTime
+		local FLAG_DIRECT_HEALS = HealComm.DIRECT_HEALS
 
-		if(health + allIncomingHeal > maxHealth * element.maxOverflow) then
-			allIncomingHeal = maxHealth * element.maxOverflow - health
+		local allDirectHeal = HealComm:GetHealAmount(unitGUID, FLAG_DIRECT_HEALS, predictionTime) or 0
+		local myDirectHeal = HealComm:GetHealAmount(unitGUID, FLAG_DIRECT_HEALS, predictionTime, myGUID) or 0
+		local beforeMyDirectHeal = 0
+		local afterMyDirectHeal = 0
+		local healMod = HealComm:GetHealModifier(unitGUID) or 1
+		local maxHealShowm = maxHealth * element.maxOverflow - health
+
+		if maxHealShowm > 0 then
+			if myDirectHeal > 0 then
+				-- We also have heal on the target, check if direct heals land before ours.
+				local _, healFrom, healAmount = HealComm:GetNextHealAmount(unitGUID, FLAG_DIRECT_HEALS, predictionTime)
+				if healFrom and healFrom ~= myGUID then
+					beforeMyDirectHeal = healAmount
+					-- Without low or no overflow another heal may not even be shown anyways.
+					if beforeMyDirectHeal < maxHealShowm then
+						_, healFrom, healAmount = HealComm:GetNextHealAmount(unitGUID, FLAG_DIRECT_HEALS, predictionTime, healFrom)
+						if healFrom and healFrom ~= myGUID then
+							beforeMyDirectHeal = beforeMyDirectHeal + healAmount
+						end
+					end
+				end
+				-- Everything else (probably) comes after our heal.
+				afterMyDirectHeal = allDirectHeal - beforeMyDirectHeal - myDirectHeal
+			else
+				afterMyDirectHeal = allDirectHeal;
+			end
+
+			-- Append over time heal if direct heal isn't already above the overflow limit.
+			if allDirectHeal < maxHealShowm then
+				afterMyDirectHeal = afterMyDirectHeal + (HealComm:GetHealAmount(unitGUID, HealComm.OVERTIME_AND_BOMB_HEALS, predictionTime) or 0)
+			end
 		end
 
-		if(allIncomingHeal < myIncomingHeal) then
-			myIncomingHeal = allIncomingHeal
+		beforeMyDirectHeal = beforeMyDirectHeal * healMod;
+		myDirectHeal = myDirectHeal * healMod;
+		afterMyDirectHeal = afterMyDirectHeal * healMod;
+
+		if beforeMyDirectHeal > maxHealShowm then
+			beforeMyDirectHeal = maxHealShowm
+			myDirectHeal = 0
+			afterMyDirectHeal = 0
 		else
-			otherIncomingHeal = allIncomingHeal - myIncomingHeal
+			maxHealShowm = maxHealShowm - beforeMyDirectHeal
+			if myDirectHeal > maxHealShowm then
+				myDirectHeal = maxHealShowm
+				afterMyDirectHeal = 0
+			else
+				maxHealShowm = maxHealShowm - myDirectHeal
+				if afterMyDirectHeal > maxHealShowm then
+					afterMyDirectHeal = maxHealShowm
+				end
+			end
 		end
-	end
 
-	local hasOverAbsorb = false
-	if(health + allIncomingHeal + absorb >= maxHealth) and (absorb > 0) then
-		hasOverAbsorb = true
+		if(element.beforeMyBar) then
+			element.beforeMyBar:SetMinMaxValues(0, maxHealth)
+			element.beforeMyBar:SetValue(beforeMyDirectHeal)
+			element.beforeMyBar:Show()
+		end
+
+		myIncomingHeal = myDirectHeal
+		otherIncomingHeal = afterMyDirectHeal
 	end
 
 	if(element.myBar) then
@@ -221,6 +294,33 @@ local function Enable(self)
 			self:RegisterEvent('UNIT_HEALTH_FREQUENT', Path)
 		end
 
+		if isClassic then
+			local function HealCommUpdate(...)
+				if self.HealthPrediction and self:IsVisible() then
+					for i = 1, select('#', ...) do
+						if self.unit and UnitGUID(self.unit) == select(i, ...) then
+							Path(self, nil, self.unit)
+						end
+					end
+				end
+			end
+
+			local function HealComm_Heal_Update(event, casterGUID, spellID, healType, _, ...)
+				HealCommUpdate(...)
+			end
+
+			local function HealComm_Modified(event, guid)
+				HealCommUpdate(guid)
+			end
+
+			HealComm.RegisterCallback(element, 'HealComm_HealStarted', HealComm_Heal_Update)
+			HealComm.RegisterCallback(element, 'HealComm_HealUpdated', HealComm_Heal_Update)
+			HealComm.RegisterCallback(element, 'HealComm_HealDelayed', HealComm_Heal_Update)
+			HealComm.RegisterCallback(element, 'HealComm_HealStopped', HealComm_Heal_Update)
+			HealComm.RegisterCallback(element, 'HealComm_ModifierChanged', HealComm_Modified)
+			HealComm.RegisterCallback(element, 'HealComm_GUIDDisappeared', HealComm_Modified)
+		end
+
 		if (not element.maxOverflow) then
 			element.maxOverflow = 1.05
 		end
@@ -303,6 +403,15 @@ local function Disable(self)
 			self:UnregisterEvent('UNIT_HEAL_ABSORB_AMOUNT_CHANGED', Path)
 		else
 			self:UnregisterEvent('UNIT_HEALTH_FREQUENT', Path)
+		end
+
+		if isClassic then
+			HealComm.UnregisterCallback(element, 'HealComm_HealStarted')
+			HealComm.UnregisterCallback(element, 'HealComm_HealUpdated')
+			HealComm.UnregisterCallback(element, 'HealComm_HealDelayed')
+			HealComm.UnregisterCallback(element, 'HealComm_HealStopped')
+			HealComm.UnregisterCallback(element, 'HealComm_ModifierChanged')
+			HealComm.UnregisterCallback(element, 'HealComm_GUIDDisappeared')
 		end
 	end
 end

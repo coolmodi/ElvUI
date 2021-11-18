@@ -10,6 +10,7 @@ function UF.HealthClipFrame_HealComm(frame)
 end
 
 function UF:SetAlpha_HealComm(obj, alpha)
+	if not E.Retail then obj.beforeMyBar:SetAlpha(alpha) end
 	obj.myBar:SetAlpha(alpha)
 	obj.otherBar:SetAlpha(alpha)
 	obj.absorbBar:SetAlpha(alpha)
@@ -17,6 +18,7 @@ function UF:SetAlpha_HealComm(obj, alpha)
 end
 
 function UF:SetTexture_HealComm(obj, texture)
+	if not E.Retail then obj.beforeMyBar:SetStatusBarTexture(texture) end
 	obj.myBar:SetStatusBarTexture(texture)
 	obj.otherBar:SetStatusBarTexture(texture)
 	obj.absorbBar:SetStatusBarTexture(texture)
@@ -24,6 +26,7 @@ function UF:SetTexture_HealComm(obj, texture)
 end
 
 function UF:SetFrameLevel_HealComm(obj, level)
+	if not E.Retail then obj.beforeMyBar:SetFrameLevel(level) end
 	obj.myBar:SetFrameLevel(level)
 	obj.otherBar:SetFrameLevel(level)
 	obj.absorbBar:SetFrameLevel(level)
@@ -43,8 +46,11 @@ function UF:Construct_HealComm(frame)
 		maxOverflow = 1,
 		health = health,
 		parent = parent,
-		frame = frame
+		frame = frame,
+		predictionTime = 3,
 	}
+
+	if not E.Retail then prediction.beforeMyBar = CreateFrame('StatusBar', nil, parent) end
 
 	UF:SetAlpha_HealComm(prediction, 0)
 	UF:SetFrameLevel_HealComm(prediction, 11)
@@ -65,6 +71,7 @@ function UF:SetSize_HealComm(frame)
 		local barHeight = db.height
 		if barHeight == -1 or barHeight > height then barHeight = height end
 
+		if not E.Retail then pred.beforeMyBar:SetSize(width, barHeight) end
 		pred.myBar:SetSize(width, barHeight)
 		pred.otherBar:SetSize(width, barHeight)
 		pred.healAbsorbBar:SetSize(width, barHeight)
@@ -74,6 +81,7 @@ function UF:SetSize_HealComm(frame)
 		local barWidth = db.height -- this is really width now not height
 		if barWidth == -1 or barWidth > width then barWidth = width end
 
+		if not E.Retail then pred.beforeMyBar:SetSize(barWidth, height) end
 		pred.myBar:SetSize(barWidth, height)
 		pred.otherBar:SetSize(barWidth, height)
 		pred.healAbsorbBar:SetSize(barWidth, height)
@@ -95,6 +103,7 @@ function UF:Configure_HealComm(frame)
 
 		local colors = UF.db.colors.healPrediction
 		pred.maxOverflow = 1 + (colors.maxOverflow or 0)
+		pred.predictionTime = db.predictionTime
 
 		if not frame:IsElementEnabled('HealthPrediction') then
 			frame:EnableElement('HealthPrediction')
@@ -112,6 +121,7 @@ function UF:Configure_HealComm(frame)
 
 		UF:SetTexture_HealComm(pred, UF.db.colors.transparentHealth and E.media.blankTex or LSM:Fetch('statusbar', UF.db.statusbar))
 
+		if not E.Retail then pred.beforeMyBar:SetReverseFill(reverseFill) end
 		myBar:SetReverseFill(reverseFill)
 		otherBar:SetReverseFill(reverseFill)
 		healAbsorbBar:SetReverseFill(not reverseFill)
@@ -122,11 +132,13 @@ function UF:Configure_HealComm(frame)
 			absorbBar:SetReverseFill(reverseFill)
 		end
 
+		if not E.Retail then pred.beforeMyBar:SetStatusBarColor(colors.others.r, colors.others.g, colors.others.b, colors.others.a) end
 		myBar:SetStatusBarColor(colors.personal.r, colors.personal.g, colors.personal.b, colors.personal.a)
 		otherBar:SetStatusBarColor(colors.others.r, colors.others.g, colors.others.b, colors.others.a)
 		absorbBar:SetStatusBarColor(colors.absorbs.r, colors.absorbs.g, colors.absorbs.b, colors.absorbs.a)
 		healAbsorbBar:SetStatusBarColor(colors.healAbsorbs.r, colors.healAbsorbs.g, colors.healAbsorbs.b, colors.healAbsorbs.a)
 
+		if not E.Retail then pred.beforeMyBar:SetOrientation(orientation) end
 		myBar:SetOrientation(orientation)
 		otherBar:SetOrientation(orientation)
 		absorbBar:SetOrientation(orientation)
@@ -142,6 +154,16 @@ function UF:Configure_HealComm(frame)
 			myBar:ClearAllPoints()
 			myBar:Point(anchor, health)
 			myBar:Point(p1, healthBarTexture, p2)
+
+			if not E.Retail then
+				pred.beforeMyBar:ClearAllPoints()
+				pred.beforeMyBar:Point(anchor, health)
+				pred.beforeMyBar:Point(p1, healthBarTexture, p2)
+
+				myBar:ClearAllPoints()
+				myBar:Point(anchor, health)
+				myBar:Point(p1, pred.beforeMyBar:GetStatusBarTexture(), p2)
+			end
 
 			otherBar:ClearAllPoints()
 			otherBar:Point(anchor, health)
@@ -173,6 +195,16 @@ function UF:Configure_HealComm(frame)
 			myBar:ClearAllPoints()
 			myBar:Point(anchor, health)
 			myBar:Point(p1, healthBarTexture, p2)
+
+			if not E.Retail then
+				pred.beforeMyBar:ClearAllPoints()
+				pred.beforeMyBar:Point(anchor, health)
+				pred.beforeMyBar:Point(p1, healthBarTexture, p2)
+
+				myBar:ClearAllPoints()
+				myBar:Point(anchor, health)
+				myBar:Point(p1, pred.beforeMyBar:GetStatusBarTexture(), p2)
+			end
 
 			otherBar:ClearAllPoints()
 			otherBar:Point(anchor, health)
