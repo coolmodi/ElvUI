@@ -370,6 +370,10 @@ end
 local function Disable(self)
 	local element = self.HealthPrediction
 	if(element) then
+        if(element.beforeMyBar) then
+			element.beforeMyBar:Hide()
+		end
+
 		if(element.myBar) then
 			element.myBar:Hide()
 		end
