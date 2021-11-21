@@ -208,7 +208,8 @@ function Plugin:InsertOptions()
 			active = {
 				order = 1,
 				type = "toggle",
-				name = "Try to include non-HealComm heal into predictions?",
+				name = "Extrapolate heal",
+                desc = "Try to extrapolate incomming heal from players without HealComm and add it to predictions. This is limited to direct heals.",
 				get = function(info)
 					return E.db[PLUGIN_NAME].active
 				end,
