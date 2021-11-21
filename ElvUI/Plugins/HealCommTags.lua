@@ -51,7 +51,11 @@ local function PredictionTag(unit, showStatus, showName)
     local hpDeficitAfterHeal = math.floor(incomingHeal) + hp - maxhp;
 
     if incomingHeal > 0 then
-        return "|cFF00FF00" .. hpDeficitAfterHeal .. "|r";
+        if hpDeficitAfterHeal > 0 then
+            return "|cFF00FF00" .. hpDeficitAfterHeal .. "|r";
+        else
+            return "|cFFFFFF00" .. hpDeficitAfterHeal .. "|r";
+        end
     else
         if hpDeficitAfterHeal ~= 0 then
             return hpDeficitAfterHeal;
