@@ -12,7 +12,7 @@ local TAG_HEALPREDICTION_NAME = "hchealth:name";
 local TAG_HEALPREDICTION_NOSTATUS = "hchealth:nostatus";
 local TAG_HEALPREDICTION_NAME_NOSTATUS = "hchealth:name-nostatus";
 
-local HCBitflag = HealComm.ALL_HEALS;
+local includeHots = true
 local healTimeframe = 3;
 
 ---------------------------------
@@ -43,7 +43,11 @@ local function PredictionTag(unit, showStatus, showName)
         return hp .. "/" .. maxhp;
     end
 
-    local incomingHeal = (HealComm:GetHealAmount(UnitGUID(unit), HCBitflag, GetTime() + healTimeframe) or 0) * (HealComm:GetHealModifier(UnitGUID(unit)) or 1);
+    local beforeOurDirect, ourDirect, afterOurDirect, overTime, blizzard = HealComm:GetHealAmountCM(UnitGUID(unit), GetTime() + healTimeframe, unit);
+    local healMod = HealComm:GetHealModifier(UnitGUID(unit)) or 1;
+    local incomingHeal = beforeOurDirect + ourDirect + afterOurDirect + blizzard;
+    if includeHots then incomingHeal = incomingHeal + overTime end
+    incomingHeal = incomingHeal * healMod;
     local hpDeficitAfterHeal = math.floor(incomingHeal) + hp - maxhp;
 
     if incomingHeal > 0 then
@@ -57,7 +61,7 @@ local function PredictionTag(unit, showStatus, showName)
     end
 end
 
-oUF.Tags.Events[TAG_HEALPREDICTION] = "UNIT_CONNECTION UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH HealComm_HealStarted HealComm_HealUpdated HealComm_HealStopped HealComm_ModifierChanged HealComm_GUIDDisappeared";
+oUF.Tags.Events[TAG_HEALPREDICTION] = "UNIT_CONNECTION UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH HealComm_HealStarted HealComm_HealUpdated HealComm_HealStopped HealComm_ModifierChanged HealComm_GUIDDisappeared UNIT_HEAL_PREDICTION";
 oUF.Tags.Methods[TAG_HEALPREDICTION] = function(unit)
     return PredictionTag(unit, true);
 end
@@ -87,7 +91,7 @@ P[PLUGIN_NAME] = {
 }
 
 function Plugin:Update()
-	HCBitflag = E.db[PLUGIN_NAME].includeHoTsInTag and HealComm.ALL_HEALS or HealComm.DIRECT_HEALS;
+	includeHots = E.db[PLUGIN_NAME].includeHoTsInTag
 	healTimeframe = E.db[PLUGIN_NAME].healTimeframe;
 end
 
@@ -135,6 +139,7 @@ function Plugin:Initialize()
 	E:AddTagInfo(TAG_HEALPREDICTION_NAME, "Health", "Displays HP deficit with HealComm prediction, name at full HP");
 	E:AddTagInfo(TAG_HEALPREDICTION_NOSTATUS, "Health", "Displays HP deficit with HealComm prediction, without status");
 	E:AddTagInfo(TAG_HEALPREDICTION_NAME_NOSTATUS, "Health", "Displays HP deficit with HealComm prediction, name at full HP, without status");
+    self:Update();
 end
 
 E:RegisterModule(Plugin:GetName());

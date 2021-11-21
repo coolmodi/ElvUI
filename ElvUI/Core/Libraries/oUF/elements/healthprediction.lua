@@ -98,16 +98,19 @@ local function Update(self, event, unit)
 		element:PreUpdate(unit)
 	end
 
-	local myIncomingHeal = UnitGetIncomingHeals(unit, 'player') or 0
-	local absorb = oUF.isRetail and UnitGetTotalAbsorbs(unit) or 0
-	local healAbsorb = oUF.isRetail and UnitGetTotalHealAbsorbs(unit) or 0
+	local myIncomingHeal = 0
+	local absorb = 0
+	local healAbsorb = 0
 	local health, maxHealth = UnitHealth(unit), UnitHealthMax(unit)
 	local otherIncomingHeal = 0
 	local hasOverHealAbsorb = false
 	local hasOverAbsorb = false
 
 	if not isClassic then
-		local allIncomingHeal = UnitGetIncomingHeals(unit) or 0
+        local allIncomingHeal = UnitGetIncomingHeals(unit) or 0
+        myIncomingHeal = UnitGetIncomingHeals(unit, 'player') or 0
+        absorb = UnitGetTotalAbsorbs(unit) or 0
+        healAbsorb = UnitGetTotalHealAbsorbs(unit) or 0
 
 		if(healAbsorb > allIncomingHeal) then
 			healAbsorb = healAbsorb - allIncomingHeal
@@ -136,47 +139,21 @@ local function Update(self, event, unit)
 			hasOverAbsorb = true
 		end
 	else
-		local myGUID = UnitGUID("player")
-		local unitGUID = UnitGUID(unit)
-		local predictionTime = GetTime() + element.predictionTime
-		local FLAG_DIRECT_HEALS = HealComm.DIRECT_HEALS
-
-		local allDirectHeal = HealComm:GetHealAmount(unitGUID, FLAG_DIRECT_HEALS, predictionTime) or 0
-		local myDirectHeal = HealComm:GetHealAmount(unitGUID, FLAG_DIRECT_HEALS, predictionTime, myGUID) or 0
 		local beforeMyDirectHeal = 0
+        local myDirectHeal = 0
 		local afterMyDirectHeal = 0
-		local healMod = HealComm:GetHealModifier(unitGUID) or 1
 		local maxHealShowm = maxHealth * element.maxOverflow - health
 
 		if maxHealShowm > 0 then
-			if myDirectHeal > 0 then
-				-- We also have heal on the target, check if direct heals land before ours.
-				local _, healFrom, healAmount = HealComm:GetNextHealAmount(unitGUID, FLAG_DIRECT_HEALS, predictionTime)
-				if healFrom and healFrom ~= myGUID then
-					beforeMyDirectHeal = healAmount
-					-- Without low or no overflow another heal may not even be shown anyways.
-					if beforeMyDirectHeal < maxHealShowm then
-						_, healFrom, healAmount = HealComm:GetNextHealAmount(unitGUID, FLAG_DIRECT_HEALS, predictionTime, healFrom)
-						if healFrom and healFrom ~= myGUID then
-							beforeMyDirectHeal = beforeMyDirectHeal + healAmount
-						end
-					end
-				end
-				-- Everything else (probably) comes after our heal.
-				afterMyDirectHeal = allDirectHeal - beforeMyDirectHeal - myDirectHeal
-			else
-				afterMyDirectHeal = allDirectHeal;
-			end
+            local unitGUID = UnitGUID(unit)
+		    local predictionTime = GetTime() + element.predictionTime
+            local beforeOurDirect, ourDirect, afterOurDirect, overTime, blizzard = HealComm:GetHealAmountCM(unitGUID, predictionTime, unit)
+            local healMod = HealComm:GetHealModifier(unitGUID) or 1
 
-			-- Append over time heal if direct heal isn't already above the overflow limit.
-			if allDirectHeal < maxHealShowm then
-				afterMyDirectHeal = afterMyDirectHeal + (HealComm:GetHealAmount(unitGUID, HealComm.OVERTIME_AND_BOMB_HEALS, predictionTime) or 0)
-			end
+            beforeMyDirectHeal = beforeOurDirect * healMod;
+            myDirectHeal = ourDirect * healMod;
+            afterMyDirectHeal = (afterOurDirect + overTime + blizzard) * healMod;
 		end
-
-		beforeMyDirectHeal = beforeMyDirectHeal * healMod;
-		myDirectHeal = myDirectHeal * healMod;
-		afterMyDirectHeal = afterMyDirectHeal * healMod;
 
 		if beforeMyDirectHeal > maxHealShowm then
 			beforeMyDirectHeal = maxHealShowm

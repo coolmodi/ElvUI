@@ -28,3 +28,4 @@ Core\Modules\Load_Modules.xml
 
 TBC\Load.xml
 Plugins\HealCommTags.lua
+Plugins\HealCommBAPIexpo.lua
