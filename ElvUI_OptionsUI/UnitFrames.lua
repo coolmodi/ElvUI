@@ -570,7 +570,7 @@ local function GetOptionsTable_HealPrediction(updateFunc, groupName, numGroup, s
 	config.args.colorsButton = ACH:Execute(L["COLORS"], nil, 3, function() ACD:SelectGroup('ElvUI', 'unitframe', 'allColorsGroup', 'healPrediction') end)
 	config.args.anchorPoint = ACH:Select(L["Anchor Point"], nil, 4, { TOP = 'TOP', BOTTOM = 'BOTTOM', CENTER = 'CENTER' })
 	config.args.absorbStyle = ACH:Select(L["Absorb Style"], nil, 5, { NONE = L["NONE"], NORMAL = L["Normal"], REVERSED = L["Reversed"], WRAPPED = L["Wrapped"], OVERFLOW = L["Overflow"] }, nil, nil, nil, nil, nil, not E.Retail)
-	config.args.predictionTime = ACH:Range("Prediction Timeframe", "How many seconds to look ahead for incoming heals.", 6, { min = 2, max = 10, step = 1 }, nil, nil, nil, nil, E.Retail)
+	config.args.predictionTime = ACH:Range("Prediction Timeframe", "How many seconds to look ahead for incoming heals.", 6, { min = 2, max = 20, step = 1 }, nil, nil, nil, nil, E.Retail)
 	config.args.overflowButton = ACH:Execute(L["Max Overflow"], nil, 7, function() ACD:SelectGroup('ElvUI', 'unitframe', 'allColorsGroup', 'healPrediction') end)
 	config.args.warning = ACH:Description(function()
 				if E.db.unitframe.colors.healPrediction.maxOverflow == 0 then
