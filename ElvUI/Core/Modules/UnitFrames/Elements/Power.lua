@@ -10,6 +10,7 @@ local CreateFrame = CreateFrame
 local UnitPowerType = UnitPowerType
 local hooksecurefunc = hooksecurefunc
 local GetUnitPowerBarInfo = GetUnitPowerBarInfo
+local InCombatLockdown = InCombatLockdown
 local POWERTYPE_ALTERNATE = Enum.PowerType.Alternate or 10
 
 function UF:Construct_PowerBar(frame, bg, text, textPos)
@@ -48,6 +49,7 @@ function UF:Construct_PowerBar(frame, bg, text, textPos)
 	power.colorDisconnected = false
 	power.colorTapping = false
 	power:CreateBackdrop(nil, nil, nil, nil, true)
+	power.backdrop.callbackBackdropColor = self.PowerBackdropColor
 
 	UF:Construct_ClipFrame(frame, power)
 
@@ -217,6 +219,17 @@ function UF:Configure_Power(frame)
 	UF:ToggleTransparentStatusBar(UF.db.colors.transparentPower, frame.Power, frame.Power.BG, nil, UF.db.colors.invertPower, db.power.reverseFill)
 end
 
+function UF:PowerBackdropColor()
+	local parent = self:GetParent()
+	if parent.isTransparent then
+		local r, g, b = parent:GetStatusBarColor()
+		UF.UpdateBackdropTextureColor(parent, r, g, b, E.media.backdropfadecolor[4])
+	else
+		self:SetBackdropColor(unpack(E.media.backdropfadecolor))
+		self:SetBackdropBorderColor(unpack(E.media.unitframeBorderColor))
+	end
+end
+
 function UF:GetDisplayPower()
 	local barInfo = GetUnitPowerBarInfo(self.__owner.unit)
 	if barInfo then
@@ -224,46 +237,49 @@ function UF:GetDisplayPower()
 	end
 end
 
-local tokens = {[0]='MANA','RAGE','FOCUS','ENERGY','RUNIC_POWER'}
-function UF:PostUpdatePowerColor()
-	local parent = self.origParent or self:GetParent()
-	if parent.isForced and not self.colorClass then
+do
+	local tokens = {[0]='MANA','RAGE','FOCUS','ENERGY','RUNIC_POWER'}
+	local function GetRandomPowerColor()
 		local color = ElvUF.colors.power[tokens[random(0,4)]]
-		self:SetStatusBarColor(color[1], color[2], color[3])
+		return color[1], color[2], color[3]
+	end
 
-		if self.BG then
-			UF:UpdateBackdropTextureColor(self.BG, color[1], color[2], color[3])
+	function UF:PostUpdatePowerColor()
+		local parent = self.origParent or self:GetParent()
+		if parent.isForced and not self.colorClass then
+			self:SetStatusBarColor(GetRandomPowerColor())
 		end
 	end
 end
 
-local powerTypesFull = {MANA = true, FOCUS = true, ENERGY = true}
-local individualUnits = {player = true, target = true, targettarget = true, targettargettarget = true, focus = true, focustarget = true, pet = true, pettarget = true}
+do
+	local powerTypesFull = {MANA = true, FOCUS = true, ENERGY = true}
+	local individualUnits = {player = true, target = true, targettarget = true, targettargettarget = true, focus = true, focustarget = true, pet = true, pettarget = true}
+	function UF:PostUpdatePower(unit, cur, min, max)
+		local parent = self.origParent or self:GetParent()
+		if parent.isForced then
+			self.cur = random(1, 100)
+			self.max = 100
+			self:SetMinMaxValues(0, self.max)
+			self:SetValue(self.cur)
+		end
 
-function UF:PostUpdatePower(unit, cur, min, max)
-	local parent = self.origParent or self:GetParent()
-	if parent.isForced then
-		self.cur = random(1, 100)
-		self.max = 100
-		self:SetMinMaxValues(0, self.max)
-		self:SetValue(self.cur)
-	end
+		local db = parent.db and parent.db.power
+		if not db then return end
 
-	local db = parent.db and parent.db.power
-	if not db then return end
-
-	if individualUnits[unit] and db.autoHide and parent.POWERBAR_DETACHED then
-		local _, powerType = UnitPowerType(unit)
-		if (powerTypesFull[powerType] and cur == max) or cur == min then
-			self:Hide()
-		else
+		if individualUnits[unit] and db.autoHide and parent.POWERBAR_DETACHED then
+			local _, powerType = UnitPowerType(unit)
+			if (powerTypesFull[powerType] and cur == max) or cur == min or (db.notInCombat and not InCombatLockdown()) then
+				self:Hide()
+			else
+				self:Show()
+			end
+		elseif not self:IsShown() then
 			self:Show()
 		end
-	elseif not self:IsShown() then
-		self:Show()
-	end
 
-	if db.hideonnpc then
-		UF:PostNamePosition(parent, unit)
+		if db.hideonnpc then
+			UF:PostNamePosition(parent, unit)
+		end
 	end
 end

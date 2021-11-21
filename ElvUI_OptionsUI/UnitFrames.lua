@@ -351,8 +351,7 @@ local function GetOptionsTable_Castbar(updateFunc, groupName, numUnits)
 	config.args.customColor.args.useCustomBackdrop = ACH:Toggle(L["Custom Backdrop"], L["Use the custom backdrop color instead of a multiple of the main color."], 7, nil, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].castbar.customColor.enable end)
 	config.args.customColor.args.spacer2 = ACH:Spacer(8, 'full', function() return not E.db.unitframe.units[groupName].castbar.customColor.enable end)
 	config.args.customColor.args.colorBackdrop = ACH:Color(L["Custom Backdrop"], L["Use the custom backdrop color instead of a multiple of the main color."], 9, true, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].castbar.customColor.enable or not E.db.unitframe.units[groupName].castbar.customColor.useCustomBackdrop end)
-	config.args.customColor.args.color = ACH:Color('', nil, 10, true, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].castbar.customColor.enable end)
-	config.args.customColor.args.color.name = function() return E.Retail and L["Interruptible"] or L["COLOR"] end
+	config.args.customColor.args.color = ACH:Color(function() return E.Retail and L["Interruptible"] or L["COLOR"] end, nil, 10, true, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].castbar.customColor.enable end)
 	config.args.customColor.args.colorNoInterrupt = ACH:Color(L["Non-Interruptible"], nil, 11, true, nil, nil, nil, nil, function() return not E.Retail or not E.db.unitframe.units[groupName].castbar.customColor.enable end)
 	config.args.customColor.args.spacer3 = ACH:Spacer(11, 'full', function() return not E.db.unitframe.units[groupName].castbar.customColor.enable end)
 	config.args.customColor.args.colorInterrupted = ACH:Color(L["Interrupted"], nil, 12, true, nil, nil, nil, nil, function() return not E.Retail or not E.db.unitframe.units[groupName].castbar.customColor.enable end)
@@ -650,9 +649,9 @@ local function GetOptionsTable_Power(hasDetatchOption, updateFunc, groupName, nu
 	config.args.attachTextTo = ACH:Select(L["Attach Text To"], L["The object you want to attach to."], 2, attachToValues)
 	config.args.width = ACH:Select(L["Style"], nil, 3, { fill = L["Filled"], spaced = L["Spaced"], inset = L["Inset"], offset = L["Offset"] })
 	config.args.height = ACH:Range(L["Height"], nil, 4, { min = UF.thinBorders and 3 or 7, max = 50, step = 1 }, nil, nil, nil, nil, function() return E.db.unitframe.units[groupName].power.width == 'offset' end)
-	config.args.powerPrediction = ACH:Toggle(L["Power Prediction"], nil, 5)
-	config.args.offset = ACH:Range(L["Offset"], L["Offset of the powerbar to the healthbar, set to 0 to disable."], 6, { min = 0, max = 20, step = 1 }, nil, nil, nil, nil, function() return E.db.unitframe.units[groupName].power.width ~= 'offset' end)
-	config.args.reverseFill = ACH:Toggle(L["Reverse Fill"], nil, 7)
+	config.args.offset = ACH:Range(L["Offset"], L["Offset of the powerbar to the healthbar, set to 0 to disable."], 5, { min = 0, max = 20, step = 1 }, nil, nil, nil, nil, function() return E.db.unitframe.units[groupName].power.width ~= 'offset' end)
+	config.args.powerPrediction = ACH:Toggle(L["Power Prediction"], nil, 6)
+	config.args.reverseFill = ACH:Toggle(L["Reverse Fill"], nil, 8)
 
 	config.args.configureButton = ACH:Execute(L["Coloring"], L["This opens the UnitFrames Color settings. These settings affect all unitframes."], 10, function() ACD:SelectGroup('ElvUI', 'unitframe', 'allColorsGroup') end)
 
@@ -664,10 +663,13 @@ local function GetOptionsTable_Power(hasDetatchOption, updateFunc, groupName, nu
 	config.args.textGroup.args.text_format = ACH:Input(L["Text Format"], L["Controls the text displayed. Tags are available in the Available Tags section of the config."], 4, nil, 'full')
 
 	if hasDetatchOption then
-		config.args.detachFromFrame = ACH:Toggle(L["Detach From Frame"], nil, 10)
-		config.args.autoHide = ACH:Toggle(L["Auto-Hide"], nil, 11, nil, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].power.detachFromFrame end)
-		config.args.detachedWidth = ACH:Range(L["Detached Width"], nil, 12, { min = 30, max = 1000, step = 1 }, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].power.detachFromFrame end)
-		config.args.parent = ACH:Select(L["Parent"], L["Choose UIPARENT to prevent it from hiding with the unitframe."], 13, { FRAME = 'FRAME', UIPARENT = 'UIPARENT' }, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].power.detachFromFrame end)
+		config.args.detachGroup = ACH:Group(L["Detach From Frame"], nil, 20)
+		config.args.detachGroup.inline = true
+		config.args.detachGroup.args.detachFromFrame = ACH:Toggle(L["Detach From Frame"], nil, 10)
+		config.args.detachGroup.args.autoHide = ACH:Toggle(L["Auto-Hide"], nil, 11, nil, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].power.detachFromFrame end)
+		config.args.detachGroup.args.notInCombat = ACH:Toggle(L["Hide Out of Combat"], nil, 12, nil, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].power.autoHide end)
+		config.args.detachGroup.args.detachedWidth = ACH:Range(L["Detached Width"], nil, 13, { min = 30, max = 1000, step = 1 }, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].power.detachFromFrame end)
+		config.args.detachGroup.args.parent = ACH:Select(L["Parent"], L["Choose UIPARENT to prevent it from hiding with the unitframe."], 14, { FRAME = 'FRAME', UIPARENT = 'UIPARENT' }, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].power.detachFromFrame end)
 	end
 
 	if hasStrataLevel then
@@ -675,11 +677,11 @@ local function GetOptionsTable_Power(hasDetatchOption, updateFunc, groupName, nu
 	end
 
 	if groupName == 'party' or groupName == 'raid' or groupName == 'raid40' then
-		config.args.displayAltPower = ACH:Toggle(L["Swap to Alt Power"], nil, 8)
+		config.args.displayAltPower = ACH:Toggle(L["Swap to Alt Power"], nil, 9)
 	end
 
 	if groupName == 'player' then
-		config.args.EnergyManaRegen = ACH:Toggle(L["Energy/Mana Regen Tick"], L["Enables the five-second-rule ticks for Mana classes and Energy ticks for Rogues and Druids."], 3, nil, nil, nil, nil, nil, nil, E.Retail)
+		config.args.EnergyManaRegen = ACH:Toggle(L["Energy/Mana Regen Tick"], L["Enables the five-second-rule ticks for Mana classes and Energy ticks for Rogues and Druids."], 7, nil, nil, nil, nil, nil, nil, E.Retail)
 	end
 
 	return config
