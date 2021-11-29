@@ -117,7 +117,10 @@ function NP:Update_Health(nameplate, skipUpdate)
 end
 
 local bars = { 'myBar', 'otherBar', 'absorbBar', 'healAbsorbBar' }
-if not E.Retail then table.insert(bars, 'beforeMyBar') end
+if not E.Retail then
+    table.insert(bars, 'beforeMyBar')
+    table.insert(bars, 'blizzardBar')
+end
 function NP:Construct_HealthPrediction(nameplate)
 	local HealthPrediction = CreateFrame('Frame', nameplate:GetName()..'HealthPrediction', nameplate)
 
@@ -144,7 +147,13 @@ function NP:Construct_HealthPrediction(nameplate)
 		HealthPrediction.beforeMyBar:SetFrameLevel(healthFrameLevel + 1)
 		HealthPrediction.beforeMyBar:SetStatusBarColor(NP.db.colors.healPrediction.others.r, NP.db.colors.healPrediction.others.g, NP.db.colors.healPrediction.others.b)
 		HealthPrediction.beforeMyBar:SetMinMaxValues(0, 1)
-		HealthPrediction.myBar:Point('LEFT', HealthPrediction.beforeMyBar:GetStatusBarTexture(), 'RIGHT')
+
+        HealthPrediction.myBar:Point('LEFT', HealthPrediction.beforeMyBar:GetStatusBarTexture(), 'RIGHT')
+
+        HealthPrediction.blizzardBar:Point('LEFT', HealthPrediction.otherBar:GetStatusBarTexture(), 'RIGHT')
+		HealthPrediction.blizzardBar:SetFrameLevel(healthFrameLevel + 1)
+		HealthPrediction.blizzardBar:SetStatusBarColor(NP.db.colors.healPrediction.blizzard.r, NP.db.colors.healPrediction.blizzard.g, NP.db.colors.healPrediction.blizzard.b)
+		HealthPrediction.blizzardBar:SetMinMaxValues(0, 1)
 	end
 
 	HealthPrediction.otherBar:Point('LEFT', HealthPrediction.myBar:GetStatusBarTexture(), 'RIGHT')
@@ -174,7 +183,10 @@ function NP:Update_HealthPrediction(nameplate)
 		if not nameplate:IsElementEnabled('HealthPrediction') then
 			nameplate:EnableElement('HealthPrediction')
 		end
-		if not E.Retail then nameplate.HealthPrediction.beforeMyBar:SetStatusBarColor(NP.db.colors.healPrediction.others.r, NP.db.colors.healPrediction.others.g, NP.db.colors.healPrediction.others.b) end
+		if not E.Retail then
+            nameplate.HealthPrediction.beforeMyBar:SetStatusBarColor(NP.db.colors.healPrediction.others.r, NP.db.colors.healPrediction.others.g, NP.db.colors.healPrediction.others.b)
+            nameplate.HealthPrediction.blizzardBar:SetStatusBarColor(NP.db.colors.healPrediction.blizzard.r, NP.db.colors.healPrediction.blizzard.g, NP.db.colors.healPrediction.blizzard.b)
+        end
 		nameplate.HealthPrediction.myBar:SetStatusBarColor(NP.db.colors.healPrediction.personal.r, NP.db.colors.healPrediction.personal.g, NP.db.colors.healPrediction.personal.b)
 		nameplate.HealthPrediction.otherBar:SetStatusBarColor(NP.db.colors.healPrediction.others.r, NP.db.colors.healPrediction.others.g, NP.db.colors.healPrediction.others.b)
 		nameplate.HealthPrediction.absorbBar:SetStatusBarColor(NP.db.colors.healPrediction.absorbs.r, NP.db.colors.healPrediction.absorbs.g, NP.db.colors.healPrediction.absorbs.b)

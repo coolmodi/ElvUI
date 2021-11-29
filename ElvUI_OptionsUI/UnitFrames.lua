@@ -1626,6 +1626,14 @@ UnitFrame.allColorsGroup = {
 							hasAlpha = true,
 							hidden = not E.Retail,
 						},
+                        blizzard = {
+							order = 9,
+							name = "Blizzard",
+                            desc = "Color for heals from Blizzard API",
+							type = 'color',
+							hasAlpha = true,
+                            hidden = E.Retail,
+						},
 					},
 				},
 				powerPrediction = {

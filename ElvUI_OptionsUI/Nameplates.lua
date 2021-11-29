@@ -520,6 +520,7 @@ E.Options.args.nameplate.args.colorsGroup.args.healPrediction.args.personal = AC
 E.Options.args.nameplate.args.colorsGroup.args.healPrediction.args.others = ACH:Color(L["Others"], nil, 2, true)
 E.Options.args.nameplate.args.colorsGroup.args.healPrediction.args.absorbs = ACH:Color(L["Absorbs"], nil, 3, true)
 E.Options.args.nameplate.args.colorsGroup.args.healPrediction.args.healAbsorbs = ACH:Color(L["Heal Absorbs"], nil, 4, true)
+E.Options.args.nameplate.args.colorsGroup.args.healPrediction.args.blizzard = ACH:Color("Blizzard", "Color for heals from Blizzard API", 5, true, nil, nil, nil, nil, E.Retail)
 
 E.Options.args.nameplate.args.colorsGroup.args.power = ACH:Group(L["Power Color"], nil, 7, nil, function(info) local t, d = E.db.nameplates.colors.power[info[#info]], P.nameplates.colors.power[info[#info]] return t.r, t.g, t.b, t.a, d.r, d.g, d.b, d.a end, function(info, r, g, b, a) local t = E.db.nameplates.colors.power[info[#info]] t.r, t.g, t.b, t.a = r, g, b, a NP:ConfigureAll() end)
 E.Options.args.nameplate.args.colorsGroup.args.power.inline = true

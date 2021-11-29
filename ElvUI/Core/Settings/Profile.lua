@@ -637,6 +637,7 @@ P.nameplates = {
 			others = {r = 0, g = 1, b = 0, a = 0.25},
 			absorbs = {r = 1, g = 1, b = 0, a = 0.25},
 			healAbsorbs = {r = 1, g = 0, b = 0, a = 0.25},
+            blizzard = {r = 0.25, g = 0.6, b = 1, a = 0.25},
 			--overabsorbs = {r = 1, g = 1, b = 0, a = 0.25},
 			--overhealabsorbs = {r = 1, g = 0, b = 0, a = 0.25},
 		},
@@ -1618,6 +1619,7 @@ P.unitframe = {
 			healAbsorbs = {r = 1, g = 0, b = 0, a = 0.25},
 			overabsorbs = {r = 1, g = 1, b = 0, a = 0.25},
 			overhealabsorbs = {r = 1, g = 0, b = 0, a = 0.25},
+            blizzard = {r = 0.25, g = 0.6, b = 1, a = 0.25},
 			maxOverflow = 0,
 		},
 		powerPrediction = {

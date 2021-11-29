@@ -142,6 +142,7 @@ local function Update(self, event, unit)
 		local beforeMyDirectHeal = 0
         local myDirectHeal = 0
 		local afterMyDirectHeal = 0
+        local blizzardApiHeal = 0
 		local maxHealShowm = maxHealth * element.maxOverflow - health
 
 		if maxHealShowm > 0 then
@@ -150,9 +151,10 @@ local function Update(self, event, unit)
             local beforeOurDirect, ourDirect, afterOurDirect, overTime, blizzard = HealComm:GetHealAmountCM(unitGUID, predictionTime, unit)
             local healMod = HealComm:GetHealModifier(unitGUID) or 1
 
-            beforeMyDirectHeal = beforeOurDirect * healMod;
-            myDirectHeal = ourDirect * healMod;
-            afterMyDirectHeal = (afterOurDirect + overTime + blizzard) * healMod;
+            beforeMyDirectHeal = beforeOurDirect * healMod
+            myDirectHeal = ourDirect * healMod
+            afterMyDirectHeal = (afterOurDirect + overTime) * healMod
+            blizzardApiHeal = blizzard * healMod
 		end
 
 		if beforeMyDirectHeal > maxHealShowm then
@@ -176,6 +178,12 @@ local function Update(self, event, unit)
 			element.beforeMyBar:SetMinMaxValues(0, maxHealth)
 			element.beforeMyBar:SetValue(beforeMyDirectHeal)
 			element.beforeMyBar:Show()
+		end
+
+        if(element.blizzardBar) then
+			element.blizzardBar:SetMinMaxValues(0, maxHealth)
+			element.blizzardBar:SetValue(blizzardApiHeal)
+			element.blizzardBar:Show()
 		end
 
 		myIncomingHeal = myDirectHeal
@@ -349,6 +357,10 @@ local function Disable(self)
 	if(element) then
         if(element.beforeMyBar) then
 			element.beforeMyBar:Hide()
+		end
+
+        if(element.blizzardBar) then
+			element.blizzardBar:Hide()
 		end
 
 		if(element.myBar) then
