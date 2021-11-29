@@ -79,9 +79,10 @@ end
 
 local function GetOptionsTable_AuraBars(updateFunc, groupName)
 	local config = ACH:Group(L["Aura Bars"], nil, nil, nil, function(info) return E.db.unitframe.units[groupName].aurabar[info[#info]] end, function(info, value) E.db.unitframe.units[groupName].aurabar[info[#info]] = value updateFunc(UF, groupName) end)
-	config.args.enable = ACH:Toggle(L["Enable"], nil, 1)
+	config.args.enable = ACH:Toggle(L["Enable"], nil, 0)
+	config.args.reverseFill = ACH:Toggle(L["Reverse Fill"], nil, 1)
 	config.args.configureButton1 = ACH:Execute(L["Coloring"], L["This opens the UnitFrames Color settings. These settings affect all unitframes."], 2, function() ACD:SelectGroup('ElvUI', 'unitframe', 'allColorsGroup') end)
-	config.args.configureButton1 = ACH:Execute(L["Coloring (Specific)"], L["This opens the AuraBar Colors filter. These settings affect specific spells."], 3, function() E:SetToFilterConfig('AuraBar Colors') end)
+	config.args.configureButton1 = ACH:Execute(L["Coloring (Specific)"], L["This opens the AuraBar Colors filter. These settings affect specific spells."], 3, function() C:SetToFilterConfig('AuraBar Colors') end)
 	config.args.anchorPoint = ACH:Select(L["Anchor Point"], L["What point to anchor to the frame you set to attach to."], 4, { ABOVE = L["Above"], BELOW = L["Below"] })
 	config.args.attachTo = ACH:Select(L["Attach To"], L["The object you want to attach to."], 5, { FRAME = L["Frame"], DEBUFFS = L["Debuffs"], BUFFS = L["Buffs"], DETACHED = L["Detach From Frame"] })
 	config.args.height = ACH:Range(L["Height"], nil, 6, { min = 5, max = 40, step = 1 })
@@ -91,7 +92,7 @@ local function GetOptionsTable_AuraBars(updateFunc, groupName)
 	config.args.sortDirection = ACH:Select(L["Sort Direction"], L["Ascending or Descending order."], 10, { ASCENDING = L["Ascending"], DESCENDING = L["Descending"] })
 	config.args.clickThrough = ACH:Toggle(L["Click Through"], L["Ignore mouse events."], 11)
 	config.args.friendlyAuraType = ACH:Select(L["Friendly Aura Type"], L["Set the type of auras to show when a unit is friendly."], 12, { HARMFUL = L["Debuffs"], HELPFUL = L["Buffs"] })
-	config.args.enemyAuraType = ACH:Select(L["Enemy Aura Type"], L["Set the type of auras to show when a unit is a foe."], 13, { HARMFUL = L["Debuffs"], HELPFUL = L["Buffs"] })
+	config.args.enemyAuraType = ACH:Select(L["Enemy Aura Type"], L["Set the type of auras to show when a unit is a foe."], 13, { HARMFUL = L["Debuffs"], HELPFUL = L["Buffs"] }, nil, nil, nil, nil, nil, groupName == 'player')
 	config.args.yOffset = ACH:Range(L["Y-Offset"], nil, 13, { min = 0, max = 100, step = 1 }, nil, nil, nil, nil, function() return E.db.unitframe.units[groupName].aurabar.attachTo == 'DETACHED' end)
 	config.args.spacing = ACH:Range(L["Spacing"], nil, 14, { min = 0, softMax = 20, step = 1 })
 
@@ -184,7 +185,7 @@ local function GetOptionsTable_Auras(auraType, updateFunc, groupName, numUnits)
 	config.args.filtersGroup.args.spacer1 = ACH:Description(L["Use drag and drop to rearrange filter priority or right click to remove a filter."] ..'\n'..L["Use Shift+LeftClick to toggle between friendly or enemy or normal state. Normal state will allow the filter to be checked on all units. Friendly state is for friendly units only and enemy state is for enemy units."], 9)
 
 	if auraType == 'debuffs' then
-		config.args.desaturate = ACH:Toggle(L["Desaturate Icon"], nil, 3)
+		config.args.desaturate = ACH:Toggle(L["Desaturate Icon"], L["Set auras that are not from you to desaturated."], 3)
 		config.args.attachTo.values = { FRAME = L["Frame"], BUFFS = L["Buffs"], HEALTH = L["Health"], POWER = L["Power"] }
 		config.args.attachTo.disabled = function() local position = E.db.unitframe.units[groupName].smartAuraPosition return position == 'DEBUFFS_ON_BUFFS' or position == 'FLUID_DEBUFFS_ON_BUFFS' end
 	end
@@ -219,7 +220,7 @@ local function GetOptionsTable_AuraWatch(updateFunc, groupName, numGroup, subGro
 	config.args.size = ACH:Range(L["Size"], nil, 2, { min = 6, max = 48, step = 1 })
 	config.args.countFontSize = ACH:Range(L["Font Size"], nil, 3, { min = 4, max = 20, step = 1 })
 	config.args.profileSpecific = ACH:Toggle(L["Profile Specific"], L["Use the profile specific filter Aura Indicator (Profile) instead of the global filter Aura Indicator."], 4)
-	config.args.configureButton = ACH:Execute(L["Configure Auras"], nil, 5, function() local configString = format('Aura Indicator (%s)', groupName == 'pet' and 'Pet' or E.db.unitframe.units[groupName].buffIndicator.profileSpecific and 'Profile' or 'Class') E:SetToFilterConfig(configString) end)
+	config.args.configureButton = ACH:Execute(L["Configure Auras"], nil, 5, function() local configString = format('Aura Indicator (%s)', groupName == 'pet' and 'Pet' or E.db.unitframe.units[groupName].buffIndicator.profileSpecific and 'Profile' or 'Class') C:SetToFilterConfig(configString) end)
 
 	if subGroup then
 		config.inline = true
@@ -462,7 +463,7 @@ local function CreateCustomTextGroup(unit, objectName)
 end
 
 --Custom Texts
-function E:RefreshCustomTextsConfigs()
+function C:RefreshCustomTexts()
 	--Hide any custom texts that don't belong to current profile
 	for _, customText in pairs(CUSTOMTEXT_CONFIGS) do
 		customText.hidden = true
@@ -721,7 +722,7 @@ local function GetOptionsTable_RaidDebuff(updateFunc, groupName)
 	config.args.xOffset = ACH:Range(L["X-Offset"], nil, 8, { min = -300, max = 300, step = 1 })
 	config.args.yOffset = ACH:Range(L["Y-Offset"], nil, 9, { min = -300, max = 300, step = 1 })
 
-	config.args.configureButton = ACH:Execute(L["Configure Auras"], nil, 10, function() E:SetToFilterConfig('RaidDebuffs') end)
+	config.args.configureButton = ACH:Execute(L["Configure Auras"], nil, 10, function() C:SetToFilterConfig('RaidDebuffs') end)
 
 	config.args.duration = ACH:Group(L["Duration Text"], nil, 12, nil, function(info) return E.db.unitframe.units[groupName].rdebuffs.duration[info[#info]] end, function(info, value) E.db.unitframe.units[groupName].rdebuffs.duration[info[#info]] = value updateFunc(UF, groupName) end)
 	config.args.duration.inline = true
@@ -875,11 +876,11 @@ local function GetOptionsTable_GeneralGroup(updateFunc, groupName, numUnits)
 
 	if groupName == 'party' or groupName == 'raid' or groupName == 'raid40' or groupName == 'raidpet' then
 		config.args.positionsGroup.args.growthDirection = ACH:Select(L["Growth Direction"], L["Growth direction from the first unitframe."], 4, C.Values.GrowthDirection)
-		config.args.positionsGroup.args.numGroups = ACH:Range(L["Number of Groups"], nil, 7, { min = 1, max = 8, step = 1 }, nil, nil, function(info, value) E.db.unitframe.units[groupName][info[#info]] = value updateFunc(UF, groupName, numUnits) if UF[groupName].isForced then UF:HeaderConfig(UF[groupName]) UF:HeaderConfig(UF[groupName], true) end end)
-		config.args.positionsGroup.args.groupsPerRowCol = ACH:Range(L["Groups Per Row/Column"], nil, 8, { min = 1, max = 8, step = 1 }, nil, nil, function(info, value) E.db.unitframe.units[groupName][info[#info]] = value updateFunc(UF, groupName, numUnits) if UF[groupName].isForced then UF:HeaderConfig(UF[groupName]) UF:HeaderConfig(UF[groupName], true) end end)
+		config.args.positionsGroup.args.numGroups = ACH:Range(L["Number of Groups"], nil, 7, { min = 1, max = 8, step = 1 }, nil, nil, function(info, value) E.db.unitframe.units[groupName][info[#info]] = value updateFunc(UF, groupName, numUnits) if UF[groupName].isForced then UF:HeaderConfig(UF[groupName]) UF:HeaderConfig(UF[groupName], true) end end, nil, groupName == 'party')
+		config.args.positionsGroup.args.groupsPerRowCol = ACH:Range(L["Groups Per Row/Column"], nil, 8, { min = 1, max = 8, step = 1 }, nil, nil, function(info, value) E.db.unitframe.units[groupName][info[#info]] = value updateFunc(UF, groupName, numUnits) if UF[groupName].isForced then UF:HeaderConfig(UF[groupName]) UF:HeaderConfig(UF[groupName], true) end end, nil, groupName == 'party')
 		config.args.positionsGroup.args.horizontalSpacing = ACH:Range(L["Horizontal Spacing"], nil, 9, { min = -1, max = 50, step = 1 })
 		config.args.positionsGroup.args.verticalSpacing = ACH:Range(L["Vertical Spacing"], nil, 10, { min = -1, max = 50, step = 1 })
-		config.args.positionsGroup.args.groupSpacing = ACH:Range(L["Group Spacing"], L["Additional spacing between each individual group."], 11, { min = 0, max = 50, step = 1 })
+		config.args.positionsGroup.args.groupSpacing = ACH:Range(L["Group Spacing"], L["Additional spacing between each individual group."], 11, { min = 0, max = 50, step = 1 }, nil, nil, nil, nil, groupName == 'party')
 
 		config.args.visibilityGroup = ACH:Group(L["Visibility"], nil, 200, nil, nil, function(info, value) E.db.unitframe.units[groupName][info[#info]] = value updateFunc(UF, groupName, numUnits) end)
 		config.args.visibilityGroup.inline = true
@@ -889,7 +890,7 @@ local function GetOptionsTable_GeneralGroup(updateFunc, groupName, numUnits)
 
 		config.args.sortingGroup = ACH:Group(L["Grouping & Sorting"], nil, 300, nil, nil, function(info, value) E.db.unitframe.units[groupName][info[#info]] = value updateFunc(UF, groupName, numUnits) end)
 		config.args.sortingGroup.inline = true
-		config.args.sortingGroup.args.raidWideSorting = ACH:Toggle(L["Raid-Wide Sorting"], L["Enabling this allows raid-wide sorting however you will not be able to distinguish between groups."], 1)
+		config.args.sortingGroup.args.raidWideSorting = ACH:Toggle(L["Raid-Wide Sorting"], L["Enabling this allows raid-wide sorting however you will not be able to distinguish between groups."], 1, nil, nil, nil, nil, nil, nil, groupName == 'party')
 		config.args.sortingGroup.args.invertGroupingOrder = ACH:Toggle(L["Invert Grouping Order"], L["Enabling this inverts the grouping order when the raid is not full, this will reverse the direction it starts from."], 2, nil, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].raidWideSorting end)
 		config.args.sortingGroup.args.startFromCenter = ACH:Toggle(L["Start Near Center"], L["The initial group will start near the center and grow out."], 3, nil, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].raidWideSorting end)
 		config.args.sortingGroup.args.groupBy = ACH:Select(L["Group By"], L["Set the order that the group will sort."], 4, { CLASS = L["CLASS"], ROLE = L["Role"], NAME = L["NAME"], GROUP = L["GROUP"], INDEX = L["Index"] })
@@ -1172,6 +1173,7 @@ UnitFrame.allColorsGroup = {
 							desc = L["Color power by color selection."],
 							get = function(info) return E.db.unitframe.colors[info[#info]] end,
 							set = function(info, value) E.db.unitframe.colors[info[#info]] = value UF:Update_AllFrames() end,
+							disabled = not E.Retail
 						},
 						powerclass = {
 							order = 4,
@@ -2418,4 +2420,4 @@ Assist.targetsGroup.args.raidicon = GetOptionsTable_RaidIcon(UF.CreateAndUpdateH
 Assist.name.args.attachTextTo.values = { Health = L["Health"], Frame = L["Frame"] }
 Assist.targetsGroup.args.name.args.attachTextTo.values = { Health = L["Health"], Frame = L["Frame"] }
 
-E:RefreshCustomTextsConfigs() -- Fire the current profile for custom texts
+C:RefreshCustomTexts() -- Fire the current profile for custom texts

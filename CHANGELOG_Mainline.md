@@ -1,6 +1,24 @@
-### Version 12.57 [ ETA: 🍨 ]
+### Version 12.58 [ ETA: 🍨 ]
 
+ActionBars: Fixed layering issue (Keybinds on Pet Bar)  
+Bags: Added an option to hide Gold  
+Bags: Fixed an issue with mouseover tooltip  
+Chat: Added an option to hide channel names  
+DataTexts: Fixed Bags DataText  
+Minimap: Added option to scale the Minimap  
+Misc: Reworked LootRoll and added options  
+NamePlates: Updated StyleFilters config  
+UnitFrames: Added reverse fill option for Aura Bars  
 
+___
+### Version 12.57 [ November 22nd 2021 ]
+
+Bags: Count position was getting stuck  
+UnitFrames: Fixed an issue with transparent power color  
+UnitFrames: Added option to Auto Hide Power out of combat  
+WorldMap: Fixed Coordinates level and a few Fullscreen Map issues  
+Skins: Fixed the Widget Bar not being skinned properly  
+Skins: Error when using Barbershop  
 
 ___
 ### Version 12.56 [ November 16th 2021 ]
