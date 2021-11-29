@@ -1,4 +1,24 @@
-### Version 1.56 [ ETA: 🍨 ]
+### Version 1.57 [ ETA: 🍨 ]
+
+ActionBars: Fixed layering issue (Keybinds on Pet Bar)  
+Bags: Added an option to hide Gold  
+Bags: Fixed an issue with mouseover tooltip  
+Chat: Added an option to hide channel names  
+DataTexts: Fixed Bags DataText  
+Minimap: Added option to scale the Minimap  
+Misc: Reworked LootRoll and added options  
+NamePlates: Updated StyleFilters config  
+UnitFrames: Added reverse fill option for Aura Bars  
+UnitFrames: Updated spark for EnergyManaRegen ticks  
+
+___
+### Version 1.56 [ November 24th 2021 ]
+
+DataTexts: Updated Friends  
+Minimap: Fixed tracking icon (Blizzard broke it)  
+NamePlates: Updates for StyleFilters config  
+UnitFrames: Fixed an issue with transparent power color  
+UnitFrames: Smart Raid Filter defaults to 5 groups for "Raid" now (8 for Raid40)  
 
 ___
 ### Version 1.55 [ November 19th 2021 ]
