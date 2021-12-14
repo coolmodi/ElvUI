@@ -1,4 +1,22 @@
-### Version 2.31 [ ETA: 🍨 ]
+### Version 2.32 [ ETA: 🍨 ]
+
+Auras: Tooltip fixes for top auras  
+Config: Fixed some options displaying in russian  
+DataTexts: Fixes for party invites  
+General: Added an option to load max camera distance on login  
+Minimap: Scaling and Font fixes  
+Misc: Added an option for LootRoll button size  
+Misc: Adjusted spacing between LootRoll need/greed/pass  
+Misc: Adjusted text length for LootRoll items  
+NamePlates: Fixed error when deleting a StyleFilter  
+UnitFrames: Fixed "attach to" option for Ready Check Icon  
+UnitFrames: LibHealComm-4.0 for HoTs  
+
+Note for plugin authors:  
+ElvDB.global.nameplate was renamed to ElvDB.global.nameplates  
+
+___
+### Version 2.31 [ December 4th 2021 ]
 
 ActionBars: Fixed layering issue (Keybinds on Pet Bar)  
 Bags: Added an option to hide Gold  
@@ -8,6 +26,7 @@ DataTexts: Fixed Bags DataText
 Minimap: Added option to scale the Minimap  
 Misc: Reworked LootRoll and added options  
 NamePlates: Updated StyleFilters config  
+Skins: Fixed button hover glow in GuildBank  
 UnitFrames: Added reverse fill option for Aura Bars  
 UnitFrames: Updated spark for EnergyManaRegen ticks  
 

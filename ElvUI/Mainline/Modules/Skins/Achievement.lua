@@ -2,7 +2,8 @@ local E, L, V, P, G = unpack(ElvUI)
 local S = E:GetModule('Skins')
 
 local _G = _G
-local ipairs, pairs, select, unpack = ipairs, pairs, select, unpack
+local next, unpack = next, unpack
+local ipairs, pairs, select = ipairs, pairs, select
 
 local hooksecurefunc = hooksecurefunc
 local GetAchievementCriteriaInfo = GetAchievementCriteriaInfo
@@ -199,6 +200,7 @@ function S:Blizzard_AchievementUI()
 	_G.AchievementFrameComparisonHeaderPortraitBg:Hide()
 	_G.AchievementFrameComparisonHeaderName:Width(90)
 	_G.AchievementFrameComparisonBackground:Hide()
+	_G.AchievementFrameComparisonWatermark:SetAlpha(0)
 	_G.AchievementFrameComparisonDark:SetAlpha(0)
 	_G.AchievementFrameComparisonSummaryPlayerBackground:Hide()
 	_G.AchievementFrameComparisonSummaryFriendBackground:Hide()

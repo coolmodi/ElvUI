@@ -1,4 +1,20 @@
-### Version 12.58 [ ETA: 🍨 ]
+### Version 12.59 [ ETA: 🍨 ]
+
+Auras: Tooltip fixes for top auras  
+Config: Fixed some options displaying in russian  
+Minimap: Scaling and Font fixes  
+Misc: Added an option for LootRoll button size  
+Misc: Adjusted spacing between LootRoll need/greed/pass  
+Misc: Adjusted text length for LootRoll items  
+NamePlates: Fixed error when deleting a StyleFilter  
+Skins: Fixed "New Mythic+ Season" overlap issue  
+UnitFrames: Fixed "attach to" option for Ready Check Icon  
+
+Note for plugin authors:  
+ElvDB.global.nameplate was renamed to ElvDB.global.nameplates  
+
+___
+### Version 12.58 [ December 4th 2021 ]
 
 ActionBars: Fixed layering issue (Keybinds on Pet Bar)  
 Bags: Added an option to hide Gold  
@@ -8,6 +24,7 @@ DataTexts: Fixed Bags DataText
 Minimap: Added option to scale the Minimap  
 Misc: Reworked LootRoll and added options  
 NamePlates: Updated StyleFilters config  
+Skins: Button Hover Glow in the Guild Bank fixed  
 UnitFrames: Added reverse fill option for Aura Bars  
 
 ___

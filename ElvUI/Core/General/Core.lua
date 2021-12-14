@@ -331,13 +331,7 @@ function E:GeneralMedia_ApplyToAll()
 	E.db.bags.countFont = font
 	E.db.bags.countFontSize = fontSize
 	E.db.nameplates.font = font
-	--E.db.nameplate.fontSize = fontSize --Dont use this because nameplate font it somewhat smaller than the rest of the font sizes
-	--E.db.nameplate.buffs.font = font
-	--E.db.nameplate.buffs.fontSize = fontSize --Dont use this because nameplate font it somewhat smaller than the rest of the font sizes
-	--E.db.nameplate.debuffs.font = font
-	--E.db.nameplate.debuffs.fontSize = fontSize --Dont use this because nameplate font it somewhat smaller than the rest of the font sizes
 	E.db.actionbar.font = font
-	--E.db.actionbar.fontSize = fontSize	--This may not look good if a big font size is chosen
 	E.db.auras.buffs.countFont = font
 	E.db.auras.buffs.countFontSize = fontSize
 	E.db.auras.buffs.timeFont = font
@@ -359,9 +353,7 @@ function E:GeneralMedia_ApplyToAll()
 	E.db.tooltip.textFontSize = fontSize
 	E.db.tooltip.smallTextFontSize = fontSize
 	E.db.tooltip.healthBar.font = font
-	--E.db.tooltip.healthbar.fontSize = fontSize -- Size is smaller than default
 	E.db.unitframe.font = font
-	--E.db.unitframe.fontSize = fontSize -- Size is smaller than default
 	E.db.unitframe.units.party.rdebuffs.font = font
 	E.db.unitframe.units.raid.rdebuffs.font = font
 	E.db.unitframe.units.raid40.rdebuffs.font = font
@@ -1068,7 +1060,7 @@ do -- BFA Convert, deprecated..
 		end
 
 		if E.db.nameplates.units.TARGET.nonTargetTransparency ~= nil then
-			E.global.nameplate.filters.ElvUI_NonTarget.actions.alpha = E.db.nameplates.units.TARGET.nonTargetTransparency * 100
+			E.global.nameplates.filters.ElvUI_NonTarget.actions.alpha = E.db.nameplates.units.TARGET.nonTargetTransparency * 100
 			E.db.nameplates.units.TARGET.nonTargetTransparency = nil
 		end
 
@@ -1090,7 +1082,7 @@ do -- BFA Convert, deprecated..
 
 		--Moved target scale to a style filter
 		if E.db.nameplates.units.TARGET.scale ~= nil then
-			E.global.nameplate.filters.ElvUI_Target.actions.scale = E.db.nameplates.units.TARGET.scale
+			E.global.nameplates.filters.ElvUI_Target.actions.scale = E.db.nameplates.units.TARGET.scale
 			E.db.nameplates.units.TARGET.scale = nil
 		end
 
@@ -1814,28 +1806,34 @@ function E:DBConversions()
 		E:DBConvertSL()
 	end
 
-	-- development converts, always call
+	-- development converts
+	if E.global.nameplate then
+		E:CopyTable(E.global.nameplates, E.global.nameplate)
+		E.global.nameplate = nil
+	end
 
-	E:ConvertActionBarKeybinds()
+	-- always convert
+	if not ElvCharacterDB.ConvertKeybindings then
+		E:ConvertActionBarKeybinds()
+		ElvCharacterDB.ConvertKeybindings = true
+	end
 end
 
 function E:ConvertActionBarKeybinds()
-	if not ElvCharacterDB.ConvertKeybindings then
-		for oldKeybind, newKeybind in pairs({ ELVUIBAR6BUTTON = 'ELVUIBAR2BUTTON', EXTRABAR7BUTTON = 'ELVUIBAR7BUTTON', EXTRABAR8BUTTON = 'ELVUIBAR8BUTTON', EXTRABAR9BUTTON = 'ELVUIBAR9BUTTON', EXTRABAR10BUTTON = 'ELVUIBAR10BUTTON' }) do
-			for i = 1, 12 do
-				local keys = { GetBindingKey(format('%s%d', oldKeybind, i)) }
-				if next(keys) then
-					for _, key in pairs(keys) do
-						SetBinding(key, format('%s%d', newKeybind, i))
-					end
+	for oldKeybind, newKeybind in pairs({ ELVUIBAR6BUTTON = 'ELVUIBAR2BUTTON', EXTRABAR7BUTTON = 'ELVUIBAR7BUTTON', EXTRABAR8BUTTON = 'ELVUIBAR8BUTTON', EXTRABAR9BUTTON = 'ELVUIBAR9BUTTON', EXTRABAR10BUTTON = 'ELVUIBAR10BUTTON' }) do
+		for i = 1, 12 do
+			local keys = { GetBindingKey(format('%s%d', oldKeybind, i)) }
+			if next(keys) then
+				for _, key in pairs(keys) do
+					SetBinding(key, format('%s%d', newKeybind, i))
 				end
 			end
 		end
+	end
 
-		local cur = GetCurrentBindingSet()
-		if cur and cur > 0 then SaveBindings(cur) end
-
-		ElvCharacterDB.ConvertKeybindings = true
+	local cur = GetCurrentBindingSet()
+	if cur and cur > 0 then
+		SaveBindings(cur)
 	end
 end
 
@@ -1932,6 +1930,11 @@ function E:Initialize()
 
 	if GetCVarBool('scriptProfile') then
 		E:StaticPopup_Show('SCRIPT_PROFILE')
+	end
+
+	-- Blizzard will set this value to int(60/CVar cameraDistanceMax)+1 at logout if it is manually set higher than that
+	if not E.Retail and E.db.general.lockCameraDistanceMax then
+		E:LockCVar('cameraDistanceMaxZoomFactor', E.db.general.cameraDistanceMax)
 	end
 
 	if E.db.general.loginmessage then

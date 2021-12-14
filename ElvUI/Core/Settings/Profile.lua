@@ -52,6 +52,8 @@ P.general = {
 		itemLevelFontOutline = 'OUTLINE',
 	},
 	durabilityScale = 1,
+	lockCameraDistanceMax = true,
+	cameraDistanceMax = E.Retail and 2.6 or 4,
 	afk = true,
 	afkChat = true,
 	numberPrefixStyle = 'ENGLISH',
@@ -154,6 +156,7 @@ P.general = {
 	lootRoll = {
 		width = 328,
 		height = 28,
+		buttonSize = 14,
 		style = 'halfbar',
 		statusBarTexture = 'ElvUI Norm',
 		qualityName = false,
@@ -1929,8 +1932,6 @@ P.unitframe = {
 			growthDirection = 'UP_RIGHT',
 			horizontalSpacing = 0,
 			verticalSpacing = 3,
-			numGroups = 1,
-			groupsPerRowCol = 1,
 			groupBy = 'INDEX',
 			sortDir = 'ASC',
 			sortMethod = 'INDEX',
@@ -2216,6 +2217,7 @@ P.unitframe.units.party.targetsGroup.buffIndicator = nil
 P.unitframe.units.party.targetsGroup.healPrediction = nil
 
 P.unitframe.units.raid = CopyTable(P.unitframe.units.party)
+P.unitframe.units.raid.groupsPerRowCol = 1
 P.unitframe.units.raid.groupBy = 'GROUP'
 P.unitframe.units.raid.buffs.numrows = 1
 P.unitframe.units.raid.buffs.perrow = 3
@@ -2363,6 +2365,8 @@ P.actionbar = {
 	noPowerColor = { r = 0.5, g = 0.5, b = 1 },
 	noRangeColor = { r = 0.8, g = 0.1, b = 0.1 },
 	notUsableColor = { r = 0.4, g = 0.4, b = 0.4 },
+	checkSelfCast = true,
+	checkFocusCast = true,
 	rightClickSelfCast = false,
 	transparent = false,
 	usableColor = { r = 1, g = 1, b = 1 },

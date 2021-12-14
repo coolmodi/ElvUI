@@ -24,6 +24,7 @@ local C_LootHistory_GetPlayerInfo = C_LootHistory.GetPlayerInfo
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
 local GREED, NEED, PASS = GREED, NEED, PASS
 local ROLL_DISENCHANT = ROLL_DISENCHANT
+local PRIEST_COLOR = RAID_CLASS_COLORS.PRIEST
 
 local cachedRolls = {}
 local cancelled_rolls = {}
@@ -53,7 +54,7 @@ local function SetTip(frame)
 				lineAdded = true
 			end
 
-			local classColor = E:ClassColor(className)
+			local classColor = E:ClassColor(className) or PRIEST_COLOR
 			GameTooltip:AddLine(playerName, classColor.r, classColor.g, classColor.b)
 		end
 	end
@@ -338,7 +339,7 @@ function M:UpdateLootRollFrames()
 		for _, button in next, rolltypes do
 			local icon = frame[button]
 			if icon then
-				icon:Size(E.db.general.lootRoll.height / 1.5)
+				icon:Size(E.db.general.lootRoll.buttonSize)
 				icon:ClearAllPoints()
 			end
 		end
@@ -351,14 +352,12 @@ function M:UpdateLootRollFrames()
 
 			frame.name:ClearAllPoints()
 			frame.name:Point('BOTTOMLEFT', frame.status, 'TOPLEFT', 4, 4)
+			frame.name:Point('RIGHT', frame.bind, 'LEFT', -4, 0)
 
 			frame.bind:ClearAllPoints()
 			frame.bind:Point('RIGHT', frame.need, 'LEFT', -1, 0)
 
-			frame.pass:Point('TOPRIGHT', frame, 4, 0)
-			if frame.disenchant then frame.disenchant:Point('RIGHT', frame.pass, 'LEFT', 1, 0) end
-			frame.greed:Point('RIGHT', frame.disenchant or frame.pass, 'LEFT', 1, 0)
-			frame.need:Point('RIGHT', frame.greed, 'LEFT', 1, 0)
+			frame.pass:Point('TOPRIGHT', frame, 4, 2)
 		else
 			frame.status:ClearAllPoints()
 			frame.status:SetAllPoints()
@@ -367,15 +366,17 @@ function M:UpdateLootRollFrames()
 
 			frame.name:ClearAllPoints()
 			frame.name:Point('LEFT', frame.status, 4, 0)
+			frame.name:Point('RIGHT', frame.bind, 'LEFT', -4, 0)
 
 			frame.bind:ClearAllPoints()
 			frame.bind:Point('RIGHT', frame.need, 'LEFT', -1, 0)
 
 			frame.pass:Point('RIGHT', frame.status, 'RIGHT', -4, 0)
-			if frame.disenchant then frame.disenchant:Point('RIGHT', frame.pass, 'LEFT', 1, 0) end
-			frame.greed:Point('RIGHT', frame.disenchant or frame.pass, 'LEFT', 1, 0)
-			frame.need:Point('RIGHT', frame.greed, 'LEFT', 1, 0)
 		end
+
+		if frame.disenchant then frame.disenchant:Point('RIGHT', frame.pass, 'LEFT', -3, -2) end
+		frame.greed:Point('RIGHT', frame.disenchant or frame.pass, 'LEFT', -3, frame.disenchant and 0 or -2)
+		frame.need:Point('RIGHT', frame.greed, 'LEFT', -3, 0)
 	end
 end
 

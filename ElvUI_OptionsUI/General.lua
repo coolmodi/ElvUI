@@ -41,9 +41,14 @@ General.args.general.args.monitor.inline = true
 General.args.general.args.monitor.args.eyefinity = ACH:Toggle(L["Multi-Monitor Support"], L["Attempt to support eyefinity/nvidia surround."])
 General.args.general.args.monitor.args.ultrawide = ACH:Toggle(L["Ultrawide Support"], L["Attempts to center UI elements in a 16:9 format for ultrawide monitors"])
 
-General.args.general.args.scaling = ACH:Group(L["UI Scale"], nil, 51)
+General.args.general.args.camera = ACH:Group(L["Camera"], nil, 55, nil, nil, nil, nil, E.Retail)
+General.args.general.args.camera.args.lockCameraDistanceMax = ACH:Toggle(L["Lock Distance Max"], nil, 11)
+General.args.general.args.camera.args.cameraDistanceMax = ACH:Range(L["Max Distance"], nil, 12, { min = 1, max = 4, step = 0.1 }, nil, nil, nil, function() return not E.db.general.lockCameraDistanceMax end)
+General.args.general.args.camera.inline = true
+
+General.args.general.args.scaling = ACH:Group(L["UI Scale"], nil, 60)
 General.args.general.args.scaling.inline = true
-General.args.general.args.scaling.args.UIScale = ACH:Range(L["UI_SCALE"], nil, 1, { min = 0.1, max = 1.25, step = 0.000000000000001, softMin = 0.40, softMax = 1.15, bigStep = 0.01 }, nil, function() return E.global.general.UIScale end, function(_, value) E.global.general.UIScale = value if not IsMouseButtonDown() then E:PixelScaleChanged() E:StaticPopup_Show('PRIVATE_RL') end end)
+General.args.general.args.scaling.args.UIScale = ACH:Range(L["UI Scale"], nil, 1, { min = 0.1, max = 1.25, step = 0.000000000000001, softMin = 0.40, softMax = 1.15, bigStep = 0.01 }, nil, function() return E.global.general.UIScale end, function(_, value) E.global.general.UIScale = value if not IsMouseButtonDown() then E:PixelScaleChanged() E:StaticPopup_Show('PRIVATE_RL') end end)
 General.args.general.args.scaling.args.ScaleSmall = ACH:Execute(L["Small"], nil, 2, function() E.global.general.UIScale = .6 E:PixelScaleChanged() E:StaticPopup_Show('PRIVATE_RL') end)
 General.args.general.args.scaling.args.ScaleMedium = ACH:Execute(L["Medium"], nil, 3, function() E.global.general.UIScale = .7 E:PixelScaleChanged() E:StaticPopup_Show('PRIVATE_RL') end)
 General.args.general.args.scaling.args.ScaleLarge = ACH:Execute(L["Large"], nil, 4, function() E.global.general.UIScale = .8 E:PixelScaleChanged() E:StaticPopup_Show('PRIVATE_RL') end)
@@ -53,15 +58,15 @@ General.args.general.args.scaling.args.ScaleMedium.customWidth = 100
 General.args.general.args.scaling.args.ScaleLarge.customWidth = 100
 General.args.general.args.scaling.args.ScaleAuto.customWidth = 100
 
-General.args.general.args.automation = ACH:Group(L["Automation"], nil, 52)
+General.args.general.args.automation = ACH:Group(L["Automation"], nil, 65)
 General.args.general.args.automation.inline = true
 
-General.args.general.args.automation.args.interruptAnnounce = ACH:Select(L["Announce Interrupts"], L["Announce when you interrupt a spell to the specified chat channel."], 1, { NONE = L["NONE"], SAY = L["SAY"], YELL = L["YELL"], PARTY = L["Party Only"], RAID = L["Party / Raid"], RAID_ONLY = L["Raid Only"], EMOTE = L["CHAT_MSG_EMOTE"] }, nil, nil, nil, function(info, value) E.db.general[info[#info]] = value if value == 'NONE' then Misc:UnregisterEvent('COMBAT_LOG_EVENT_UNFILTERED') else Misc:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED') end end)
+General.args.general.args.automation.args.interruptAnnounce = ACH:Select(L["Announce Interrupts"], L["Announce when you interrupt a spell to the specified chat channel."], 1, { NONE = L["None"], SAY = L["Say"], YELL = L["Yell"], PARTY = L["Party Only"], RAID = L["Party / Raid"], RAID_ONLY = L["Raid Only"], EMOTE = L["CHAT_MSG_EMOTE"] }, nil, nil, nil, function(info, value) E.db.general[info[#info]] = value if value == 'NONE' then Misc:UnregisterEvent('COMBAT_LOG_EVENT_UNFILTERED') else Misc:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED') end end)
 General.args.general.args.automation.args.autoAcceptInvite = ACH:Toggle(L["Accept Invites"], L["Automatically accept invites from guild/friends."], 2)
 General.args.general.args.automation.args.autoTrackReputation = ACH:Toggle(L["Auto Track Reputation"], nil, 4)
-General.args.general.args.automation.args.autoRepair = ACH:Select(L["Auto Repair"], L["Automatically repair using the following method when visiting a merchant."], 5, { NONE = L["NONE"], GUILD = not E.Classic and L["GUILD"] or nil, PLAYER = L["PLAYER"] })
+General.args.general.args.automation.args.autoRepair = ACH:Select(L["Auto Repair"], L["Automatically repair using the following method when visiting a merchant."], 5, { NONE = L["None"], GUILD = not E.Classic and L["Guild"] or nil, PLAYER = L["Player"] })
 
-General.args.general.args.totems = ACH:Group(L["Class Totems"], nil, 53, nil, function(info) return E.db.general.totems[info[#info]] end, function(info, value) E.db.general.totems[info[#info]] = value Totems:PositionAndSize() end, function() return not E.private.general.totemBar end)
+General.args.general.args.totems = ACH:Group(L["Class Totems"], nil, 70, nil, function(info) return E.db.general.totems[info[#info]] end, function(info, value) E.db.general.totems[info[#info]] = value Totems:PositionAndSize() end, function() return not E.private.general.totemBar end)
 General.args.general.args.totems.inline = true
 General.args.general.args.totems.args.enable = ACH:Toggle(L["Enable"], nil, 1, nil, nil, nil, function() return E.private.general.totemBar end, function(_, value) E.private.general.totemBar = value; E:StaticPopup_Show('PRIVATE_RL') end, false)
 General.args.general.args.totems.args.size = ACH:Range(L["Button Size"], nil, 2, { min = 24, max = 60, step = 1 })
@@ -151,8 +156,8 @@ General.args.cosmetic.args.chatBubblesGroup.args.chatBubbleFont = ACH:SharedMedi
 General.args.cosmetic.args.chatBubblesGroup.args.chatBubbleFontSize = ACH:Range(L["Font Size"], nil, 3, C.Values.FontSize, nil, nil, nil, function() return not E.private.general.replaceBubbleFont end)
 General.args.cosmetic.args.chatBubblesGroup.args.chatBubbleFontOutline = ACH:FontFlags(L["Font Outline"], nil, 4, nil, nil, nil, function() return not E.private.general.replaceBubbleFont end)
 General.args.cosmetic.args.chatBubblesGroup.args.spacer1 = ACH:Spacer(10, 'full')
-General.args.cosmetic.args.chatBubblesGroup.args.warning = ACH:Description('|cffFF0000This does not work in Instances or Garrisons!|r', 11, 'medium')
-General.args.cosmetic.args.chatBubblesGroup.args.chatBubbles = ACH:Select(L["Chat Bubbles Style"], L["Skin the blizzard chat bubbles."], 12, { backdrop = L["Skin Backdrop"], nobackdrop = L["Remove Backdrop"], backdrop_noborder = L["Skin Backdrop (No Borders)"], disabled = L["DISABLE"] })
+General.args.cosmetic.args.chatBubblesGroup.args.warning = ACH:Description(L["|cffFF0000This does not work in Instances or Garrisons!|r"], 11, 'medium')
+General.args.cosmetic.args.chatBubblesGroup.args.chatBubbles = ACH:Select(L["Chat Bubbles Style"], L["Skin the blizzard chat bubbles."], 12, { backdrop = L["Skin Backdrop"], nobackdrop = L["Remove Backdrop"], backdrop_noborder = L["Skin Backdrop (No Borders)"], disabled = L["Disable"] })
 General.args.cosmetic.args.chatBubblesGroup.args.chatBubbleName = ACH:Toggle(L["Chat Bubble Names"], L["Display the name of the unit on the chat bubble. This will not work if backdrop is disabled or when you are in an instance."], 13)
 
 General.args.alternativePowerGroup = ACH:Group(L["Alternative Power"], nil, 15, nil, function(info) return E.db.general.altPowerBar[info[#info]] end, function(info, value) E.db.general.altPowerBar[info[#info]] = value Blizzard:UpdateAltPowerBarSettings() end, nil, not E.Retail)
@@ -172,7 +177,7 @@ General.args.alternativePowerGroup.args.textGroup.inline = true
 General.args.alternativePowerGroup.args.textGroup.args.font = ACH:SharedMediaFont(L["Font"], nil, 1)
 General.args.alternativePowerGroup.args.textGroup.args.fontSize = ACH:Range(L["Font Size"], nil, 2, C.Values.FontSize)
 General.args.alternativePowerGroup.args.textGroup.args.fontOutline = ACH:FontFlags(L["Font Outline"], nil, 3)
-General.args.alternativePowerGroup.args.textGroup.args.textFormat = ACH:Select(L["Text Format"], nil, 4, { NONE = L["NONE"], NAME = L["NAME"], NAMEPERC = L["Name: Percent"], NAMECURMAX = L["Name: Current / Max"], NAMECURMAXPERC = L["Name: Current / Max - Percent"], PERCENT = L["Percent"], CURMAX = L["Current / Max"], CURMAXPERC = L["Current / Max - Percent"] })
+General.args.alternativePowerGroup.args.textGroup.args.textFormat = ACH:Select(L["Text Format"], nil, 4, { NONE = L["None"], NAME = L["Name"], NAMEPERC = L["Name: Percent"], NAMECURMAX = L["Name: Current / Max"], NAMECURMAXPERC = L["Name: Current / Max - Percent"], PERCENT = L["Percent"], CURMAX = L["Current / Max"], CURMAXPERC = L["Current / Max - Percent"] })
 General.args.alternativePowerGroup.args.textGroup.args.textFormat.sortByValue = true
 
 General.args.blizzUIImprovements = ACH:Group(L["BlizzUI Improvements"], nil, 20)
@@ -188,13 +193,13 @@ General.args.blizzUIImprovements.args.general.args.commandBarSetting = ACH:Selec
 General.args.blizzUIImprovements.args.general.args.vehicleSeatIndicatorSize = ACH:Range(L["Vehicle Seat Indicator Size"], nil, 9, { min = 64, max = 128, step = 4 }, nil, nil, function(info, value) E.db.general[info[#info]] = value Blizzard:UpdateVehicleFrame() end, nil, not E.Retail)
 General.args.blizzUIImprovements.args.general.args.durabilityScale = ACH:Range(L["Durability Scale"], nil, 10, { min = .5, max = 8, step = .5 }, nil, nil, function(info, value) E.db.general[info[#info]] = value Blizzard:UpdateDurabilityScale() end)
 
-General.args.blizzUIImprovements.args.quest = ACH:Group(L["Quest"], nil, 2)
+General.args.blizzUIImprovements.args.quest = ACH:Group(L["Quest"], nil, 3)
 General.args.blizzUIImprovements.args.quest.inline = true
 General.args.blizzUIImprovements.args.quest.args.questRewardMostValueIcon = ACH:Toggle(L["Mark Quest Reward"], L["Marks the most valuable quest reward with a gold coin."], 1)
 General.args.blizzUIImprovements.args.quest.args.questXPPercent = ACH:Toggle(L["XP Quest Percent"], nil, 2, nil, nil, nil, nil, nil, nil, not E.Retail)
 General.args.blizzUIImprovements.args.quest.args.objectiveTracker = ACH:Toggle(L["Objective Frame"], L["Enable"], 1, nil, function() E:StaticPopup_Show('CONFIG_RL') end, nil, nil, nil, nil, E.Retail)
 
-General.args.blizzUIImprovements.args.lootGroup = ACH:Group(L["Loot"], nil, 3, nil, function(info) return E.private.general[info[#info]] end, function(info, value) E.private.general[info[#info]] = value; E:StaticPopup_Show('PRIVATE_RL') end)
+General.args.blizzUIImprovements.args.lootGroup = ACH:Group(L["Loot"], nil, 4, nil, function(info) return E.private.general[info[#info]] end, function(info, value) E.private.general[info[#info]] = value; E:StaticPopup_Show('PRIVATE_RL') end)
 General.args.blizzUIImprovements.args.lootGroup.inline = true
 General.args.blizzUIImprovements.args.lootGroup.args.loot = ACH:Toggle(L["Loot"], L["Enable/Disable the loot frame."], 1)
 
@@ -202,12 +207,13 @@ General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup = ACH:Group(L
 General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.lootRoll = ACH:Toggle(L["Enable"], L["Enable/Disable the loot roll frame."], 0, nil, nil, nil, function(info) return E.private.general[info[#info]] end, function(info, value) E.private.general[info[#info]] = value; E:StaticPopup_Show('PRIVATE_RL') end)
 General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.width = ACH:Range(L["Width"], nil, 1, { min = 50, max = 1000, step = 1 })
 General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.height = ACH:Range(L["Height"], nil, 2, { min = 5, max = 100, step = 1 })
-General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.style = ACH:Select(L["Style"], nil, 3, { halfbar = 'Half Bar', fullbar = 'Full Bar' })
-General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.statusBarTexture = ACH:SharedMediaStatusbar(L["Texture"], L["The texture that will be used mainly for statusbars."], 1)
-General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.qualityName = ACH:Toggle(L["Quality Name"], nil, 4)
-General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.qualityStatusBar = ACH:Toggle(L["Quality StatusBar"], nil, 5)
-General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.statusBarColor = ACH:Color(L["StatusBar Color"], nil, 5, nil, nil, function(info) local c, d = E.db.general.lootRoll[info[#info]], P.general.lootRoll[info[#info]] return c.r, c.g, c.b, 1, d.r, d.g, d.b, 1 end, function(info, r, g, b) local c = E.db.general.lootRoll[info[#info]] c.r, c.g, c.b = r, g, b end, nil, function() return E.db.general.lootRoll.qualityStatusBar end)
-General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.qualityStatusBarBackdrop = ACH:Toggle(L["Quality Background"], nil, 6)
+General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.buttonSize = ACH:Range(L["Button Size"], nil, 3, { softMin = 14, softMax = 64, min = 12, max = 128, step = 1 })
+General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.style = ACH:Select(L["Style"], nil, 4, { halfbar = 'Half Bar', fullbar = 'Full Bar' })
+General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.statusBarTexture = ACH:SharedMediaStatusbar(L["Texture"], L["The texture that will be used mainly for statusbars."], 5)
+General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.qualityName = ACH:Toggle(L["Quality Name"], nil, 6)
+General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.qualityStatusBar = ACH:Toggle(L["Quality StatusBar"], nil, 7)
+General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.statusBarColor = ACH:Color(L["StatusBar Color"], nil, 8, nil, nil, function(info) local c, d = E.db.general.lootRoll[info[#info]], P.general.lootRoll[info[#info]] return c.r, c.g, c.b, 1, d.r, d.g, d.b, 1 end, function(info, r, g, b) local c = E.db.general.lootRoll[info[#info]] c.r, c.g, c.b = r, g, b end, nil, function() return E.db.general.lootRoll.qualityStatusBar end)
+General.args.blizzUIImprovements.args.lootGroup.args.lootRollGroup.args.qualityStatusBarBackdrop = ACH:Toggle(L["Quality Background"], nil, 9)
 
 General.args.blizzUIImprovements.args.itemLevelInfo = ACH:Group(L["Item Level"], nil, 4, nil, function(info) return E.db.general.itemLevel[info[#info]] end, function(info, value) E.db.general.itemLevel[info[#info]] = value Misc:ToggleItemLevelInfo() end, nil, not E.Retail)
 General.args.blizzUIImprovements.args.itemLevelInfo.inline = true
