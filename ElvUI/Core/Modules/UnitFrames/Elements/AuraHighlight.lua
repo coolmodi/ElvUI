@@ -41,6 +41,14 @@ function UF:Configure_AuraHighlight(frame)
 			end
 		else
 			frame.AuraHighlightBackdrop = false
+
+            if E.db.unitframe.debuffHighlighting == "NON_UNIFORM" then
+                frame.AuraHighlight:SetTexture([[Interface\AddOns\ElvUI\Core\Media\Textures\HighlightNonUniform]])
+                frame.AuraHighlight:SetBlendMode("ADD")
+            elseif E.db.unitframe.debuffHighlighting == "NON_UNIFORM_BO" then
+                frame.AuraHighlight:SetTexture([[Interface\AddOns\ElvUI\Core\Media\Textures\HighlightNonUniformBO]])
+                frame.AuraHighlight:SetBlendMode("ADD")
+            end
 		end
 	else
 		frame:DisableElement('AuraHighlight')
