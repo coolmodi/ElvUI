@@ -23,3 +23,5 @@ Color (default blue) can be changed in: UnitFrames -> Colors -> Heal Prediction
 `Non-Uniform BO`: Same with clear center.
 
 * Added heal prediction to target of target frame.
+
+* Enabled tank/assist role indicators for raid frames.
