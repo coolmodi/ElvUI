@@ -12,6 +12,7 @@ local tinsert = tinsert
 local CreateFrame = CreateFrame
 local CastingBarFrame_OnLoad = CastingBarFrame_OnLoad
 local CastingBarFrame_SetUnit = CastingBarFrame_SetUnit
+local PetCastingBarFrame_OnLoad = PetCastingBarFrame_OnLoad
 local MAX_COMBO_POINTS = MAX_COMBO_POINTS
 -- GLOBALS: ElvUF_Target
 
@@ -137,21 +138,21 @@ function UF:Update_PlayerFrame(frame, db)
 	UF:Configure_Castbar(frame)
 	UF:Configure_Fader(frame)
 
-	if not db.enable and not E.private.unitframe.disabledBlizzardFrames.player then
-		CastingBarFrame_OnLoad(_G.CastingBarFrame, 'player', true, false)
-		CastingBarFrame_OnLoad(_G.PetCastingBarFrame)
-	elseif not db.enable and E.private.unitframe.disabledBlizzardFrames.player or (db.enable and not db.castbar.enable) then
-		CastingBarFrame_SetUnit(_G.CastingBarFrame, nil)
-		CastingBarFrame_SetUnit(_G.PetCastingBarFrame, nil)
-	end
-
 	if not E.Retail and E.myclass ~= 'WARRIOR' then
 		UF:Configure_EnergyManaRegen(frame)
 	end
 
+	if (UF.db.units.player.enable and UF.db.units.player.castbar.enable) or E.private.unitframe.disabledBlizzardFrames.castbar then
+		CastingBarFrame_SetUnit(_G.CastingBarFrame)
+		CastingBarFrame_SetUnit(_G.PetCastingBarFrame)
+	else
+		CastingBarFrame_OnLoad(_G.CastingBarFrame, 'player', true, false)
+		PetCastingBarFrame_OnLoad(_G.PetCastingBarFrame)
+	end
+
 	--We need to update Target AuraBars if attached to Player AuraBars
 	--mainly because of issues when using power offset on player and switching to/from middle orientation
-	if E.db.unitframe.units.target.aurabar.attachTo == 'PLAYER_AURABARS' and UF.target then
+	if UF.db.units.target.aurabar.attachTo == 'PLAYER_AURABARS' and UF.target then
 		UF:Configure_AuraBars(UF.target)
 	end
 
