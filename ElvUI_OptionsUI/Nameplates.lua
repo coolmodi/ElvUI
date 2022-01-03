@@ -548,36 +548,36 @@ E.Options.args.nameplate.args.colorsGroup.args.classResources.args.CHI_POWER = A
 E.Options.args.nameplate.args.colorsGroup.args.classResources.args.COMBO_POINTS.args.chargedComboPoint = ACH:Color(L["Charged Combo Point"], nil, 13, nil, nil, function(info) local t, d = E.db.nameplates.colors.classResources[info[#info]], P.nameplates.colors.classResources[info[#info]] return t.r, t.g, t.b, t.a, d.r, d.g, d.b end, function(info, r, g, b) local t = E.db.nameplates.colors.classResources[info[#info]] t.r, t.g, t.b = r, g, b NP:ConfigureAll() end)
 
 for i = 1, 6 do
-	E.Options.args.nameplates.args.colorsGroup.args.classResources.args.CHI_POWER.args[''..i] = ACH:Color(L["CHI_POWER"]..' #'..i)
-	E.Options.args.nameplates.args.colorsGroup.args.classResources.args.COMBO_POINTS.args[''..i] = ACH:Color(L["COMBO_POINTS"]..' #'..i)
+    E.Options.args.nameplate.args.colorsGroup.args.classResources.args.CHI_POWER.args[''..i] = ACH:Color(L["CHI_POWER"]..' #'..i)
+    E.Options.args.nameplate.args.colorsGroup.args.classResources.args.COMBO_POINTS.args[''..i] = ACH:Color(L["COMBO_POINTS"]..' #'..i)
 end
 
-E.Options.args.nameplates.args.playerGroup = GetUnitSettings('PLAYER', L["Player"])
-E.Options.args.nameplates.args.friendlyPlayerGroup = GetUnitSettings('FRIENDLY_PLAYER', L["FRIENDLY_PLAYER"])
-E.Options.args.nameplates.args.friendlyNPCGroup = GetUnitSettings('FRIENDLY_NPC', L["FRIENDLY_NPC"])
-E.Options.args.nameplates.args.enemyPlayerGroup = GetUnitSettings('ENEMY_PLAYER', L["ENEMY_PLAYER"])
-E.Options.args.nameplates.args.enemyNPCGroup = GetUnitSettings('ENEMY_NPC', L["ENEMY_NPC"])
+E.Options.args.nameplate.args.playerGroup = GetUnitSettings('PLAYER', L["Player"])
+E.Options.args.nameplate.args.friendlyPlayerGroup = GetUnitSettings('FRIENDLY_PLAYER', L["FRIENDLY_PLAYER"])
+E.Options.args.nameplate.args.friendlyNPCGroup = GetUnitSettings('FRIENDLY_NPC', L["FRIENDLY_NPC"])
+E.Options.args.nameplate.args.enemyPlayerGroup = GetUnitSettings('ENEMY_PLAYER', L["ENEMY_PLAYER"])
+E.Options.args.nameplate.args.enemyNPCGroup = GetUnitSettings('ENEMY_NPC', L["ENEMY_NPC"])
 
-E.Options.args.nameplates.args.targetGroup = ACH:Group(L["Target"], nil, 101, nil, function(info) return E.db.nameplates.units.TARGET[info[#info]] end, function(info, value) E.db.nameplates.units.TARGET[info[#info]] = value NP:SetCVars() NP:ConfigureAll() end, function() return not E.NamePlates.Initialized end)
-E.Options.args.nameplates.args.targetGroup.args.nonTargetAlphaShortcut = ACH:Execute(L["Non-Target Alpha"], nil, 1, function() C:SetStyleFilterConfig('ElvUI_NonTarget') ACD:SelectGroup('ElvUI', 'nameplate', 'filters', 'actions') end)
-E.Options.args.nameplates.args.targetGroup.args.targetScaleShortcut = ACH:Execute(L["Scale"], nil, 2, function() C:SetStyleFilterConfig('ElvUI_Target') ACD:SelectGroup('ElvUI', 'nameplate', 'filters', 'actions') end)
-E.Options.args.nameplates.args.targetGroup.args.spacer1 = ACH:Spacer(3, 'full')
-E.Options.args.nameplates.args.targetGroup.args.glowStyle = ACH:Select(L["Target/Low Health Indicator"], nil, 4, { none = L["None"], style1 = L["Border Glow"], style2 = L["Background Glow"], style3 = L["Top Arrow"], style4 = L["Side Arrows"], style5 = L["Border Glow"]..' + '..L["Top Arrow"], style6 = L["Background Glow"]..' + '..L["Top Arrow"], style7 = L["Border Glow"]..' + '..L["Side Arrows"], style8 = L["Background Glow"]..' + '..L["Side Arrows"] })
-E.Options.args.nameplates.args.targetGroup.args.glowStyle.customWidth = 225
-E.Options.args.nameplates.args.targetGroup.args.arrowScale = ACH:Range(L["Arrow Scale"], nil, 5, { min = .2, max = 2, step = .01, isPercent = true })
-E.Options.args.nameplates.args.targetGroup.args.arrowSpacing = ACH:Range(L["Arrow Spacing"], nil, 6, { min = 0, max = 50, step = 1 })
-E.Options.args.nameplates.args.targetGroup.args.arrows = ACH:MultiSelect(L["Arrow Texture"], nil, 30, nil, nil, nil, function(_, key) return E.db.nameplates.units.TARGET.arrow == key end, function(_, key) E.db.nameplates.units.TARGET.arrow = key NP:SetCVars() NP:ConfigureAll() end)
-E.Options.args.nameplates.args.targetGroup.args.arrows.customWidth = 80
+E.Options.args.nameplate.args.targetGroup = ACH:Group(L["Target"], nil, 101, nil, function(info) return E.db.nameplates.units.TARGET[info[#info]] end, function(info, value) E.db.nameplates.units.TARGET[info[#info]] = value NP:SetCVars() NP:ConfigureAll() end, function() return not E.NamePlates.Initialized end)
+E.Options.args.nameplate.args.targetGroup.args.nonTargetAlphaShortcut = ACH:Execute(L["Non-Target Alpha"], nil, 1, function() C:SetStyleFilterConfig('ElvUI_NonTarget') ACD:SelectGroup('ElvUI', 'nameplate', 'filters', 'actions') end)
+E.Options.args.nameplate.args.targetGroup.args.targetScaleShortcut = ACH:Execute(L["Scale"], nil, 2, function() C:SetStyleFilterConfig('ElvUI_Target') ACD:SelectGroup('ElvUI', 'nameplate', 'filters', 'actions') end)
+E.Options.args.nameplate.args.targetGroup.args.spacer1 = ACH:Spacer(3, 'full')
+E.Options.args.nameplate.args.targetGroup.args.glowStyle = ACH:Select(L["Target/Low Health Indicator"], nil, 4, { none = L["None"], style1 = L["Border Glow"], style2 = L["Background Glow"], style3 = L["Top Arrow"], style4 = L["Side Arrows"], style5 = L["Border Glow"]..' + '..L["Top Arrow"], style6 = L["Background Glow"]..' + '..L["Top Arrow"], style7 = L["Border Glow"]..' + '..L["Side Arrows"], style8 = L["Background Glow"]..' + '..L["Side Arrows"] })
+E.Options.args.nameplate.args.targetGroup.args.glowStyle.customWidth = 225
+E.Options.args.nameplate.args.targetGroup.args.arrowScale = ACH:Range(L["Arrow Scale"], nil, 5, { min = .2, max = 2, step = .01, isPercent = true })
+E.Options.args.nameplate.args.targetGroup.args.arrowSpacing = ACH:Range(L["Arrow Spacing"], nil, 6, { min = 0, max = 50, step = 1 })
+E.Options.args.nameplate.args.targetGroup.args.arrows = ACH:MultiSelect(L["Arrow Texture"], nil, 30, nil, nil, nil, function(_, key) return E.db.nameplates.units.TARGET.arrow == key end, function(_, key) E.db.nameplates.units.TARGET.arrow = key NP:SetCVars() NP:ConfigureAll() end)
+E.Options.args.nameplate.args.targetGroup.args.arrows.customWidth = 80
 
 for key, arrow in pairs(E.Media.Arrows) do
-	E.Options.args.nameplates.args.targetGroup.args.arrows.values[key] = E:TextureString(arrow, ':32:32')
+	E.Options.args.nameplate.args.targetGroup.args.arrows.values[key] = E:TextureString(arrow, ':32:32')
 end
 
-E.Options.args.nameplates.args.targetGroup.args.classBarGroup = ACH:Group(L["Classbar"], nil, 13, nil, function(info) return E.db.nameplates.units.TARGET.classpower[info[#info]] end, function(info, value) E.db.nameplates.units.TARGET.classpower[info[#info]] = value NP:ConfigureAll() end)
-E.Options.args.nameplates.args.targetGroup.args.classBarGroup.inline = true
-E.Options.args.nameplates.args.targetGroup.args.classBarGroup.args.enable = ACH:Toggle(L["Enable"], nil, 1)
-E.Options.args.nameplates.args.targetGroup.args.classBarGroup.args.width = ACH:Range(L["Width"], nil, 2, { min = minWidth, max = MaxWidth('PLAYER'), step = 1 })
-E.Options.args.nameplates.args.targetGroup.args.classBarGroup.args.height = ACH:Range(L["Height"], nil, 3, { min = minHeight, max = MaxHeight('PLAYER'), step = 1 })
-E.Options.args.nameplates.args.targetGroup.args.classBarGroup.args.xOffset = ACH:Range(L["X-Offset"], nil, 5, { min = -100, max = 100, step = 1 })
-E.Options.args.nameplates.args.targetGroup.args.classBarGroup.args.yOffset = ACH:Range(L["Y-Offset"], nil, 6, { min = -100, max = 100, step = 1 })
-E.Options.args.nameplates.args.targetGroup.args.classBarGroup.args.sortDirection = ACH:Select(L["Sort Direction"], L["Defines the sort order of the selected sort method."], 7, { asc = L["Ascending"], desc = L["Descending"], NONE = L["None"] }, nil, nil, nil, nil, nil, function() return (E.myclass ~= 'DEATHKNIGHT') end)
+E.Options.args.nameplate.args.targetGroup.args.classBarGroup = ACH:Group(L["Classbar"], nil, 13, nil, function(info) return E.db.nameplates.units.TARGET.classpower[info[#info]] end, function(info, value) E.db.nameplates.units.TARGET.classpower[info[#info]] = value NP:ConfigureAll() end)
+E.Options.args.nameplate.args.targetGroup.args.classBarGroup.inline = true
+E.Options.args.nameplate.args.targetGroup.args.classBarGroup.args.enable = ACH:Toggle(L["Enable"], nil, 1)
+E.Options.args.nameplate.args.targetGroup.args.classBarGroup.args.width = ACH:Range(L["Width"], nil, 2, { min = minWidth, max = MaxWidth('PLAYER'), step = 1 })
+E.Options.args.nameplate.args.targetGroup.args.classBarGroup.args.height = ACH:Range(L["Height"], nil, 3, { min = minHeight, max = MaxHeight('PLAYER'), step = 1 })
+E.Options.args.nameplate.args.targetGroup.args.classBarGroup.args.xOffset = ACH:Range(L["X-Offset"], nil, 5, { min = -100, max = 100, step = 1 })
+E.Options.args.nameplate.args.targetGroup.args.classBarGroup.args.yOffset = ACH:Range(L["Y-Offset"], nil, 6, { min = -100, max = 100, step = 1 })
+E.Options.args.nameplate.args.targetGroup.args.classBarGroup.args.sortDirection = ACH:Select(L["Sort Direction"], L["Defines the sort order of the selected sort method."], 7, { asc = L["Ascending"], desc = L["Descending"], NONE = L["None"] }, nil, nil, nil, nil, nil, function() return (E.myclass ~= 'DEATHKNIGHT') end)
