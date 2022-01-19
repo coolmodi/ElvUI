@@ -22,8 +22,10 @@ P.general = {
 	topPanel = false,
 	customGlow = {
 		style = 'Pixel Glow',
-		color = { 23/255, 132/255, 209/255, 0.9 }, -- not rgba format yet due to lib
+		color = { r = 23/255, g = 132/255, b = 209/255, a = 0.9 },
+		useColor = false,
 		speed = 0.3,
+		lines = 8,
 		size = 1,
 	},
 	topPanelSettings = {
@@ -601,6 +603,8 @@ P.nameplates = {
 	lowHealthThreshold = 0.4,
 	motionType = 'STACKED',
 	nameColoredGlow = false,
+	overlapH = 0.8,
+	overlapV = 1.1,
 	showEnemyCombat = 'DISABLED',
 	showFriendlyCombat = 'DISABLED',
 	smoothbars = false,
@@ -632,6 +636,7 @@ P.nameplates = {
 	},
 	threat = {
 		enable = true,
+		beingTankedByPet = true,
 		beingTankedByTank = true,
 		goodScale = 1,
 		badScale = 1,
@@ -1253,7 +1258,6 @@ local UF_Castbar = {
 		fontSize = 12,
 		fontStyle = 'OUTLINE'
 	},
-	displayTarget = false,
 	enable = true,
 	format = 'REMAINING',
 	height = 18,
@@ -2016,6 +2020,8 @@ P.unitframe.units.player.buffs.priority = 'Blacklist,Personal,PlayerBuffs,Whitel
 P.unitframe.units.player.debuffs.enable = true
 P.unitframe.units.player.debuffs.priority = 'Blacklist,Personal,nonPersonal'
 P.unitframe.units.player.castbar.latency = true
+P.unitframe.units.player.castbar.displayTarget = false
+
 P.unitframe.units.player.fader.enable = false
 P.unitframe.units.player.fader.casting = true
 P.unitframe.units.player.fader.combat = true

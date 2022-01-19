@@ -1,29 +1,38 @@
-### Version 12.59 [ ETA: 🍨 ]
+### Version 12.61 [ ETA: 🍨 ]
 
-Auras: Tooltip fixes for top auras  
-Config: Fixed some options displaying in russian  
-General: Added new search section in our OptionsUI  
-Libraries: Added LibCustomGlow and options in General - Cosmetic  
-Minimap: Scaling and Font fixes  
-Misc: Added button size option for LootRoll  
-Misc: Added font options for LootRoll  
-Misc: Added LootRoll option to position buttons on the left side  
-Misc: Added spacing option for LootRoll  
-Misc: Adjusted spacing between LootRoll need/greed/pass  
-Misc: Adjusted text length for LootRoll items  
+UnitFrames: Fixed AuraBars font issue  
+
+___
+### Version 12.60 [ January 18th 2022 ]
+
+**Important**  
+ActionBars: Swapped to Custom Glow (General -> Cosmetic)  
+Config: Added Search section (with Whats New button)  
+
+**Changes**  
+Auras: Top Aurs time will have cooldown time updated properly in Tooltip  
+Config: Fixed error when deleting a StyleFilter  
+Config: Fixed some options displaying in Russian  
+Minimap: Scaling and Font fixes for Location  
+Misc: LootRoll has several new options  
+Movers: Added mover for TimeAlertFrame on Korean region  
+NamePlates: Attempted to fix Widget alpha/scaling issues  
 NamePlates: Fixed Desaturate Icon option  
-NamePlates: Fixed error when deleting a StyleFilter  
+NamePlates: Fixed Off Tank setting and added an Off Tank (Pets) which shows some off tank pets  
 NamePlates: Fixed Quest Icon text position option  
-Skins: Fixed "New Mythic+ Season" overlap issue  
-Skins: Fixed conquest and pvp rating tooltip skin  
+Skins: Attempted to fix "New Mythic+ Season" overlap issue another way  
+Skins: Fixed conquest and PVP rating tooltip skin  
+Tags: Fixed [class:icon] cropping  
 UnitFrames: Added an option to toggle Blizzards default Castbar  
 UnitFrames: Fixed "attach to" option for Ready Check Icon  
+UnitFrames: Fixed "Display Target" as it only works for Player  
 UnitFrames: Fixed kyrian rogue charged combo points  
 UnitFrames: Fixed non attached Castbar Icon  
-UnitFrames: Fixed sort by class  
+UnitFrames: Fixed sort by class option  
 
-Note for plugin authors:  
-ElvDB.global.nameplate was renamed to ElvDB.global.nameplates  
+___
+### Version 12.59 [ January 18th 2022 ]
+Simpy forgot to remove classic/tbc TOCs  
 
 ___
 ### Version 12.58 [ December 4th 2021 ]
