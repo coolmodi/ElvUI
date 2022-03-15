@@ -173,6 +173,8 @@ local bankIDs = {-1, 5, 6, 7, 8, 9, 10}
 local bankEvents = {'BAG_UPDATE_DELAYED', 'BAG_UPDATE', 'BAG_CLOSED', 'BANK_BAG_SLOT_FLAGS_UPDATED', 'PLAYERBANKBAGSLOTS_CHANGED', 'PLAYERBANKSLOTS_CHANGED'}
 local bagEvents = {'BAG_UPDATE_DELAYED', 'BAG_UPDATE', 'BAG_CLOSED', 'ITEM_LOCK_CHANGED', 'BAG_SLOT_FLAGS_UPDATED', 'QUEST_ACCEPTED', 'QUEST_REMOVED'}
 local presistentEvents = {
+	PLAYERREAGENTBANKSLOTS_CHANGED = true,
+	PLAYERBANKSLOTS_CHANGED = true,
 	BAG_UPDATE_DELAYED = true,
 	BAG_UPDATE = true,
 	BAG_CLOSED = true
@@ -829,6 +831,7 @@ function B:AssignBagFlagMenu()
 
 				info.disabled = nil
 				info.tooltipTitle = nil
+
 				_G.UIDropDownMenu_AddButton(info)
 			end
 		end
@@ -845,6 +848,8 @@ function B:AssignBagFlagMenu()
 	info.disabled = nil
 
 	info.text = BAG_FILTER_IGNORE
+	info.checked = B:IsSortIgnored(holder.bagID)
+
 	info.func = function(_, _, _, value)
 		if holder.bagID == BANK_CONTAINER then
 			SetBankAutosortDisabled(not value)
@@ -856,17 +861,20 @@ function B:AssignBagFlagMenu()
 			SetBagSlotFlag(holder.bagID, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP, not value)
 		end
 	end
-	if holder.bagID == BANK_CONTAINER then
-		info.checked = GetBankAutosortDisabled()
-	elseif holder.bagID == BACKPACK_CONTAINER then
-		info.checked = GetBackpackAutosortDisabled()
-	elseif holder.bagID > NUM_BAG_SLOTS then
-		info.checked = GetBankBagSlotFlag(holder.bagID - NUM_BAG_SLOTS, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP)
-	else
-		info.checked = GetBagSlotFlag(holder.bagID, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP)
-	end
 
 	_G.UIDropDownMenu_AddButton(info)
+end
+
+function B:IsSortIgnored(bagID)
+	if bagID == BANK_CONTAINER then
+		return GetBankAutosortDisabled()
+	elseif bagID == BACKPACK_CONTAINER then
+		return GetBackpackAutosortDisabled()
+	elseif bagID > NUM_BAG_SLOTS then
+		return GetBankBagSlotFlag(bagID - NUM_BAG_SLOTS, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP)
+	else
+		return GetBagSlotFlag(bagID, LE_BAG_FILTER_FLAG_IGNORE_CLEANUP)
+	end
 end
 
 function B:GetBagAssignedInfo(holder)
@@ -1045,7 +1053,7 @@ function B:Layout(isBank)
 
 		local totalSlots, lastReagentRowButton = 0
 		local bag = f.Bags[REAGENTBANK_CONTAINER]
-		for slotID, slot in next, bag do
+		for slotID, slot in ipairs(bag) do
 			totalSlots = totalSlots + 1
 
 			slot:ClearAllPoints()
@@ -1123,7 +1131,7 @@ function B:SetBagAssignments(holder, skip)
 		B:Layout(frame.isBank)
 	end
 
-	if frame.isBank then
+	if frame.isBank and frame:IsShown() then
 		if holder.bagID ~= BANK_CONTAINER then
 			BankFrameItemButton_Update(holder)
 		end
@@ -1164,10 +1172,28 @@ function B:OnEvent(event, ...)
 			self.notPurchased[containerID] = nil
 		end
 	elseif event == 'PLAYERBANKSLOTS_CHANGED' then
-		local bankID = ...
-		B:UpdateBagSlots(self, (bankID <= NUM_BANKGENERIC_SLOTS) and BANK_CONTAINER or (bankID - NUM_BANKGENERIC_SLOTS))
+		local slotID = ...
+		local index = (slotID <= NUM_BANKGENERIC_SLOTS) and BANK_CONTAINER or (slotID - NUM_BANKGENERIC_SLOTS)
+		local default = index == BANK_CONTAINER
+		local bagID = self.BagIDs[default and 1 or index+1]
+		if not bagID then return end
+
+		if self:IsShown() then -- when its shown we only want to update the default bank bags slot
+			if default then -- the other bags are handled by BAG_UPDATE
+				B:UpdateSlot(B.BankFrame, bagID, slotID)
+			end
+		else
+			local bag = self.Bags[bagID]
+			self.staleBags[bagID] = bag
+
+			if default then
+				bag.staleSlots[slotID] = true
+			end
+		end
 	elseif event == 'BAG_UPDATE' or event == 'BAG_CLOSED' then
-		B:DelayedContainer(self, event, ...)
+		if not self.isBank or self:IsShown() then
+			B:DelayedContainer(self, event, ...)
+		end
 	elseif event == 'BAG_UPDATE_DELAYED' then
 		for bagID, container in next, self.DelayedContainers do
 			if bagID ~= 0 then
@@ -1187,7 +1213,13 @@ function B:OnEvent(event, ...)
 		B:SetBagAssignments(self.ContainerHolder[id], true)
 		B:UpdateBagSlots(self, self.BagIDs[id])
 	elseif event == 'PLAYERREAGENTBANKSLOTS_CHANGED' then
-		B:UpdateSlot(self, REAGENTBANK_CONTAINER, ...)
+		if self:IsShown() then
+			B:UpdateSlot(self, REAGENTBANK_CONTAINER, ...)
+		else
+			local bag = self.Bags[REAGENTBANK_CONTAINER]
+			self.staleBags[REAGENTBANK_CONTAINER] = bag
+			bag.staleSlots[...] = true
+		end
 	elseif (event == 'QUEST_ACCEPTED' or event == 'QUEST_REMOVED') and self:IsShown() then
 		for slot in next, B.QuestSlots do
 			B:UpdateSlot(self, slot.bagID, slot.slotID)
@@ -1267,6 +1299,7 @@ B.ExcludeGrays = E.Retail and {
 	[36812] = "Ground Gear",
 	[62072] = "Robble's Wobbly Staff",
 	[67410] = "Very Unlucky Rock",
+	[190382] = "Warped Pocket Dimension",
 } or { -- TBC and Classic
 	[32888] = "The Relics of Terokk",
 	[28664] = "Nitrin's Instructions",
@@ -1403,6 +1436,7 @@ function B:ConstructContainerFrame(name, isBank)
 	f.topOffset = 50
 	f.bottomOffset = 8
 	f.BagIDs = (isBank and bankIDs) or bagIDs
+	f.staleBags = {} -- used to keep track of bank items that need update on next open
 	f.Bags = {}
 
 	local mover = (isBank and _G.ElvUIBankMover) or _G.ElvUIBagMover
@@ -1530,6 +1564,10 @@ function B:ConstructContainerFrame(name, isBank)
 
 		f.Bags[bagID] = bag
 
+		if bagID == BANK_CONTAINER then
+			bag.staleSlots = {}
+		end
+
 		for slotID = 1, MAX_CONTAINER_ITEMS do
 			bag[slotID] = B:ConstructContainerButton(f, bagID, slotID)
 		end
@@ -1607,6 +1645,9 @@ function B:ConstructContainerFrame(name, isBank)
 			for slotID = 1, B.REAGENTBANK_SIZE do
 				bag[slotID] = B:ConstructContainerButton(f, REAGENTBANK_CONTAINER, slotID)
 			end
+
+			bag.numSlots = B.REAGENTBANK_SIZE
+			bag.staleSlots = {}
 
 			f.Bags[REAGENTBANK_CONTAINER] = bag
 			f.reagentFrame.slots = bag
@@ -2158,6 +2199,19 @@ function B:OpenBank()
 	if B.BankFrame.firstOpen then
 		B:UpdateAllSlots(B.BankFrame)
 		B.BankFrame.firstOpen = nil
+	elseif next(B.BankFrame.staleBags) then
+		for bagID, bag in next, B.BankFrame.staleBags do
+			if bagID == REAGENTBANK_CONTAINER or bagID == BANK_CONTAINER then
+				for slotID in next, bag.staleSlots do
+					B:UpdateSlot(B.BankFrame, bagID, slotID)
+					bag.staleSlots[slotID] = nil
+				end
+			else
+				B:UpdateBagSlots(B.BankFrame, bagID)
+			end
+
+			B.BankFrame.staleBags[bagID] = nil
+		end
 	end
 
 	--Allow opening reagent tab directly by holding Shift
@@ -2312,9 +2366,7 @@ function B:VendorGrays_OnUpdate(elapsed)
 		B.SellFrame.Info.goldGained = B.SellFrame.Info.goldGained + goldGained
 		B.SellFrame.Info.itemsSold = B.SellFrame.Info.itemsSold + 1
 		B.SellFrame.statusbar:SetValue(B.SellFrame.Info.itemsSold)
-
-		local timeLeft = (B.SellFrame.Info.ProgressMax - B.SellFrame.Info.itemsSold)*B.SellFrame.Info.SellInterval
-		B.SellFrame.statusbar.ValueText:SetText(B.SellFrame.Info.itemsSold..' / '..B.SellFrame.Info.ProgressMax..' ( '..timeLeft..'s )')
+		B.SellFrame.statusbar.ValueText:SetText(B.SellFrame.Info.itemsSold..' / '..B.SellFrame.Info.ProgressMax)
 	elseif lastItem then
 		B.SellFrame:Hide()
 
@@ -2539,6 +2591,7 @@ function B:Initialize()
 		B:SecureHook('BackpackTokenFrame_Update', 'UpdateTokens')
 		B:RegisterEvent('PLAYER_AVG_ITEM_LEVEL_UPDATE')
 
+		B.BankFrame:RegisterEvent('PLAYERREAGENTBANKSLOTS_CHANGED') -- let reagent collect data for next open
 		-- Delay because we need to wait for Quality to exist, it doesnt seem to on login at PEW
 		E:Delay(1, B.UpdateBagSlots, B, B.BankFrame, REAGENTBANK_CONTAINER)
 	end

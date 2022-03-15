@@ -9,15 +9,15 @@ function UF:Construct_RaidRoleFrames(frame)
 	frame.LeaderIndicator = anchor:CreateTexture(nil, 'OVERLAY')
 	frame.AssistantIndicator = anchor:CreateTexture(nil, 'OVERLAY')
 	frame.MasterLooterIndicator = anchor:CreateTexture(nil, 'OVERLAY')
-    frame.RaidRoleIndicator = anchor:CreateTexture(nil, 'OVERLAY')
+	frame.RaidRoleIndicator = anchor:CreateTexture(nil, 'OVERLAY')
 
-	anchor:Size(24, 12)
+	anchor:Size(36, 12)
 	anchor:SetFrameLevel(frame.RaisedElementParent.RaidRoleLevel)
 
 	frame.LeaderIndicator:Size(12)
 	frame.AssistantIndicator:Size(12)
 	frame.MasterLooterIndicator:Size(12)
-    frame.RaidRoleIndicator:Size(12)
+	frame.RaidRoleIndicator:Size(12)
 
 	frame.LeaderIndicator.PostUpdate = UF.RaidRoleUpdate
 	frame.AssistantIndicator.PostUpdate = UF.RaidRoleUpdate
@@ -36,7 +36,7 @@ function UF:Configure_RaidRoleIcons(frame)
 			frame:EnableElement('LeaderIndicator')
 			frame:EnableElement('AssistantIndicator')
 			frame:EnableElement('MasterLooterIndicator')
-            frame:EnableElement('RaidRoleIndicator')
+			frame:EnableElement('RaidRoleIndicator')
 		end
 
 		raidRoleFrameAnchor:ClearAllPoints()
@@ -46,7 +46,7 @@ function UF:Configure_RaidRoleIcons(frame)
 		frame:DisableElement('LeaderIndicator')
 		frame:DisableElement('AssistantIndicator')
 		frame:DisableElement('MasterLooterIndicator')
-        frame:DisableElement('RaidRoleIndicator')
+		frame:DisableElement('RaidRoleIndicator')
 	end
 end
 
@@ -56,19 +56,20 @@ function UF:RaidRoleUpdate()
 	local leader = frame.LeaderIndicator
 	local assistant = frame.AssistantIndicator
 	local masterlooter = frame.MasterLooterIndicator
-    local raidRole = frame.RaidRoleIndicator
+	local mamt = frame.RaidRoleIndicator
 
-	if not leader or not assistant or not masterlooter or not raidRole then return end
+	if not anchor then return end
 
 	local db = frame.db
 	local isLeader = leader:IsShown()
 	local isAssist = assistant:IsShown()
-    local isRole = raidRole:IsShown()
+	local isMAMT = mamt:IsShown()
+	local isML = masterlooter:IsShown()
 
 	leader:ClearAllPoints()
 	assistant:ClearAllPoints()
 	masterlooter:ClearAllPoints()
-    raidRole:ClearAllPoints()
+	mamt:ClearAllPoints()
 
 	if db and db.raidRoleIcons then
 		local pos, x, y = db.raidRoleIcons.position, db.raidRoleIcons.xOffset, db.raidRoleIcons.yOffset
@@ -77,18 +78,32 @@ function UF:RaidRoleUpdate()
 		local pos1 = right and 'RIGHT' or 'LEFT'
 		local pos2 = right and 'LEFT' or 'RIGHT'
 
-        local elems = {}
-        if isLeader then table.insert(elems, leader) end
-        if isAssist then table.insert(elems, assistant) end
-        if isRole then table.insert(elems, raidRole) end
-        table.insert(elems, masterlooter)
+		if isLeader then
+			leader:Point(pos, anchor, x, y)
+		elseif isAssist then
+			assistant:Point(pos, anchor, x, y)
+		end
 
-        for i = 1, #elems do
-            if i == 1 then
-                elems[i]:Point(pos, anchor, x, y)
-            else
-                elems[i]:Point(pos1, elems[i-1], pos2)
-            end
-        end
+		if isMAMT then
+			if isLeader then
+				mamt:Point(pos1, leader, pos2)
+			elseif isAssist then
+				mamt:Point(pos1, assistant, pos2)
+			else
+				mamt:Point(pos, anchor, x, y)
+			end
+		end
+
+		if isML then
+			if isLeader then
+				masterlooter:Point(pos1, leader, pos2)
+			elseif isAssist then
+				masterlooter:Point(pos1, assistant, pos2)
+			elseif isMAMT then
+				masterlooter:Point(pos1, mamt, pos2)
+			else
+				masterlooter:Point(pos, anchor, x, y)
+			end
+		end
 	end
 end

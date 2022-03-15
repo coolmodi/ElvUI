@@ -7,7 +7,6 @@
 local _G, format, next = _G, format, next
 local gsub, pairs, type = gsub, pairs, type
 
-local BAG_ITEM_QUALITY_COLORS = BAG_ITEM_QUALITY_COLORS
 local CreateFrame = CreateFrame
 local GetAddOnEnableState = GetAddOnEnableState
 local GetAddOnMetadata = GetAddOnMetadata
@@ -76,10 +75,9 @@ E.Classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 E.TBC = WOW_PROJECT_ID == (WOW_PROJECT_BURNING_CRUSADE_CLASSIC or 5)
 E.Wrath = false
 
--- Item Qualitiy stuff - used by MerathilisUI
+-- Item Qualitiy stuff, also used by MerathilisUI
 E.QualityColors = {}
-local qualityColors = BAG_ITEM_QUALITY_COLORS
-for index, value in pairs(qualityColors) do
+for index, value in pairs(_G.BAG_ITEM_QUALITY_COLORS) do
 	E.QualityColors[index] = {r = value.r, g = value.g, b = value.b}
 end
 E.QualityColors[-1] = {r = 0, g = 0, b = 0}
@@ -185,9 +183,9 @@ do
 	local a,b,c = '','([%(%)%.%%%+%-%*%?%[%^%$])','%%%1'
 	function E:EscapeString(s) return gsub(s,b,c) end
 
-	local d = {'|c[fF][fF]%x%x%x%x%x%x','|r','|[TA].-|[ta]','^%s+','%s+$'}
-	function E:StripString(s)
-		for _, z in next, d do s = gsub(s,z,a) end
+	local d = {'|[TA].-|[ta]','|c[fF][fF]%x%x%x%x%x%x','|r','^%s+','%s+$'}
+	function E:StripString(s, ignoreTextures)
+		for i = ignoreTextures and 2 or 1, #d do s = gsub(s,d[i],a) end
 		return s
 	end
 end

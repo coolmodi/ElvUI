@@ -25,25 +25,61 @@ PetBattleFrameHider:SetFrameStrata('LOW')
 RegisterStateDriver(PetBattleFrameHider, 'visibility', '[petbattle] hide; show')
 
 -- updating of "invalid" units, function edited by ElvUI
-local function enableTargetUpdate(object)
-	object.onUpdateFrequency = object.onUpdateFrequency or 0.1
-	object.__eventless = true
-
-	object:SetScript('OnUpdate', function(self, elapsed)
-		if not self.unit then
-			return
-		elseif self.elapsed and self.elapsed > self.onUpdateFrequency then
-			self:UpdateAllElements('OnUpdate')
+local function xtargetOnUpdate(self, elapsed)
+	if not self.unit or not UnitExists(self.unit) then
+		return
+	else
+		local frequency = self.elapsed or 0
+		if frequency > self.onUpdateFrequency then
+			local guid = UnitGUID(self.unit)
+			if self.lastGUID ~= guid then
+				self:UpdateAllElements('OnUpdate')
+				self.lastGUID = guid
+			else
+				if self:IsElementEnabled('Health') then self.Health:ForceUpdate() end
+				if self:IsElementEnabled('Power') then self.Power:ForceUpdate() end
+			end
 
 			self.elapsed = 0
 		else
-			self.elapsed = (self.elapsed or 0) + elapsed
+			self.elapsed = frequency + elapsed
 		end
-	end)
+
+		local prediction = self.elapsedPrediction or 0
+		if prediction > self.onUpdatePrediction then
+			if self:IsElementEnabled('HealthPrediction') then self.HealthPrediction:ForceUpdate() end
+			if self:IsElementEnabled('PowerPrediction') then self.PowerPrediction:ForceUpdate() end
+			if self:IsElementEnabled('RaidTargetIndicator') then self.RaidTargetIndicator:ForceUpdate() end
+
+			self.elapsedPrediction = 0
+		else
+			self.elapsedPrediction = prediction + elapsed
+		end
+
+		local auras = self.elapsedAuras or 0
+		if auras > self.onUpdateAuras and self:IsElementEnabled('Auras') then
+			if self.Auras then self.Auras:ForceUpdate() end
+			if self.Buffs then self.Buffs:ForceUpdate() end
+			if self.Debuffs then self.Debuffs:ForceUpdate() end
+
+			self.elapsedAuras = 0
+		else
+			self.elapsedAuras = auras + elapsed
+		end
+	end
+end
+
+local function enableTargetUpdate(object)
+	if not object.onUpdateFrequency then object.onUpdateFrequency = 0.2 end
+	if not object.onUpdatePrediction then object.onUpdatePrediction = 0.4 end
+	if not object.onUpdateAuras then object.onUpdateAuras = 0.6 end
+
+	object.__eventless = true
+	object:SetScript('OnUpdate', xtargetOnUpdate)
 end
 Private.enableTargetUpdate = enableTargetUpdate
 
-local function updateActiveUnit(self)
+local function updateActiveUnit(self, event)
 	-- Calculate units to work with
 	local realUnit, modUnit = SecureButton_GetUnit(self), SecureButton_GetModifiedUnit(self)
 
@@ -62,9 +98,15 @@ local function updateActiveUnit(self)
 
 	-- Change the active unit and run a full update.
 	if(Private.UpdateUnits(self, modUnit, realUnit)) then
-		self:UpdateAllElements('RefreshUnit')
+		self:UpdateAllElements(event or 'RefreshUnit')
 
 		return true
+	end
+end
+
+local function evalUnitAndUpdate(self, event)
+	if(not updateActiveUnit(self, event)) then
+		return self:UpdateAllElements(event)
 	end
 end
 
@@ -228,9 +270,7 @@ for k, v in next, {
 end
 
 local function onShow(self)
-	if(not updateActiveUnit(self, 'OnShow')) then
-		return self:UpdateAllElements('OnShow')
-	end
+	evalUnitAndUpdate(self, 'OnShow')
 end
 
 local function updatePet(self, event, unit)
@@ -245,9 +285,8 @@ local function updatePet(self, event, unit)
 	end
 
 	if(self.unit ~= petUnit) then return end
-	if(not updateActiveUnit(self, event)) then
-		return self:UpdateAllElements(event)
-	end
+
+	evalUnitAndUpdate(self, event)
 end
 
 local function updateRaid(self, event)
@@ -274,7 +313,13 @@ local function initObject(unit, style, styleFunc, header, ...)
 		table.insert(objects, object)
 
 		-- We have to force update the frames when PEW fires.
-		object:RegisterEvent('PLAYER_ENTERING_WORLD', object.UpdateAllElements, true)
+		-- It's also important to evaluate units before running an update
+		-- because sometimes events that are required for unit updates end up
+		-- not firing because of loading screens. For instance, there's a slight
+		-- delay between UNIT_EXITING_VEHICLE and UNIT_EXITED_VEHICLE during
+		-- which a user can go through a loading screen after which the player
+		-- frame will be stuck with the 'vehicle' unit.
+		object:RegisterEvent('PLAYER_ENTERING_WORLD', evalUnitAndUpdate, true)
 
 		-- Handle the case where someone has modified the unitsuffix attribute in
 		-- oUF-initialConfigFunction.
@@ -287,7 +332,7 @@ local function initObject(unit, style, styleFunc, header, ...)
 			object:RegisterEvent('UNIT_EXITED_VEHICLE', updateActiveUnit)
 
 			-- We don't need to register UNIT_PET for the player unit. We register it
-			-- mainly because UNIT_EXITED_VEHICLE and UNIT_ENTERED_VEHICLE doesn't always
+			-- mainly because UNIT_EXITED_VEHICLE and UNIT_ENTERED_VEHICLE don't always
 			-- have pet information when they fire for party and raid units.
 			if(objectUnit ~= 'player') then
 				object:RegisterEvent('UNIT_PET', updatePet)
@@ -895,5 +940,125 @@ if(global) then
 		error('%s is setting its global to an existing name "%s".', parent, global)
 	else
 		_G[global] = oUF
+	end
+end
+
+do -- Event Pooler by Simpy
+	local pooler = CreateFrame('Frame')
+	pooler.events = {}
+	pooler.times = {}
+
+	pooler.delay = 0.1 -- update check rate
+	pooler.instant = 3 -- seconds since last event
+
+	pooler.run = function(funcs, frame, event, ...)
+		for _, func in pairs(funcs) do
+			func(frame, event, ...)
+		end
+	end
+
+	pooler.execute = function(event, pool, instant, arg1, ...)
+		for frame, info in pairs(pool) do
+			local funcs = info.functions
+			if instant and funcs then
+				pooler.run(funcs, frame, event, arg1, ...)
+			else
+				local data = funcs and info.data[event]
+				local count = data and #data
+				local args = count and data[count]
+				if args then
+					-- if count > 1 then print(frame:GetDebugName(), event, count, unpack(args)) end
+					pooler.run(funcs, frame, event, unpack(args))
+					wipe(data)
+				end
+			end
+		end
+	end
+
+	pooler.update = function()
+		for event, pool in pairs(pooler.events) do
+			pooler.execute(event, pool)
+		end
+	end
+
+	pooler.tracker = function(frame, event, arg1, ...)
+		-- print('tracker', frame, event, arg1, ...)
+
+		local pool = pooler.events[event]
+		if pool then
+			local now = time()
+			local last = pooler.times[event]
+			if last and (last + pooler.instant) < now then
+				pooler.execute(event, pool, true, arg1, ...)
+				-- print('instant', frame:GetDebugName(), event, arg1)
+			elseif arg1 ~= nil then -- require arg1, no unitless
+				local pooled = pool[frame]
+				if pooled then
+					if not pooled.data[event] then
+						pooled.data[event] = {}
+					end
+
+					tinsert(pooled.data[event], {arg1, ...})
+				end
+			end
+
+			pooler.times[event] = now
+		end
+	end
+
+	pooler.onUpdate = function(self, elapsed)
+		if self.elapsed and self.elapsed > pooler.delay then
+			pooler.update()
+
+			self.elapsed = 0
+		else
+			self.elapsed = (self.elapsed or 0) + elapsed
+		end
+	end
+
+	pooler:SetScript('OnUpdate', pooler.onUpdate)
+
+	function oUF:RegisterEvent(frame, event, func)
+		-- print('RegisterEvent', frame, event, func)
+
+		if not pooler.events[event] then
+			pooler.events[event] = {}
+			pooler.events[event][frame] = {functions={},data={}}
+		elseif not pooler.events[event][frame] then
+			pooler.events[event][frame] = {functions={},data={}}
+		end
+
+		frame:RegisterEvent(event, pooler.tracker)
+		tinsert(pooler.events[event][frame].functions, func)
+	end
+
+	function oUF:UnregisterEvent(frame, event, func)
+		-- print('UnregisterEvent', frame, event, func)
+
+		local pool = pooler.events[event]
+		if pool then
+			local pooled = pool[frame]
+			if pooled then
+				for i, funct in ipairs(pooled.functions) do
+					if funct == func then
+						tremove(pooled.functions, i)
+					end
+				end
+
+				if not next(pooled.functions) then
+					pooled.functions = nil
+					pooled.data = nil -- clear data
+				end
+
+				if not next(pooled) then
+					pool[frame] = nil
+				end
+			end
+
+			if not next(pool) then
+				pooler.events[event] = nil
+				frame:UnregisterEvent(event, pooler.tracker)
+			end
+		end
 	end
 end

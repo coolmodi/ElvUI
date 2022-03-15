@@ -25,8 +25,8 @@ local ORDER = 100
 local filters = {}
 
 local minHeight, minWidth = 2, 40
-local function MaxHeight(unit) local heightType = unit == 'PLAYER' and 'personalHeight' or strfind('FRIENDLY', unit) and 'friendlyHeight' or strfind('ENEMY', unit) and 'enemyHeight' return max(NP.db.plateSize[heightType] or 0, 20) end
-local function MaxWidth(unit) local widthType = unit == 'PLAYER' and 'personalWidth' or strfind('FRIENDLY', unit) and 'friendlyWidth' or strfind('ENEMY', unit) and 'enemyWidth' return max(NP.db.plateSize[widthType] or 0, 250) end
+local function MaxHeight(unit) local heightType = unit == 'PLAYER' and 'personalHeight' or strfind(unit, 'FRIENDLY') and 'friendlyHeight' or strfind(unit, 'ENEMY') and 'enemyHeight' return max(NP.db.plateSize[heightType] or 0, 20) end
+local function MaxWidth(unit) local widthType = unit == 'PLAYER' and 'personalWidth' or strfind(unit, 'FRIENDLY') and 'friendlyWidth' or strfind(unit, 'ENEMY') and 'enemyWidth' return max(NP.db.plateSize[widthType] or 0, 250) end
 
 local function GetUnitSettings(unit, name)
 	local copyValues = {}
@@ -51,7 +51,7 @@ local function GetUnitSettings(unit, name)
 	group.args.healthGroup = ACH:Group(L["Health"], nil, 2, nil, function(info) return E.db.nameplates.units[unit].health[info[#info]] end, function(info, value) E.db.nameplates.units[unit].health[info[#info]] = value NP:ConfigureAll() end)
 	group.args.healthGroup.args.enable = ACH:Toggle(L["Enable"], nil, 1, nil, nil, nil, nil, nil, nil, function() return unit == 'PLAYER' end)
 	group.args.healthGroup.args.height = ACH:Range(L["Height"], nil, 3, { min = minHeight, max = MaxHeight(unit), step = 1 })
-	group.args.healthGroup.args.width = ACH:Execute(L["Width"], nil, 4, function() ACD:SelectGroup('ElvUI', 'nameplates', 'generalGroup', 'general', 'clickableRange') end)
+	group.args.healthGroup.args.width = ACH:Execute(L["Width"], nil, 4, function() ACD:SelectGroup('ElvUI', 'nameplates', 'generalGroup', 'clickableRange') end)
 	group.args.healthGroup.args.healPrediction = ACH:Toggle(L["Heal Prediction"], nil, 5)
 	group.args.healthGroup.args.predictionTime = ACH:Range("Prediction Timeframe", "How many seconds to look ahead for incoming heals.", 6, { min = 2, max = 20, step = 1 }, nil, nil, nil, nil, E.Retail)
 
@@ -457,7 +457,7 @@ E.Options.args.nameplates.args.generalGroup.args.threatGroup.args.goodScale = AC
 E.Options.args.nameplates.args.generalGroup.args.threatGroup.args.badScale = ACH:Range(L["Bad Scale"], nil, 2, { min = .5, max = 1.5, step = .01, isPercent = true }, nil, nil, nil, function() return not E.db.nameplates.threat.enable end)
 E.Options.args.nameplates.args.generalGroup.args.threatGroup.args.useThreatColor = ACH:Toggle(L["Use Threat Color"], nil, 3)
 E.Options.args.nameplates.args.generalGroup.args.threatGroup.args.beingTankedByTank = ACH:Toggle(L["Off Tank"], L["Use Off Tank Color when another Tank has threat."], 4, nil, nil, nil, nil, nil, function() return not E.db.nameplates.threat.useThreatColor end)
-E.Options.args.nameplates.args.generalGroup.args.threatGroup.args.beingTankedByPet = ACH:Toggle(E.NewSign..L["Off Tank (Pets)"], nil, 5, nil, nil, nil, nil, nil, function() return not E.db.nameplates.threat.useThreatColor end)
+E.Options.args.nameplates.args.generalGroup.args.threatGroup.args.beingTankedByPet = ACH:Toggle(L["Off Tank (Pets)"], nil, 5, nil, nil, nil, nil, nil, function() return not E.db.nameplates.threat.useThreatColor end)
 E.Options.args.nameplates.args.generalGroup.args.threatGroup.args.indicator = ACH:Toggle(L["Show Icon"], nil, 6, nil, nil, nil, nil, nil, function() return not E.db.nameplates.threat.enable end)
 
 E.Options.args.nameplates.args.colorsGroup = ACH:Group(L["Colors"], nil, 15, nil, nil, nil, function() return not E.NamePlates.Initialized end)

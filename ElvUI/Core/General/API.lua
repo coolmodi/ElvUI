@@ -5,8 +5,8 @@ local E, L, V, P, G = unpack(ElvUI)
 local LCS = E.Libs.LCS
 
 local _G = _G
+local wipe, max, next = wipe, max, next
 local type, ipairs, pairs, unpack = type, ipairs, pairs, unpack
-local wipe, max, next, format = wipe, max, next, format
 local strfind, strlen, tonumber, tostring = strfind, strlen, tonumber, tostring
 
 local CreateFrame = CreateFrame
@@ -688,7 +688,7 @@ function E:LoadAPI()
 	end)
 	GameMenuFrame[E.name] = GameMenuButton
 
-	if not IsAddOnLoaded('ConsolePortUI_Menu') then -- #390
+	if not E:IsAddOnEnabled('ConsolePortUI_Menu') then
 		GameMenuButton:Size(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
 		GameMenuButton:Point('TOPLEFT', GameMenuButtonAddons, 'BOTTOMLEFT', 0, -1)
 		hooksecurefunc('GameMenuFrame_UpdateVisibleButtons', E.PositionGameMenuButton)

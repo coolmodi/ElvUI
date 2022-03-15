@@ -1,4 +1,38 @@
-### Version 1.61 [ ETA: 🍨 ]
+### Version 1.63 [ ETA: 🍨 ]
+
+___
+### Version 1.62 [ February 22nd 2022 ]
+
+**Important**  
+Another overall performance update  
+Please post feedback in the elvui-performance channel on our Discord  
+
+**Changes**  
+Chat: Fixed chat alerts playing on chat history  
+General: Minimap mover will match Minimap that has a scale other than one  
+Locales: Updated Russian translation (Credits Enkaf)  
+NamePlates: Fixed Aura Style Filters not triggering because of the element being disabled  
+NamePlates: Fixed errors when deleting a Style Filter  
+UnitFrames: Aura Bars will now work with Fluid Smart Aura positioning  
+UnitFrames: PVP Indicator working again  
+UnitFrames: Raid Role Indicator now supports Main Assist and Main Tank  
+
+___
+### Version 1.61 [ February 12th 2022 ]
+
+**Important**  
+Increased overall performance (should be noticable in raids and battlegrounds).  
+Please post feedback in the elvui-performance channel on our Discord  
+
+**Changes**  
+Bank: Improved bank performance, fixed items not updating  
+Chat: Fixed Copy Chat Lines  
+Cosmetic: Fixed AutoCast Shine custom glow  
+UnitFrames: Added additional power options  
+UnitFrames: Added heal prediction to frames missing it  
+UnitFrames: Classbar in Druid Bear Form can now display Mana  
+UnitFrames: Fixed aura bar flickering  
+UnitFrames: Improved aura positioning and performance  
 
 ___
 ### Version 1.60 [ January 24th 2022 ]

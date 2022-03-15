@@ -12,6 +12,7 @@ local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not lib then return end
 local Masque = LibStub("Masque", true)
 
+local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local textureList = {
     empty = [[Interface\AdventureMap\BrokenIsles\AM_29]],
     white = [[Interface\BUTTONS\WHITE8X8]],
@@ -19,7 +20,7 @@ local textureList = {
 }
 
 local shineCoords = {0.3984375, 0.4453125, 0.40234375, 0.44921875}
-if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+if isRetail then
     textureList.shine = [[Interface\Artifacts\Artifacts]]
     shineCoords = {0.8115234375,0.9169921875,0.8798828125,0.9853515625}
 end
@@ -92,14 +93,14 @@ lib.GlowFramePool = GlowFramePool
 
 local function addFrameAndTex(r,color,name,key,N,xOffset,yOffset,texture,texCoord,desaturated,frameLevel)
     key = key or ""
-	frameLevel = frameLevel or 8
+    frameLevel = frameLevel or 8
     if not r[name..key] then
         r[name..key] = GlowFramePool:Acquire()
         r[name..key]:SetParent(r)
         r[name..key].name = name..key
     end
     local f = r[name..key]
-	f:SetFrameLevel(r:GetFrameLevel()+frameLevel)
+    f:SetFrameLevel(r:GetFrameLevel()+frameLevel)
     f:SetPoint("TOPLEFT",r,"TOPLEFT",-xOffset+0.05,yOffset+0.05)
     f:SetPoint("BOTTOMRIGHT",r,"BOTTOMRIGHT",xOffset,-yOffset+0.05)
     f:Show()
@@ -112,11 +113,13 @@ local function addFrameAndTex(r,color,name,key,N,xOffset,yOffset,texture,texCoor
         if not f.textures[i] then
             f.textures[i] = GlowTexPool:Acquire()
             f.textures[i]:SetTexture(texture)
-            f.textures[i]:SetBlendMode("ADD")
             f.textures[i]:SetTexCoord(texCoord[1],texCoord[2],texCoord[3],texCoord[4])
             f.textures[i]:SetDesaturated(desaturated)
             f.textures[i]:SetParent(f)
             f.textures[i]:SetDrawLayer("ARTWORK",7)
+            if not isRetail and name == "_AutoCastGlow" then
+                f.textures[i]:SetBlendMode("ADD")
+            end
         end
         f.textures[i]:SetVertexColor(color[1],color[2],color[3],color[4])
         f.textures[i]:Show()
@@ -327,6 +330,7 @@ lib.stopList["Pixel Glow"] = lib.PixelGlow_Stop
 local function acUpdate(self,elapsed)
     local width,height = self:GetSize()
     if width ~= self.info.width or height ~= self.info.height then
+        if width*height == 0 then return end -- Avoid division by zero
         self.info.width = width
         self.info.height = height
         self.info.perimeter = 2*(width+height)
@@ -609,7 +613,7 @@ function lib.ButtonGlow_Start(r,color,frequency,frameLevel)
     if not r then
         return
     end
-	frameLevel = frameLevel or 8;
+    frameLevel = frameLevel or 8;
     local throttle
     if frequency and frequency > 0 then
         throttle = 0.25/frequency*0.01
@@ -624,8 +628,8 @@ function lib.ButtonGlow_Start(r,color,frequency,frameLevel)
         f:SetPoint("TOPLEFT", r, "TOPLEFT", -width * 0.2, height * 0.2)
         f:SetPoint("BOTTOMRIGHT", r, "BOTTOMRIGHT", width * 0.2, -height * 0.2)
         f.ants:SetSize(width*1.4*0.85, height*1.4*0.85)
-		AnimIn_OnFinished(f.animIn)
-		if f.animOut:IsPlaying() then
+        AnimIn_OnFinished(f.animIn)
+        if f.animOut:IsPlaying() then
             f.animOut:Stop()
             f.animIn:Play()
         end
