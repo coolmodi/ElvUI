@@ -1,7 +1,24 @@
-### Version 12.71 [ ETA: 🍨 ]
+### Version 12.73 [ ETA: 🍨 ]
 
-**Dev**  
-something is different probably, check commits ;P  
+Dev Branch: something is different probably, check commits ;P  
+
+___
+### Version 12.72 [ March 22nd 2022 ]
+
+Filters: Added back Castle Nathria buffs and debuffs  
+UnitFrames: Added support to display all Seeds of the Pantheon fight in Boss Frames  
+UnitFrames: Boon of the Ascended will no longer fade out Raid Frames  
+UnitFrames: Fixed aura rows overlapping  
+
+___
+### Version 12.71 [ March 18th 2022 ]
+
+Skinned Encounter Journal Item Sets  
+Updated code for AuraBars anchoring (works better attached to centered elements)  
+Fixed Auras not being sorted correctly sometimes  
+Added Unbound Freedom to PlayerBuffs (thanks Shrom)  
+Updated German locales (thanks DlargeX)  
+Optimized Alt Power Bar code a bit  
 
 ___
 ### Version 12.70 [ March 12th 2022 ]
