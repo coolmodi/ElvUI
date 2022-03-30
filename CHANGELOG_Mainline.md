@@ -1,6 +1,14 @@
-### Version 12.73 [ ETA: 🍨 ]
+### Version 12.74 [ ETA: 🍨 ]
 
-Dev Branch: something is different probably, check commits ;P  
+___
+### Version 12.73 [ March 29th 2022 ]
+
+NamePlates: Added Castbar Display Target to Enemy NPC and Friendly NPC.  
+StyleFilter: Added several Unit Condition triggers: Another Players Pet, Guild, Trivial, Connected, Conscious, Possessed, Charmed states, Dead / Alive, and Being Resurrected.  
+UnitFrames: Fixed range (again)  
+UnitFrames: Fix castbar custom backdrop color if set to a class color from not displaying other class colors properly if using the same profile that originally set the option.  
+UnitFrames: Fix castbar custom backdrop when using reverse option.  
+UnitFrames: Added Castbar Display Target to Pet and Boss frames.  
 
 ___
 ### Version 12.72 [ March 22nd 2022 ]
