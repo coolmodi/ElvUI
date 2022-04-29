@@ -1525,8 +1525,8 @@ function CH:HandleShortChannels(msg, hide)
 	msg = gsub(msg, '^(.-|h) '..L["whispers"], '%1')
 	msg = gsub(msg, '^(.-|h) '..L["says"], '%1')
 	msg = gsub(msg, '^(.-|h) '..L["yells"], '%1')
-	msg = gsub(msg, '<'.._G.AFK..'>', '[|cffFF0000'..L["AFK"]..'|r] ')
-	msg = gsub(msg, '<'.._G.DND..'>', '[|cffE7E716'..L["DND"]..'|r] ')
+	msg = gsub(msg, '<'.._G.AFK..'>', '[|cffFF9900'..L["AFK"]..'|r] ')
+	msg = gsub(msg, '<'.._G.DND..'>', '[|cffFF3333'..L["DND"]..'|r] ')
 	msg = gsub(msg, '^%['.._G.RAID_WARNING..'%]', '['..L["RW"]..']')
 	return msg
 end
@@ -2279,11 +2279,7 @@ do
 	end
 end
 
-local ignoreChats = {[2]='Log'}
-if not E.Classic then
-	tinsert(ignoreChats, 3, 'Voice')
-end
-
+local ignoreChats = { [2]='Log', [3]='Voice' }
 function CH:SetupChat()
 	if not E.private.chat.enable then return end
 
