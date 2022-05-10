@@ -1,6 +1,8 @@
 -- Russian localization file for ruRU.
 local L = ElvUI[1].Libs.ACL:NewLocale("ElvUI", "ruRU")
 
+L["Display Mana"] = true
+L["Will display mana when main power is:"] = true
 L["%s and then %s"] = "%s, а затем %s"
 L["|cffFF3333This does not work in Instances or Garrisons!|r"] = "|cffFF3333 Это не работает в подземельях и гарнизонах!"
 L["|cffFF3333Warning:|r Changing options in this section will apply to all Aura Indicator auras. To change only one Aura, please click \"Configure Auras\" and change that specific Auras settings. If \"Profile Specific\" is selected it will apply to that filter set."] = "|cffFF3333Внимание:|rИзменение параметров в этом разделе будет применяться ко всем аурам индикатора ауры. Чтобы изменить только одну ауру, нажмите \"Настроить ауру\" и измените настройки этой конкретной ауры. Если выбрано «Специфический профиль», он будет применяться к этому набору фильтров."
@@ -951,7 +953,8 @@ L["Main Options"] = "Основные опции"
 L["Main statusbar texture."] = "Основная текстура полос состояния (здоровье, ресурс и тд)."
 L["Main Tanks / Main Assist"] = "Танки/помощники"
 L["Make textures transparent."] = "Сделать текстуры прозрачными"
-L["Make the unitframe glow yellow when it is below this percent of health, it will glow red when the health value is half of this value."] = "Заставляет индикатор подсвечиваться желтым при установленном проценте здоровья. При достижении половины этого значения свечение станет красным."
+L["Make the unitframe glow when it is below this percent of health."] = true
+L["When this is enabled, Low Health Threshold colors will not be displayed while targeted."] = true
 L["Make the world map smaller."] = "Сделать карту мира меньше. Она больше не будет занимать весь экран в увеличенном варианте."
 L["MANA"] = "Мана"
 L["Map ID"] = "ID карты"

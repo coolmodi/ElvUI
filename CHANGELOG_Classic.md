@@ -1,11 +1,35 @@
-### Version 1.69 [ ETA: 🍨 ]
+### Version 1.72 [ ETA: 🍨 ]
 
+:)
+
+___
+### Version 1.71 [ May 8th 2022 ]
+
+NamePlates: fixed target indicator displaying many arrows  
+DataTexts: added label / no label for durability and bags  
+DataTexts: custom labels can be colorized with color tags  
+
+___
+### Version 1.70 [ May 6th 2022 ]
+
+StyleFilter: fix a couple import and export bugs  
+Chat: block other secure commands like /focus from being saved to editbox history  
+NamePlates: fixed debuffs being able to attach to debuffs in options  
+NamePlates: block widget tooltips on forbidden nameplates  
+NamePlates: added new Prefer Target Color option along with Low Health Color and Low Health Half color settings  
+Cooldowns: fixed Rogue Stealth displaying as nan and flashing too often  
+
+___
+### Version 1.69 [ May 1st 2022 ]
+
+Aurabars: Fixed alignment with size override setting  
 Chat: Updated chat installer to handle voice transcription  
 Locales: Updated deDE (Credits: Dlarge)  
 Locales: Updated zhTW (Credits: fang2hou)  
+Misc: Fixed Raid Utility not saving position correctly  
+Nameplates: Added ability to export and import selected style filters  
 Tooltip: Added font options for tooltip header  
 UnitFrames: Readded "Start Near Center" option for party  
-Misc: Fixed Raid Utility not saving position correctly  
 
 ___
 ### Version 1.68 [ April 20th 2022 ]
@@ -29,7 +53,7 @@ ___
 
 Chat: Repaired gold text will now match Vendored Grays gold format  
 Skins: Updated EventTrace  
-StyleFilters: Optimized execution of filters for performance gain  
+StyleFilter: Optimized execution of filters for performance gain  
 Tags: Added [group:raid] which displays current group number only while in a raid  
 
 ___
@@ -145,7 +169,7 @@ Chat: Added an option to hide channel names
 DataTexts: Fixed Bags DataText  
 Minimap: Added option to scale the Minimap  
 Misc: Reworked LootRoll and added options  
-NamePlates: Updated StyleFilters config  
+NamePlates: Updated StyleFilter config  
 UnitFrames: Added reverse fill option for Aura Bars  
 UnitFrames: Updated spark for EnergyManaRegen ticks  
 
@@ -154,7 +178,7 @@ ___
 
 DataTexts: Updated Friends  
 Minimap: Fixed tracking icon (Blizzard broke it)  
-NamePlates: Updates for StyleFilters config  
+NamePlates: Updates for StyleFilter config  
 UnitFrames: Fixed an issue with transparent power color  
 UnitFrames: Smart Raid Filter defaults to 5 groups for "Raid" now (8 for Raid40)  
 

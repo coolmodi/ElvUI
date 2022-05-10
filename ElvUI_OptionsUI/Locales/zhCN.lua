@@ -1,6 +1,8 @@
 -- Simplified Chinese localization file for zhCN.
 local L = ElvUI[1].Libs.ACL:NewLocale("ElvUI", "zhCN")
 
+L["Display Mana"] = true
+L["Will display mana when main power is:"] = true
 L["%s and then %s"] = "%s 于 %s"
 L["|cffFF3333This does not work in Instances or Garrisons!|r"] = true
 L["|cffFF3333Warning:|r Changing options in this section will apply to all Aura Indicator auras. To change only one Aura, please click \"Configure Auras\" and change that specific Auras settings. If \"Profile Specific\" is selected it will apply to that filter set."] = true
@@ -951,7 +953,8 @@ L["Main Options"] = true
 L["Main statusbar texture."] = "主状态条材质"
 L["Main Tanks / Main Assist"] = "主坦克/主助理"
 L["Make textures transparent."] = "材质透明"
-L["Make the unitframe glow yellow when it is below this percent of health, it will glow red when the health value is half of this value."] = "姓名板在此设定值下会变黄色, 在设定值一半以下会变红色"
+L["Make the unitframe glow when it is below this percent of health."] = true
+L["When this is enabled, Low Health Threshold colors will not be displayed while targeted."] = true
 L["Make the world map smaller."] = "让世界地图更小"
 L["MANA"] = "法力值"
 L["Map ID"] = "地图ID"

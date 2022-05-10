@@ -1,6 +1,8 @@
 -- Portuguese localization file for ptBR.
 local L = ElvUI[1].Libs.ACL:NewLocale("ElvUI", "ptBR")
 
+L["Display Mana"] = true
+L["Will display mana when main power is:"] = true
 L["%s and then %s"] = "%s e depois %s"
 L["|cffFF3333This does not work in Instances or Garrisons!|r"] = true
 L["|cffFF3333Warning:|r Changing options in this section will apply to all Aura Indicator auras. To change only one Aura, please click \"Configure Auras\" and change that specific Auras settings. If \"Profile Specific\" is selected it will apply to that filter set."] = true
@@ -951,7 +953,8 @@ L["Main Options"] = true
 L["Main statusbar texture."] = "Textura princiapal da barra de estado."
 L["Main Tanks / Main Assist"] = "Tanque Principal / Assistente Princial"
 L["Make textures transparent."] = "Deixar as texturas transparentes."
-L["Make the unitframe glow yellow when it is below this percent of health, it will glow red when the health value is half of this value."] = "Faz o Quadro de Unidade brilhar amarelo quando está abaixo desta porcentagem de vida, irá brilhar vermelho quando o valor estiver a metade deste valor."
+L["Make the unitframe glow when it is below this percent of health."] = true
+L["When this is enabled, Low Health Threshold colors will not be displayed while targeted."] = true
 L["Make the world map smaller."] = "Fazer o Mapa Mundial menor."
 L["MANA"] = "Mana"
 L["Map ID"] = "ID do Mapa"

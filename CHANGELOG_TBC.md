@@ -1,10 +1,36 @@
-### Version 2.44 [ ETA: 🍨 ]
+### Version 2.47 [ ETA: 🍨 ]
 
+:)
+
+___
+### Version 2.46 [ May 8th 2022 ]
+
+NamePlates: fixed target indicator displaying many arrows  
+DataTexts: added label / no label for durability and bags  
+DataTexts: custom labels can be colorized with color tags  
+
+___
+### Version 2.45 [ May 6th 2022 ]
+
+StyleFilter: fix a couple import and export bugs  
+Chat: block other secure commands like /focus from being saved to editbox history  
+NamePlates: fixed debuffs being able to attach to debuffs in options  
+NamePlates: block widget tooltips on forbidden nameplates  
+NamePlates: added new Prefer Target Color option along with Low Health Color and Low Health Half color settings  
+Cooldowns: fixed Rogue Stealth displaying as nan and flashing too often  
+Skins: Chat Config Toggle button is now skinned  
+ActionBars: fixed microbar LFG icon being sized incorrectly  
+
+___
+### Version 2.44 [ May 1st 2022 ]
+
+Aurabars: Fixed alignment with size override setting  
 Locales: Updated deDE (Credits: Dlarge)  
 Locales: Updated zhTW (Credits: fang2hou)  
+Misc: Fixed Raid Utility not saving position correctly  
+Nameplates: Added ability to export and import selected style filters  
 Tooltip: Added font options for tooltip header  
 UnitFrames: Readded "Start Near Center" option for party  
-Misc: Fixed Raid Utility not saving position correctly  
 
 ___
 ### Version 2.43 [ April 20th 2022 ]
@@ -158,7 +184,7 @@ Chat: Added an option to hide channel names
 DataTexts: Fixed Bags DataText  
 Minimap: Added option to scale the Minimap  
 Misc: Reworked LootRoll and added options  
-NamePlates: Updated StyleFilters config  
+NamePlates: Updated StyleFilter config  
 Skins: Fixed button hover glow in GuildBank  
 UnitFrames: Added reverse fill option for Aura Bars  
 UnitFrames: Updated spark for EnergyManaRegen ticks  
@@ -167,7 +193,7 @@ ___
 ### Version 2.30 [ November 24th 2021 ]
 
 DataTexts: Updated Friends  
-NamePlates: Updates for StyleFilters config  
+NamePlates: Updates for StyleFilter config  
 Skins: Updated trade window  
 UnitFrames: Fixed an issue with transparent power color  
 UnitFrames: Smart Raid Filter defaults to 5 groups for "Raid" now (8 for Raid40)  

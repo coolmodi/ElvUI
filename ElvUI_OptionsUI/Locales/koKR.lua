@@ -1,6 +1,8 @@
 -- Korean localization file for koKR.
 local L = ElvUI[1].Libs.ACL:NewLocale("ElvUI", "koKR")
 
+L["Display Mana"] = true
+L["Will display mana when main power is:"] = true
 L["%s and then %s"] = "%s 이후 %s"
 L["|cffFF3333This does not work in Instances or Garrisons!|r"] = true
 L["|cffFF3333Warning:|r Changing options in this section will apply to all Aura Indicator auras. To change only one Aura, please click \"Configure Auras\" and change that specific Auras settings. If \"Profile Specific\" is selected it will apply to that filter set."] = true
@@ -951,7 +953,8 @@ L["Main Options"] = true
 L["Main statusbar texture."] = "시전바, 클래스타이머 등의 텍스쳐를 결정합니다."
 L["Main Tanks / Main Assist"] = "방어/지원 담당자"
 L["Make textures transparent."] = "색상을 반투명하게 합니다."
-L["Make the unitframe glow yellow when it is below this percent of health, it will glow red when the health value is half of this value."] = "생명력이 해당 수치(%) 이하의 경우 노란색, 해당 수치(%) 절반 이하일 경우 빨간색으로 빛나도록 합니다."
+L["Make the unitframe glow when it is below this percent of health."] = true
+L["When this is enabled, Low Health Threshold colors will not be displayed while targeted."] = true
 L["Make the world map smaller."] = "월드맵을 작게 표시합니다."
 L["MANA"] = "마나"
 L["Map ID"] = true
