@@ -1,6 +1,17 @@
-### Version 12.80 [ ETA: 🍨 ]
+### Version 12.81 [ ETA: 🍨 ]
 
-:)
+
+
+___
+### Version 12.80 [ May 31th 2022 ]
+
+ActionBars: Stance bar fixes (issue #163)  
+DataTexts: Added noLabel option for combat timer text  
+Locales: Updated deDE (Credits: Dlarge)  
+NamePlates: Fixed class color source option for interrupts  
+Skins: Updated guild crafters skin  
+Skins: Updated world map quest skin (issue #128)  
+UnitFrames: Fixed power text getting misplaced onto health if power is hidden (issue #15)  
 
 ___
 ### Version 12.79 [ May 8th 2022 ]
