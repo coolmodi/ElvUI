@@ -80,7 +80,7 @@ A default texture will be applied to the Texture widgets if they don't have a te
 
 local _, ns = ...
 local oUF = ns.oUF
-local isClassic = oUF.isTBC or oUF.isClassic
+local isClassic = oUF.isTBC or oUF.isClassic or oUF.isWrath
 local HealComm = isClassic and LibStub("LibHealComm-4.0") or nil
 
 local function Update(self, event, unit)

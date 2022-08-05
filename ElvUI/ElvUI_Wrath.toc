@@ -23,3 +23,5 @@ Core\Layout\Load_Layout.xml
 Core\Modules\Load_Modules.xml
 
 Wrath\Load.xml
+Plugins\HealCommTags.lua
+Plugins\HealCommBAPIexpo.lua
