@@ -22,6 +22,26 @@ local function skinFriendRequest(frame)
 	frame.isSkinned = true
 end
 
+local function SkinPlusMinus(button, minus)
+	local texture = E.Media.Textures.PlusButton
+	if minus then
+		texture = E.Media.Textures.MinusButton
+	end
+
+	button:SetNormalTexture(texture)
+	button.SetNormalTexture = E.noop
+
+	button:SetPushedTexture(texture)
+	button.SetPushedTexture = E.noop
+
+	button:SetHighlightTexture('')
+	button.SetHighlightTexture = E.noop
+
+	button:SetDisabledTexture(texture)
+	button.SetDisabledTexture = E.noop
+	button:GetDisabledTexture():SetDesaturated(true)
+end
+
 function S:FriendsFrame()
 	if not (E.private.skins.blizzard.enable and E.private.skins.blizzard.friends) then return end
 
@@ -202,7 +222,6 @@ function S:FriendsFrame()
 	_G.WhoListScrollFrameScrollBar:ClearAllPoints()
 	_G.WhoListScrollFrameScrollBar:Point('TOPRIGHT', _G.WhoListScrollFrame, 'TOPRIGHT', 26, -13)
 	_G.WhoListScrollFrameScrollBar:Point('BOTTOMRIGHT', _G.WhoListScrollFrame, 'BOTTOMRIGHT', 0, 18)
-
 
 	for i = 1, _G.WHOS_TO_DISPLAY do
 		local button = _G['WhoFrameButton'..i]
@@ -432,14 +451,16 @@ function S:FriendsFrame()
 
 	_G.GuildInfoTextBackground.NineSlice:SetTemplate('Transparent')
 	S:HandleScrollBar(_G.GuildInfoFrameScrollFrameScrollBar)
-
 	S:HandleCloseButton(_G.GuildInfoCloseButton, _G.GuildInfoFrame.backdrop)
 
 	S:HandleButton(_G.GuildInfoSaveButton)
-	_G.GuildInfoSaveButton:Point('BOTTOMLEFT', 8, 8)
-
 	S:HandleButton(_G.GuildInfoCancelButton)
-	_G.GuildInfoCancelButton:Point('LEFT', _G.GuildInfoSaveButton, 'RIGHT', 4, 0)
+
+	_G.GuildInfoCancelButton:ClearAllPoints()
+	_G.GuildInfoCancelButton:Point('BOTTOMRIGHT', _G.GuildInfoFrame, -10, 8)
+
+	_G.GuildInfoSaveButton:ClearAllPoints()
+	_G.GuildInfoSaveButton:Point('RIGHT', _G.GuildInfoCancelButton, 'LEFT', -4, 0)
 
 	-- Control Frame
 	_G.GuildControlPopupFrame:StripTextures()
@@ -448,26 +469,6 @@ function S:FriendsFrame()
 
 	S:HandleDropDownBox(_G.GuildControlPopupFrameDropDown, 185)
 	_G.GuildControlPopupFrameDropDownButton:Size(18)
-
-	local function SkinPlusMinus(button, minus)
-		local texture = E.Media.Textures.PlusButton
-		if minus then
-			texture = E.Media.Textures.MinusButton
-		end
-
-		button:SetNormalTexture(texture)
-		button.SetNormalTexture = E.noop
-
-		button:SetPushedTexture(texture)
-		button.SetPushedTexture = E.noop
-
-		button:SetHighlightTexture('')
-		button.SetHighlightTexture = E.noop
-
-		button:SetDisabledTexture(texture)
-		button.SetDisabledTexture = E.noop
-		button:GetDisabledTexture():SetDesaturated(true)
-	end
 
 	SkinPlusMinus(_G.GuildControlPopupFrameAddRankButton)
 	_G.GuildControlPopupFrameAddRankButton:Point('LEFT', _G.GuildControlPopupFrameDropDown, 'RIGHT', -8, 3)

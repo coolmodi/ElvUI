@@ -14,13 +14,32 @@ local hooksecurefunc = hooksecurefunc
 local GUILDMEMBERS_TO_DISPLAY = GUILDMEMBERS_TO_DISPLAY
 local C_FriendList_GetNumWhoResults = C_FriendList.GetNumWhoResults
 local C_FriendList_GetWhoInfo = C_FriendList.GetWhoInfo
-local MAX_GUILDBANK_TABS = MAX_GUILDBANK_TABS
 
 local function skinFriendRequest(frame)
 	if frame.isSkinned then return end
 	S:HandleButton(frame.DeclineButton, nil, true)
 	S:HandleButton(frame.AcceptButton)
 	frame.isSkinned = true
+end
+
+local function SkinPlusMinus(button, minus)
+	local texture = E.Media.Textures.PlusButton
+	if minus then
+		texture = E.Media.Textures.MinusButton
+	end
+
+	button:SetNormalTexture(texture)
+	button.SetNormalTexture = E.noop
+
+	button:SetPushedTexture(texture)
+	button.SetPushedTexture = E.noop
+
+	button:SetHighlightTexture('')
+	button.SetHighlightTexture = E.noop
+
+	button:SetDisabledTexture(texture)
+	button.SetDisabledTexture = E.noop
+	button:GetDisabledTexture():SetDesaturated(true)
 end
 
 function S:FriendsFrame()
@@ -286,10 +305,6 @@ function S:FriendsFrame()
 	_G.GuildFrameColumnHeader2:Point('LEFT', _G.GuildFrameColumnHeader1, 'RIGHT', -2, -0)
 	_G.GuildFrameColumnHeader2:Width(127)
 
-	if _G.GuildInfoGuildEventButton then
-		S:HandleButton(_G.GuildInfoGuildEventButton)
-	end
-
 	S:HandleFrame(_G.GuildEventLogFrame)
 	S:HandleCloseButton(_G.GuildEventLogCloseButton)
 	_G.GuildEventFrame.NineSlice:SetTemplate('Transparent')
@@ -415,7 +430,6 @@ function S:FriendsFrame()
 	_G.GuildMemberNoteBackground.backdrop:Point('BOTTOMRIGHT', 0, 2)
 
 	_G.PersonalNoteText:Point('TOPLEFT', 4, -4)
-	_G.PersonalNoteText:Width(197)
 
 	_G.GuildMemberOfficerNoteBackground:StripTextures()
 	_G.GuildMemberOfficerNoteBackground:CreateBackdrop()
@@ -441,14 +455,24 @@ function S:FriendsFrame()
 
 	_G.GuildInfoTextBackground.NineSlice:SetTemplate('Transparent')
 	S:HandleScrollBar(_G.GuildInfoFrameScrollFrameScrollBar)
-
 	S:HandleCloseButton(_G.GuildInfoCloseButton, _G.GuildInfoFrame.backdrop)
 
 	S:HandleButton(_G.GuildInfoSaveButton)
-	_G.GuildInfoSaveButton:Point('BOTTOMLEFT', 8, 8)
-
 	S:HandleButton(_G.GuildInfoCancelButton)
-	_G.GuildInfoCancelButton:Point('LEFT', _G.GuildInfoSaveButton, 'RIGHT', 4, 0)
+
+	_G.GuildInfoCancelButton:ClearAllPoints()
+	_G.GuildInfoCancelButton:Point('BOTTOMRIGHT', _G.GuildInfoFrame, -10, 8)
+
+	_G.GuildInfoSaveButton:ClearAllPoints()
+	_G.GuildInfoSaveButton:Point('RIGHT', _G.GuildInfoCancelButton, 'LEFT', -4, 0)
+
+	local InfoEventButton = _G.GuildInfoGuildEventButton
+	if InfoEventButton then
+		S:HandleButton(InfoEventButton)
+
+		InfoEventButton:ClearAllPoints()
+		InfoEventButton:Point('BOTTOMLEFT', _G.GuildInfoFrame, 10, 8)
+	end
 
 	-- Guild Control Frame (Guild Master Only)
 	for i = 1, _G.MAX_GUILDBANK_TABS do
@@ -468,26 +492,6 @@ function S:FriendsFrame()
 
 	S:HandleDropDownBox(_G.GuildControlPopupFrameDropDown, 185)
 	_G.GuildControlPopupFrameDropDownButton:Size(18)
-
-	local function SkinPlusMinus(button, minus)
-		local texture = E.Media.Textures.PlusButton
-		if minus then
-			texture = E.Media.Textures.MinusButton
-		end
-
-		button:SetNormalTexture(texture)
-		button.SetNormalTexture = E.noop
-
-		button:SetPushedTexture(texture)
-		button.SetPushedTexture = E.noop
-
-		button:SetHighlightTexture('')
-		button.SetHighlightTexture = E.noop
-
-		button:SetDisabledTexture(texture)
-		button.SetDisabledTexture = E.noop
-		button:GetDisabledTexture():SetDesaturated(true)
-	end
 
 	SkinPlusMinus(_G.GuildControlPopupFrameAddRankButton)
 	_G.GuildControlPopupFrameAddRankButton:Point('LEFT', _G.GuildControlPopupFrameDropDown, 'RIGHT', -8, 3)
