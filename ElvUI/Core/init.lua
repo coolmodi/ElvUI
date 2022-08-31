@@ -43,7 +43,9 @@ Engine[4] = E.DF.profile
 Engine[5] = E.DF.global
 _G.ElvUI = Engine
 
-E.oUF = Engine.oUF
+E.oUF = _G.ElvUF
+assert(E.oUF, 'ElvUI was unable to locate oUF.')
+
 E.ActionBars = E:NewModule('ActionBars','AceHook-3.0','AceEvent-3.0')
 E.AFK = E:NewModule('AFK','AceEvent-3.0','AceTimer-3.0')
 E.Auras = E:NewModule('Auras','AceHook-3.0','AceEvent-3.0')
@@ -71,7 +73,8 @@ E.InfoColor = '|cff1784d1' -- blue
 E.InfoColor2 = '|cff9b9b9b' -- silver
 E.twoPixelsPlease = false -- changing this option is not supported! :P
 
-E.wowpatch, E.wowbuild, E.wowdate, E.wowtoc = GetBuildInfo() -- TODO: Move back to Core.lua
+-- TODO: Move back to Core.lua
+E.wowpatch, E.wowbuild, E.wowdate, E.wowtoc = GetBuildInfo()
 
 -- Expansions
 E.Retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
@@ -128,10 +131,11 @@ do
 	E:AddLib('Masque', 'Masque', true)
 	E:AddLib('Translit', 'LibTranslit-1.0')
 
-	-- TODO: Wrath (Check for an updated version of DualSpec)
-	if E.Retail then
+	if E.Retail or E.Wrath then
 		E:AddLib('DualSpec', 'LibDualSpec-1.0')
-	else
+	end
+
+	if not E.Retail then
 		E:AddLib('LCS', 'LibClassicSpecs-ElvUI')
 
 		if E.Classic then
