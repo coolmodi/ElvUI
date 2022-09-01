@@ -2539,7 +2539,7 @@ elseif E.Wrath then
 	P.actionbar.barPet.visibility = '[novehicleui,pet,nooverridebar,nopossessbar] show; hide'
 	P.actionbar.stanceBar.visibility = '[vehicleui] hide; show'
 else
-	P.actionbar.barPet.visibility = '[pet,nooverridebar,nopossessbar] show; hide'
+	P.actionbar.barPet.visibility = '[nooverridebar,nopossessbar] show; hide'
 	P.actionbar.stanceBar.visibility = 'show'
 end
 
@@ -2641,6 +2641,7 @@ P.actionbar.bar1.visibility = E.Retail and '[petbattle] hide; show' or 'show'
 
 if E.Wrath then
 	P.actionbar.bar1.paging.ROGUE = '[bonusbar:1] 7; [bonusbar:2] 8;'
+	P.actionbar.bar1.paging.WARLOCK = '[form:1] 7;'
 else
 	P.actionbar.bar1.paging.ROGUE = '[bonusbar:1] 7;'
 end

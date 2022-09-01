@@ -20,6 +20,7 @@ local UnitFactionGroup = UnitFactionGroup
 local DisableAddOn = DisableAddOn
 local IsInGroup = IsInGroup
 local IsInGuild = IsInGuild
+local IsSpellKnown = IsSpellKnown
 local IsInRaid = IsInRaid
 local ReloadUI = ReloadUI
 local UnitGUID = UnitGUID
@@ -27,7 +28,7 @@ local GetBindingKey = GetBindingKey
 local SetBinding = SetBinding
 local SaveBindings = SaveBindings
 local GetCurrentBindingSet = GetCurrentBindingSet
-local GetSpecialization = (E.Classic or E.TBC and LCS.GetSpecialization) or GetSpecialization
+local GetSpecialization = (E.Classic or E.TBC or E.Wrath and LCS.GetSpecialization) or GetSpecialization
 
 local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
 local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
@@ -129,6 +130,8 @@ E.DispelClasses = {
 
 if E.Retail then
 	E.DispelClasses.SHAMAN.Curse = true
+elseif E.Wrath then
+	E.DispelClasses.SHAMAN.Curse = IsSpellKnown(51886)
 else
 	E.DispelClasses.SHAMAN.Poison = true
 	E.DispelClasses.SHAMAN.Disease = true
