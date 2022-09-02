@@ -85,7 +85,7 @@ function UF:SetSize_HealComm(frame)
 
 	if orientation == 'HORIZONTAL' then
 		local barHeight = db.height
-		if barHeight == -1 or barHeight > height then barHeight = height end
+		if barHeight and barHeight == -1 or barHeight > height then barHeight = height end
 
 		if not E.Retail then 
             pred.beforeMyBar:SetSize(width, barHeight)
@@ -98,7 +98,7 @@ function UF:SetSize_HealComm(frame)
 		pred.parent:SetSize(width * (pred.maxOverflow or 0), height)
 	else
 		local barWidth = db.height -- this is really width now not height
-		if barWidth == -1 or barWidth > width then barWidth = width end
+		if barWidth and barWidth == -1 or barWidth > width then barWidth = width end
 
 		if not E.Retail then 
             pred.beforeMyBar:SetSize(barWidth, height)
