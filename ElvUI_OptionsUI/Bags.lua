@@ -3,7 +3,6 @@ local C, L = unpack(E.OptionsUI)
 local B = E:GetModule('Bags')
 local ACH = E.Libs.ACH
 
-local _G = _G
 local gsub = gsub
 local next = next
 local strmatch = strmatch
@@ -29,7 +28,7 @@ Bags.args.general.args.moneyCoins = ACH:Toggle(L["Show Coins"], L["Use coin icon
 Bags.args.general.args.generalGroup = ACH:MultiSelect(L["General"], nil, 5, nil, nil, nil, function(_, key) return E.db.bags[key] end)
 Bags.args.general.args.generalGroup.values = {
 	transparent = L["Transparent"],
-	questIcon = L["Quest Icon"],
+	questIcon = L["Quest Starter Icon"],
 	junkIcon = L["Junk Icon"],
 	junkDesaturate = L["Desaturate Junk"],
 	newItemGlow = L["New Item Glow"],

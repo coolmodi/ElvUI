@@ -372,23 +372,29 @@ function AB:CreateBar(id)
 	AB:HookScript(bar, 'OnLeave', 'Bar_OnLeave')
 
 	for i = 1, 12 do
-		bar.buttons[i] = LAB:CreateButton(i, format(bar:GetName()..'Button%d', i), bar, nil)
-		bar.buttons[i]:SetState(0, 'action', i)
+		local button = LAB:CreateButton(i, format(bar:GetName()..'Button%d', i), bar, nil)
+		button:SetState(0, 'action', i)
+
+		button.AuraCooldown.targetAura = true
+		button.AuraCooldown.CooldownOverride = 'actionbar'
+		E:RegisterCooldown(button.AuraCooldown)
 
 		for k = 1, 14 do
-			bar.buttons[i]:SetState(k, 'action', (k - 1) * 12 + i)
+			button:SetState(k, 'action', (k - 1) * 12 + i)
 		end
 
 		if i == 12 then
-			bar.buttons[i]:SetState(12, 'custom', AB.customExitButton)
+			button:SetState(12, 'custom', AB.customExitButton)
 		end
 
 		if MasqueGroup and E.private.actionbar.masque.actionbars then
-			bar.buttons[i]:AddToMasque(MasqueGroup)
+			button:AddToMasque(MasqueGroup)
 		end
 
-		AB:HookScript(bar.buttons[i], 'OnEnter', 'Button_OnEnter')
-		AB:HookScript(bar.buttons[i], 'OnLeave', 'Button_OnLeave')
+		AB:HookScript(button, 'OnEnter', 'Button_OnEnter')
+		AB:HookScript(button, 'OnLeave', 'Button_OnLeave')
+
+		bar.buttons[i] = button
 	end
 
 	if defaults.conditions and strfind(defaults.conditions, '[form,noform]') then
@@ -998,7 +1004,8 @@ end
 function AB:DisableBlizzard()
 	-- dont blindly add to this table, the first 5 get their events registered
 	local count, tbl = 6, {'MultiCastActionBarFrame', 'OverrideActionBar', 'StanceBarFrame', 'PossessBarFrame', 'PetActionBarFrame', 'MainMenuBar', 'MicroButtonAndBagsBar', 'MultiBarBottomLeft', 'MultiBarBottomRight', 'MultiBarLeft', 'MultiBarRight'}
-	if E.Wrath then -- need to check if MultiCastActionBarFrame taints on wrath (it's the totem bar lol)
+	if E.Wrath then -- TotemBar: this still might taint
+		_G.UIPARENT_MANAGED_FRAME_POSITIONS.MultiCastActionBarFrame = nil
 		tremove(tbl, 1)
 		count = 5
 	end
@@ -1368,6 +1375,18 @@ function AB:StyleFlyout(button)
 	end
 end
 
+function AB:UpdateAuraCooldown(button, duration)
+	local cd = button and button.AuraCooldown
+	if not cd then return end
+
+	local oldstate = cd.hideText
+	cd.hideText = (duration and duration > 1.5) or (button.chargeCooldown and not button.chargeCooldown.hideText) or (E.db.cooldown.targetAura == false) or nil
+	if cd.timer and (oldstate ~= cd.hideText) then
+		E:ToggleBlizzardCooldownText(cd, cd.timer)
+		E:Cooldown_ForceUpdate(cd.timer)
+	end
+end
+
 function AB:UpdateChargeCooldown(button, duration)
 	local cd = button and button.chargeCooldown
 	if not cd then return end
@@ -1384,8 +1403,9 @@ function AB:ToggleCooldownOptions()
 	for button in pairs(LAB.actionButtons) do
 		if button._state_type == 'action' then
 			local _, duration = button:GetCooldown()
-			AB:UpdateChargeCooldown(button, duration)
 			AB:SetButtonDesaturation(button, duration)
+			AB:UpdateChargeCooldown(button, duration)
+			AB:UpdateAuraCooldown(button, duration)
 		end
 	end
 end
@@ -1446,12 +1466,17 @@ end
 
 function AB:LAB_CooldownDone(button)
 	AB:SetButtonDesaturation(button, 0)
+
+	if button._state_type == 'action' then
+		AB:UpdateAuraCooldown(button)
+	end
 end
 
 function AB:LAB_CooldownUpdate(button, _, duration)
 	if button._state_type == 'action' then
-		AB:UpdateChargeCooldown(button, duration)
 		AB:SetButtonDesaturation(button, duration)
+		AB:UpdateChargeCooldown(button, duration)
+		AB:UpdateAuraCooldown(button, duration)
 	end
 
 	if button.cooldown then
