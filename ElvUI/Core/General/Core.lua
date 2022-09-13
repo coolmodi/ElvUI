@@ -4,7 +4,7 @@ local E, L, V, P, G = unpack(ElvUI)
 local LCS = E.Libs.LCS
 
 local _G = _G
-local tonumber, floor, pairs, ipairs, error, unpack, select, tostring = tonumber, floor, pairs, ipairs, error, unpack, select, tostring
+local tonumber, pairs, ipairs, error, unpack, select, tostring = tonumber, pairs, ipairs, error, unpack, select, tostring
 local strsplit, strjoin, wipe, sort, tinsert, tremove, tContains = strsplit, strjoin, wipe, sort, tinsert, tremove, tContains
 local format, find, strrep, strlen, sub, gsub = format, strfind, strrep, strlen, strsub, gsub
 local assert, type, pcall, xpcall, next, print = assert, type, pcall, xpcall, next, print
@@ -20,7 +20,6 @@ local UnitFactionGroup = UnitFactionGroup
 local DisableAddOn = DisableAddOn
 local IsInGroup = IsInGroup
 local IsInGuild = IsInGuild
-local IsSpellKnown = IsSpellKnown
 local IsInRaid = IsInRaid
 local ReloadUI = ReloadUI
 local UnitGUID = UnitGUID
@@ -66,8 +65,8 @@ E.myname = UnitName('player')
 E.myrealm = GetRealmName()
 E.mynameRealm = format('%s - %s', E.myname, E.myrealm) -- contains spaces/dashes in realm (for profile keys)
 E.myspec = E.Retail and GetSpecialization()
-E.wowbuild = tonumber(E.wowbuild)
 E.wowpatch, E.wowbuild, E.wowdate, E.wowtoc = GetBuildInfo()
+E.wowbuild = tonumber(E.wowbuild)
 E.physicalWidth, E.physicalHeight = GetPhysicalScreenSize()
 E.screenWidth, E.screenHeight = GetScreenWidth(), GetScreenHeight()
 E.resolution = format('%dx%d', E.physicalWidth, E.physicalHeight)
@@ -119,26 +118,7 @@ E.InverseAnchors = {
 	TOPRIGHT = 'BOTTOMLEFT'
 }
 
-E.DispelClasses = {
-	PALADIN = { Poison = true, Disease = true },
-	PRIEST = { Magic = true, Disease = true },
-	MONK = { Disease = true, Poison = true },
-	DRUID = { Curse = true, Poison = true },
-	MAGE = { Curse = true },
-	WARLOCK = {},
-	SHAMAN = {}
-}
-
-if E.Retail then
-	E.DispelClasses.SHAMAN.Curse = true
-else
-	local cleanse = not E.Wrath or IsSpellKnown(51886)
-	E.DispelClasses.SHAMAN.Curse = E.Wrath and cleanse or nil
-	E.DispelClasses.SHAMAN.Poison = cleanse
-	E.DispelClasses.SHAMAN.Disease = cleanse
-
-	E.DispelClasses.PALADIN.Magic = true
-end
+E.DispelFilter = E.Libs.Dispel:GetMyDispelTypes()
 
 E.BadDispels = {
 	[34914]		= 'Vampiric Touch',		-- horrifies
@@ -905,12 +885,10 @@ do
 			if sender == PLAYER_NAME then return end
 			if prefix == 'ELVUI_VERSIONCHK' then
 				local ver, msg, inCombat = E.version, tonumber(message), InCombatLockdown()
-				local versionInRange = (E.Classic and floor(ver) == 1) or (E.Wrath and floor(ver) == 3) or (floor(ver) == 12)
-				local validRange = msg and versionInRange and (msg > ver)
 
 				E.UserList[E:StripMyRealm(sender)] = msg
 
-				if validRange and not E.recievedOutOfDateMessage then -- you're outdated D:
+				if msg and (msg > ver) and not E.recievedOutOfDateMessage then -- you're outdated D:
 					E:Print(L["ElvUI is out of date. You can download the newest version from www.tukui.org. Get premium membership and have ElvUI automatically updated with the Tukui Client!"])
 
 					if msg and ((msg - ver) >= 0.05) and not inCombat then
@@ -1347,6 +1325,32 @@ function E:DBConvertSL()
 			data[0].r, data[0].g, data[0].b = data.r, data.g, data.b
 			data.r, data.g, data.b = nil, nil, nil
 		end
+	end
+
+	-- raid 1-3 converts
+	E.db.unitframe.smartRaidFilter = nil
+
+	if E.db.unitframe.units.raid then
+		E.db.unitframe.units.raid.visibility = nil
+		E.db.unitframe.units.raid.enable = nil
+		E:CopyTable(E.db.unitframe.units.raid1, E.db.unitframe.units.raid)
+		E.db.unitframe.units.raid = nil
+	end
+
+	if E.db.unitframe.units.raid40 then
+		E.db.unitframe.units.raid40.visibility = nil
+		E.db.unitframe.units.raid40.enable = nil
+		E:CopyTable(E.db.unitframe.units.raid3, E.db.unitframe.units.raid40)
+		E.db.unitframe.units.raid40 = nil
+	end
+
+	if E.db.movers and E.db.movers.ElvUF_RaidMover then
+		E.db.movers.ElvUF_Raid1Mover = E.db.movers.ElvUF_RaidMover
+		E.db.movers.ElvUF_RaidMover = nil
+	end
+	if E.db.movers and E.db.movers.ElvUF_Raid40Mover then
+		E.db.movers.ElvUF_Raid3Mover = E.db.movers.ElvUF_Raid40Mover
+		E.db.movers.ElvUF_Raid40Mover = nil
 	end
 end
 
@@ -1824,26 +1828,6 @@ function E:DBConversions()
 	end
 
 	-- development converts
-	if E.db.unitframe.units.raid then
-		E:CopyTable(E.db.unitframe.units.raid1, E.db.unitframe.units.raid)
-		E.db.unitframe.units.raid = nil
-	end
-
-	if E.db.unitframe.units.raid40 then
-		E:CopyTable(E.db.unitframe.units.raid3, E.db.unitframe.units.raid40)
-		E.db.unitframe.units.raid40 = nil
-	end
-
-	E.db.unitframe.smartRaidFilter = nil
-
-	if E.db.movers and E.db.movers.ElvUF_RaidMover then
-		E.db.movers.ElvUF_Raid1Mover = E.db.movers.ElvUF_RaidMover
-		E.db.movers.ElvUF_RaidMover = nil
-	end
-	if E.db.movers and E.db.movers.ElvUF_Raid40Mover then
-		E.db.movers.ElvUF_Raid3Mover = E.db.movers.ElvUF_Raid40Mover
-		E.db.movers.ElvUF_Raid40Mover = nil
-	end
 
 	-- always convert
 	if not ElvCharacterDB.ConvertKeybindings then

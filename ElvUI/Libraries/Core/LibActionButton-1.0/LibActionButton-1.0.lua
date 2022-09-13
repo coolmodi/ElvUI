@@ -60,7 +60,8 @@ lib.activeButtons = lib.activeButtons or {}
 lib.actionButtons = lib.actionButtons or {}
 lib.nonActionButtons = lib.nonActionButtons or {}
 
-lib.AuraCooldowns = lib.AuraCooldowns or {}
+local AuraButtons = lib.AuraButtons or { auras = {}, buttons = {} }
+lib.AuraButtons = AuraButtons
 
 lib.ChargeCooldowns = lib.ChargeCooldowns or {}
 lib.NumChargeCooldowns = lib.NumChargeCooldowns or 0
@@ -104,15 +105,18 @@ local type_meta_map = {
 	custom = Custom_MT
 }
 
-local ButtonRegistry, ActiveButtons, ActionButtons, NonActionButtons, AuraCooldowns = lib.buttonRegistry, lib.activeButtons, lib.actionButtons, lib.nonActionButtons, lib.AuraCooldowns
+local ButtonRegistry, ActiveButtons, ActionButtons, NonActionButtons = lib.buttonRegistry, lib.activeButtons, lib.actionButtons, lib.nonActionButtons
 
 local Update, UpdateButtonState, UpdateUsable, UpdateCount, UpdateCooldown, UpdateTooltip, UpdateNewAction, UpdateSpellHighlight, ClearNewActionHighlight
 local StartFlash, StopFlash, UpdateFlash, UpdateHotkeys, UpdateRangeTimer, UpdateOverlayGlow
 local UpdateFlyout, ShowGrid, HideGrid, UpdateGrid, SetupSecureSnippets, WrapOnClick
 local ShowOverlayGlow, HideOverlayGlow
 local EndChargeCooldown
-local UpdateAuraCooldowns -- Simpy
 local UpdateRange -- Sezz
+
+local UpdateAuraCooldowns -- Simpy
+local AURA_COOLDOWNS_ENABLED = true
+local AURA_COOLDOWNS_DURATION = 0
 
 local InitializeEventHandler, OnEvent, ForAllButtons, OnUpdate
 
@@ -695,7 +699,7 @@ function InitializeEventHandler()
 	lib.eventFrame:RegisterEvent("PET_BAR_HIDEGRID")
 	lib.eventFrame:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
 	lib.eventFrame:RegisterEvent("UPDATE_BINDINGS")
-	lib.eventFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+	--lib.eventFrame:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 	lib.eventFrame:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 
 	lib.eventFrame:RegisterEvent("ACTIONBAR_UPDATE_STATE")
@@ -758,6 +762,10 @@ function OnEvent(frame, event, arg1, ...)
 				Update(button)
 			end
 		end
+
+		if AURA_COOLDOWNS_ENABLED then
+			UpdateAuraCooldowns()
+		end
 	elseif event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" then
 		ForAllButtons(Update)
 	elseif event == "UPDATE_SHAPESHIFT_FORM" then
@@ -783,10 +791,12 @@ function OnEvent(frame, event, arg1, ...)
 	elseif event == "UPDATE_BINDINGS" then
 		ForAllButtons(UpdateHotkeys)
 	elseif event == "PLAYER_TARGET_CHANGED" then
-		UpdateAuraCooldowns()
+		if AURA_COOLDOWNS_ENABLED then
+			UpdateAuraCooldowns()
+		end
 		UpdateRangeTimer()
 	elseif event == "UNIT_AURA" then
-		if arg1 == "target" then
+		if AURA_COOLDOWNS_ENABLED and arg1 == "target" then
 			UpdateAuraCooldowns()
 		end
 	elseif (event == "ACTIONBAR_UPDATE_STATE") or
@@ -1019,32 +1029,50 @@ function UpdateRange(self, force) -- Sezz: moved from OnUpdate
 end
 
 -----------------------------------------------------------
---- Active Aura Counters for Target ~ By Simpy
+--- Active Aura Cooldowns for Target ~ By Simpy
 
+local currentAuras = {}
 function UpdateAuraCooldowns()
-	wipe(AuraCooldowns)
-
 	local filter = UnitIsFriend("player", "target") and "HELPFUL" or "PLAYER"
+
+	local previousAuras = CopyTable(currentAuras, true)
+	wipe(currentAuras)
 
 	local index = 1
 	local name, _, _, _, duration, expiration, source = UnitAura("target", index, filter)
 	while name do
-		if source == 'player' and duration and duration > 0 then
-			AuraCooldowns[name] = { duration = duration, expiration = expiration }
+		local buttons = AuraButtons.auras[name]
+		if buttons then
+			local start = (source == 'player' and duration and duration > 0 and duration <= AURA_COOLDOWNS_DURATION) and (expiration - duration)
+			for _, button in next, buttons do
+				if start then
+					CooldownFrame_Set(button.AuraCooldown, start, duration, true)
+
+					currentAuras[button] = true
+					previousAuras[button] = nil
+				end
+			end
 		end
 
 		index = index + 1
 		name, _, _, _, duration, expiration = UnitAura("target", index, filter)
 	end
 
-	for button in next, ActionButtons do
-		local aura = AuraCooldowns[button.abilityName]
-		if aura then
-			CooldownFrame_Set(button.AuraCooldown, aura.expiration - aura.duration, aura.duration, true)
-		else
-			CooldownFrame_Clear(button.AuraCooldown)
-		end
+	for button in next, previousAuras do
+		CooldownFrame_Clear(button.AuraCooldown)
 	end
+end
+
+function lib:SetAuraCooldownDuration(value)
+	AURA_COOLDOWNS_DURATION = value
+
+	UpdateAuraCooldowns()
+end
+
+function lib:SetAuraCooldowns(enabled)
+	AURA_COOLDOWNS_ENABLED = enabled
+
+	UpdateAuraCooldowns()
 end
 
 -----------------------------------------------------------
@@ -1188,10 +1216,38 @@ function Update(self, fromUpdateConfig)
 	if allowSaturation then
 		self.icon:SetDesaturated(false)
 	end
+
+	local previousAbility = AuraButtons.buttons[self]
+	if previousAbility then
+		AuraButtons.buttons[self] = nil
+
+		local auras = AuraButtons.auras[previousAbility]
+
+		for i, button in next, auras do
+			if button == self then
+				tremove(auras, i)
+				break
+			end
+		end
+
+		if not next(auras) then
+			AuraButtons.auras[previousAbility] = nil
+		end
+	end
+
 	if self._state_type == "action" then
 		local action_type, id = GetActionInfo(self._state_action)
 		local abilityName = GetSpellInfo(id)
 		self.abilityName = abilityName
+
+		AuraButtons.buttons[self] = abilityName
+		if abilityName then
+			if not AuraButtons.auras[abilityName] then
+				AuraButtons.auras[abilityName] = {}
+			end
+
+			tinsert(AuraButtons.auras[abilityName], self)
+		end
 
 		if ((action_type == "spell" or action_type == "companion") and ZoneAbilityFrame and ZoneAbilityFrame.baseName and not HasZoneAbility()) then
 			local name = GetSpellInfo(ZoneAbilityFrame.baseName)
