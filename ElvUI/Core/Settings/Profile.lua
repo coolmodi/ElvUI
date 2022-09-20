@@ -178,21 +178,11 @@ P.general = {
 		nameFontOutline = 'OUTLINE',
 	},
 	objectiveTracker = true,
-	totems = {
-		alpha = 1,
-		buttonSize = 32,
-		flyoutDirection = 'UP',
-		flyoutSize = 28,
-		flyoutSpacing = 2,
-		font = 'PT Sans Narrow',
-		fontOutline = 'OUTLINE',
-		fontSize = 12,
+	totems = { -- totem tracker
 		growthDirection = 'VERTICAL',
-		mouseover = false,
+		sortDirection = (E.Wrath and 'DESCENDING') or 'ASCENDING',
 		size = 40,
-		sortDirection = 'ASCENDING',
 		spacing = 4,
-		visibility = '[vehicleui] hide;show'
 	},
 	kittys = false
 }
@@ -1494,8 +1484,8 @@ local UF_RaidDebuffs = {
 	showDispellableDebuff = true,
 	onlyMatchSpellID = true,
 	fontSize = 10,
-	font = 'Homespun',
-	fontOutline = 'MONOCHROMEOUTLINE',
+	font = 'PT Sans Narrow',
+	fontOutline = 'OUTLINE',
 	size = 26,
 	xOffset = 0,
 	yOffset = 0,
@@ -1733,10 +1723,10 @@ P.unitframe = {
 				{r = 0.05, g = 0.57, b = 0.23}
 			},
 			SHAMAN = {
-				{r = .58, g = .23, b = .10},
-				{r = .23, g = .45, b = .13},
-				{r = .19, g = .48, b = .60},
-				{r = .42, g = .18, b = .74},
+				{r = .23, g = .45, b = .13}, -- earth
+				{r = .58, g = .23, b = .10}, -- fire
+				{r = .19, g = .48, b = .60}, -- water
+				{r = .42, g = .18, b = .74}, -- air
 			},
 			WARLOCK = {r = 0.58, g = 0.51, b = 0.79}
 		},
@@ -2068,6 +2058,7 @@ P.unitframe = {
 			cutaway = CopyTable(UF_Cutaway),
 			debuffs = CopyTable(UF_Auras),
 			fader = CopyTable(UF_Fader),
+			health = CopyTable(UF_Health),
 			name = CopyTable(UF_Name),
 			raidicon = CopyTable(UF_RaidIcon),
 			rdebuffs = CopyTable(UF_RaidDebuffs),
@@ -2276,6 +2267,7 @@ P.unitframe.units.party.buffIndicator.enable = true
 P.unitframe.units.party.castbar.enable = false
 P.unitframe.units.party.castbar.width = 256
 P.unitframe.units.party.castbar.positionsGroup = { anchorPoint = 'BOTTOM', xOffset = 0, yOffset = 0}
+P.unitframe.units.party.CombatIcon.enable = false
 P.unitframe.units.party.debuffs.enable = true
 P.unitframe.units.party.debuffs.anchorPoint = 'RIGHT'
 P.unitframe.units.party.debuffs.maxDuration = 300
@@ -2305,6 +2297,7 @@ P.unitframe.units.raid1.buffs.numrows = 1
 P.unitframe.units.raid1.buffs.perrow = 3
 P.unitframe.units.raid1.buffIndicator.enable = true
 P.unitframe.units.raid1.castbar = nil
+P.unitframe.units.raid1.CombatIcon = nil
 P.unitframe.units.raid1.debuffs.enable = false
 P.unitframe.units.raid1.debuffs.numrows = 1
 P.unitframe.units.raid1.debuffs.perrow = 3
@@ -2504,6 +2497,20 @@ P.actionbar = {
 		backdropSpacing = 2,
 		alpha = 1,
 		inheritGlobalFade = false,
+	},
+	totemBar = {
+		enable = true,
+		alpha = 1,
+		spacing = 4,
+		buttonSize = 32,
+		flyoutDirection = 'UP',
+		flyoutSize = 28,
+		flyoutSpacing = 2,
+		font = 'PT Sans Narrow',
+		fontOutline = 'OUTLINE',
+		fontSize = 12,
+		mouseover = false,
+		visibility = '[vehicleui] hide;show'
 	},
 	microbar = {
 		enabled = false,
