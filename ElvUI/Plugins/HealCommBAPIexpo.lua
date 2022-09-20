@@ -113,7 +113,11 @@ function HealComm:GetHealAmountCM(dstGUID, timeMax, unitId)
                             endTime = endTime > 0 and endTime or pending.endTime
 
                             if endTime > currTime then
-                                amount = amount * stack
+                                if pending.hasVariableTicks then
+                                    amount = amount[pending.totalTicks - pending[i + 4] + 1]
+                                else
+                                    amount = amount * stack
+                                end
 
                                 if bitType == DIRECT_HEALS then
                                     if endTime <= timeMax then
