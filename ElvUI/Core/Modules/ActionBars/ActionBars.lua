@@ -50,10 +50,6 @@ local Masque = E.Masque
 local MasqueGroup = Masque and Masque:Group('ElvUI', 'ActionBars')
 local defaultFont, defaultFontSize, defaultFontOutline
 
-local hiddenParent = CreateFrame('Frame', nil, _G.UIParent)
-hiddenParent:SetAllPoints()
-hiddenParent:Hide()
-
 AB.RegisterCooldown = E.RegisterCooldown
 AB.handledBars = {} --List of all bars
 AB.handledbuttons = {} --List of all buttons that have been modified.
@@ -272,7 +268,6 @@ function AB:PositionAndSizeBar(barName)
 	local buttonsPerRow = db.buttonsPerRow
 	local numButtons = db.buttons
 	local point = db.point
-	local visibility = db.visibility
 
 	bar.db = db
 	bar.mouseover = db.mouseover
@@ -330,15 +325,16 @@ function AB:PositionAndSizeBar(barName)
 	bar:SetAttribute('page', page)
 
 	if db.enabled then
-		visibility = gsub(visibility, '[\n\r]', '')
-
-		E:EnableMover(bar.mover:GetName())
-		RegisterStateDriver(bar, 'visibility', visibility)
+		E:EnableMover(bar.mover.name)
 		bar:Show()
+
+		local visibility = gsub(db.visibility, '[\n\r]', '')
+		RegisterStateDriver(bar, 'visibility', visibility)
 	else
-		E:DisableMover(bar.mover:GetName())
-		UnregisterStateDriver(bar, 'visibility')
+		E:DisableMover(bar.mover.name)
 		bar:Hide()
+
+		UnregisterStateDriver(bar, 'visibility')
 	end
 
 	E:SetMoverSnapOffset('ElvAB_'..bar.id, db.buttonSpacing * 0.5)
@@ -629,18 +625,12 @@ function AB:UpdateButtonSettings(specific)
 end
 
 function AB:GetPage(bar, defaultPage, condition)
-	local page = AB.db[bar].paging[E.myclass]
 	if not condition then condition = '' end
 
-	if page then
-		page = gsub(page, '[\n\r]', '')
+	local page = AB.db[bar].paging[E.myclass]
+	if page then condition = condition..' '..gsub(page, '[\n\r]', '') end
 
-		condition = condition..' '..page
-	end
-
-	condition = condition..' '..defaultPage
-
-	return condition
+	return condition..' '..defaultPage
 end
 
 function AB:StyleButton(button, noBackdrop, useMasque, ignoreNormal)
@@ -1015,7 +1005,7 @@ function AB:DisableBlizzard()
 		local frame = _G[name]
 		if frame then
 			if i < count then frame:UnregisterAllEvents() end
-			frame:SetParent(hiddenParent)
+			frame:SetParent(E.HiddenFrame)
 			AB:SetNoopsi(frame)
 		end
 	end
