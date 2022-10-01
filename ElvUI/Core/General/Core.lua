@@ -150,6 +150,10 @@ E.UIParent:SetPoint('BOTTOM')
 E.UIParent.origHeight = E.UIParent:GetHeight()
 E.snapBars[#E.snapBars + 1] = E.UIParent
 
+E.UFParent = _G.ElvUFParent -- created in oUF
+E.UFParent:SetParent(E.UIParent)
+E.UFParent:SetFrameStrata('LOW')
+
 E.HiddenFrame = CreateFrame('Frame')
 E.HiddenFrame:Hide()
 
@@ -892,6 +896,8 @@ do
 					E:Print(L["ElvUI is out of date. You can download the newest version from www.tukui.org. Get premium membership and have ElvUI automatically updated with the Tukui Client!"])
 
 					if msg and ((msg - ver) >= 0.05) and not inCombat then
+						E.PopupDialogs.ELVUI_UPDATE_AVAILABLE.text = L["ElvUI is five or more revisions out of date. You can download the newest version from www.tukui.org. Get premium membership and have ElvUI automatically updated with the Tukui Client!"]..'|n|n'..format('Sender %s : Version %s', sender, msg)
+
 						E:StaticPopup_Show('ELVUI_UPDATE_AVAILABLE')
 					end
 
