@@ -1,6 +1,8 @@
 -- Traditional Chinese localization file for zhTW.
 local L = ElvUI[1].Libs.ACL:NewLocale("ElvUI", "zhTW")
 
+L["Abbreviate Name"] = true
+L["Max Allowed Groups"] = true
 L["Display Mana"] = true
 L["Will display mana when main power is:"] = true
 L["%s and then %s"] = "%s 與 %s"
@@ -1780,6 +1782,8 @@ L["blockDispellable"] = "[屏蔽] 可驅散的"
 L["blockNoDuration"] = "[屏蔽] 永久的"
 L["blockNonPersonal"] = "[屏蔽] 他人的"
 L["blockNotDispellable"] = "[屏蔽] 不可驅散的"
+L["blockMount"] = "[屏蔽] Mount"
+L["Mount"] = true
 L["CastByNPC"] = "NPC施放的"
 L["CastByPlayers"] = "玩家施放的"
 L["CastByUnit"] = "單位施放的"

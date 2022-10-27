@@ -1,6 +1,8 @@
 -- Simplified Chinese localization file for zhCN.
 local L = ElvUI[1].Libs.ACL:NewLocale("ElvUI", "zhCN")
 
+L["Abbreviate Name"] = true
+L["Max Allowed Groups"] = true
 L["Display Mana"] = "显示法力"
 L["Will display mana when main power is:"] = "显示法力值当主能量是:"
 L["%s and then %s"] = "%s 于 %s"
@@ -1780,6 +1782,8 @@ L["blockDispellable"] = "[屏蔽]可驱散的"
 L["blockNoDuration"] = "[屏蔽]永久的"
 L["blockNonPersonal"] = "[屏蔽]他人的"
 L["blockNotDispellable"] = "[屏蔽]不可驱散的"
+L["blockMount"] = "[屏蔽]Mount"
+L["Mount"] = true
 L["CastByNPC"] = "NPC施放的"
 L["CastByPlayers"] = "玩家施放的"
 L["CastByUnit"] = "该单位施放的"

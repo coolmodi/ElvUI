@@ -34,6 +34,7 @@ V.general = {
 		enable = true,
 		hideClassHallReport = false,
 		hideCalendar = true,
+		hideTracking = false,
 	},
 	classColorMentionsSpeech = true,
 	raidUtility = true,
@@ -170,6 +171,10 @@ V.skins = {
 		voidstorage = true,
 		weeklyRewards = true,
 		worldmap = true,
+		expansionLanding = true,
+		majorFactions = true,
+		genericTrait = true,
+		editor = true,
 	}
 }
 

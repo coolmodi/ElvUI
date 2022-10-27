@@ -1,6 +1,8 @@
 -- Spanish localization file for esES and esMX.
 local L = ElvUI[1].Libs.ACL:NewLocale("ElvUI", "esMX")
 
+L["Abbreviate Name"] = "Abreviar el Nombre"
+L["Max Allowed Groups"] = "Grupos Maximos Permitidos"
 L["Display Mana"] = "Mostrar mana"
 L["Will display mana when main power is:"] = "Mostrar mana cuando la poder principal es:"
 L["%s and then %s"] = "%s y entonces %s"
@@ -1775,11 +1777,13 @@ L["Zone Name"] = "Nombre de Zona"
 
 ----------------------------------
 L["BlizzardNameplate"] = true
-L["blockCastByPlayers"] = "[Block] Cast By Players"
-L["blockDispellable"] = "[Block] Dispellable"
-L["blockNoDuration"] = "[Block] No Duration"
-L["blockNonPersonal"] = "[Block] Non Personal"
-L["blockNotDispellable"] = "[Block] Not Dispellable"
+L["blockCastByPlayers"] = "[Bloquear] Cast By Players"
+L["blockDispellable"] = "[Bloquear] Dispellable"
+L["blockNoDuration"] = "[Bloquear] No Duration"
+L["blockNonPersonal"] = "[Bloquear] Non Personal"
+L["blockNotDispellable"] = "[Bloquear] Not Dispellable"
+L["blockMount"] = "[Bloquear] Mount"
+L["Mount"] = true
 L["CastByNPC"] = "Cast By NPC"
 L["CastByPlayers"] = "Cast By Players"
 L["CastByUnit"] = "Cast By Unit"
