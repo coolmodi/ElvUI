@@ -442,6 +442,12 @@ function AB:CreateVehicleLeave()
 		Button:GetNormalTexture():SetTexCoord(0.140625 + .08, 0.859375 - .06, 0.140625 + .08, 0.859375 - .08)
 		Button:GetPushedTexture():SetTexCoord(0.140625, 0.859375, 0.140625, 0.859375)
 		Button:StyleButton(nil, true, true)
+
+		hooksecurefunc(Button, 'SetHighlightTexture', function(btn, tex)
+			if tex ~= btn.hover then
+				Button:SetHighlightTexture(btn.hover)
+			end
+		end)
 	end
 
 	hooksecurefunc(Button, 'SetPoint', function(_, _, parent)
@@ -449,12 +455,6 @@ function AB:CreateVehicleLeave()
 			Button:ClearAllPoints()
 			Button:SetParent(_G.UIParent)
 			Button:Point('CENTER', holder, 'CENTER')
-		end
-	end)
-
-	hooksecurefunc(Button, 'SetHighlightTexture', function(btn, tex)
-		if tex ~= btn.hover then
-			Button:SetHighlightTexture(btn.hover)
 		end
 	end)
 
@@ -634,7 +634,7 @@ function AB:StyleButton(button, noBackdrop, useMasque, ignoreNormal)
 	if border and not button.useMasque then border:Kill() end
 	if action then action:SetAlpha(0) end
 	if slotbg then slotbg:Hide() end
-	if mask then mask:Hide() end
+	if mask and not button.useMasque then mask:Hide() end
 
 	if count then
 		local position, xOffset, yOffset = db and db.countTextPosition or 'BOTTOMRIGHT', db and db.countTextXOffset or 0, db and db.countTextYOffset or 2

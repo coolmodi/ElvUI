@@ -796,7 +796,7 @@ local function GetOptionsTable_RaidIcon(updateFunc, groupName, numUnits, subGrou
 end
 
 local function GetOptionsTable_RoleIcons(updateFunc, groupName, numGroup)
-	local config = ACH:Group(L["Role Icon"], nil, nil, nil, function(info) return E.db.unitframe.units[groupName].roleIcon[info[#info]] end, function(info, value) E.db.unitframe.units[groupName].roleIcon[info[#info]] = value updateFunc(UF, groupName, numGroup) end, nil, E.Classic or E.TBC)
+	local config = ACH:Group(L["Role Icon"], nil, nil, nil, function(info) return E.db.unitframe.units[groupName].roleIcon[info[#info]] end, function(info, value) E.db.unitframe.units[groupName].roleIcon[info[#info]] = value updateFunc(UF, groupName, numGroup) end, nil, E.Classic)
 	config.args.enable = ACH:Toggle(L["Enable"], nil, 0)
 	config.args.options = ACH:MultiSelect(' ', nil, 1, { tank = L["Show For Tanks"], healer = L["Show For Healers"], damager = L["Show For DPS"], combatHide = L["Hide In Combat"] }, nil, nil, function(_, key) return E.db.unitframe.units[groupName].roleIcon[key] end, function(_, key, value) E.db.unitframe.units[groupName].roleIcon[key] = value updateFunc(UF, groupName, numGroup) end)
 	config.args.position = ACH:Select(L["Position"], nil, 2, C.Values.AllPoints)
@@ -1201,8 +1201,11 @@ Colors.classResourceGroup.args.COMBO_POINTS.inline = true
 Colors.classResourceGroup.args.CHI_POWER = ACH:Group(L["CHI_POWER"], nil, 3, nil, function(info) local i = tonumber(info[#info]); local t, d = E.db.unitframe.colors.classResources.MONK[i], P.unitframe.colors.classResources.MONK[i] return t.r, t.g, t.b, t.a, d.r, d.g, d.b end, function(info, r, g, b) local t = E.db.unitframe.colors.classResources.MONK[tonumber(info[#info])] t.r, t.g, t.b = r, g, b UF:Update_AllFrames() end, nil, not E.Retail)
 Colors.classResourceGroup.args.CHI_POWER.inline = true
 
-for i = 1, 6 do
-	Colors.classResourceGroup.args.CHI_POWER.args[''..i] = ACH:Color(L["CHI_POWER"]..' #'..i)
+for i = 1, 7 do
+	if i ~= 7 then
+		Colors.classResourceGroup.args.CHI_POWER.args[''..i] = ACH:Color(L["CHI_POWER"]..' #'..i)
+	end
+
 	Colors.classResourceGroup.args.COMBO_POINTS.args[''..i] = ACH:Color(L["COMBO_POINTS"]..' #'..i)
 end
 
