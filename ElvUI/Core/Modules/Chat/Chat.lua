@@ -180,7 +180,7 @@ else -- cause it doesnt exist on tbc or classic
 	local getDeprecatedAccountInfo = function(accountInfo)
 		if accountInfo then
 			local wowProjectID = accountInfo.gameAccountInfo.wowProjectID or 0
-			local clientProgram = accountInfo.gameAccountInfo.clientProgram ~= "" and accountInfo.gameAccountInfo.clientProgram or nil
+			local clientProgram = accountInfo.gameAccountInfo.clientProgram ~= '' and accountInfo.gameAccountInfo.clientProgram or nil
 			return	accountInfo.bnetAccountID, accountInfo.accountName, accountInfo.battleTag, accountInfo.isBattleTagFriend,
 					accountInfo.gameAccountInfo.characterName, accountInfo.gameAccountInfo.gameAccountID, clientProgram,
 					accountInfo.gameAccountInfo.isOnline, accountInfo.lastOnlineTime, accountInfo.isAFK, accountInfo.isDND, accountInfo.customMessage, accountInfo.note, accountInfo.isFriend,
@@ -191,19 +191,19 @@ else -- cause it doesnt exist on tbc or classic
 	local getDeprecatedGameAccountInfo = function(gameAccountInfo, accountInfo)
 		if gameAccountInfo and accountInfo then
 			local wowProjectID = gameAccountInfo.wowProjectID or 0
-			local characterName = gameAccountInfo.characterName or ""
-			local realmName = gameAccountInfo.realmName or ""
+			local characterName = gameAccountInfo.characterName or ''
+			local realmName = gameAccountInfo.realmName or ''
 			local realmID = gameAccountInfo.realmID or 0
-			local factionName = gameAccountInfo.factionName or ""
-			local raceName = gameAccountInfo.raceName or ""
-			local className = gameAccountInfo.className or ""
-			local areaName = gameAccountInfo.areaName or ""
-			local characterLevel = gameAccountInfo.characterLevel or ""
-			local richPresence = gameAccountInfo.richPresence or ""
+			local factionName = gameAccountInfo.factionName or ''
+			local raceName = gameAccountInfo.raceName or ''
+			local className = gameAccountInfo.className or ''
+			local areaName = gameAccountInfo.areaName or ''
+			local characterLevel = gameAccountInfo.characterLevel or ''
+			local richPresence = gameAccountInfo.richPresence or ''
 			local gameAccountID = gameAccountInfo.gameAccountID or 0
 			local playerGuid = gameAccountInfo.playerGuid or 0
 			return	gameAccountInfo.hasFocus, characterName, gameAccountInfo.clientProgram,
-					realmName, realmID, factionName, raceName, className, "", areaName, characterLevel,
+					realmName, realmID, factionName, raceName, className, '', areaName, characterLevel,
 					richPresence, accountInfo.customMessage, accountInfo.customMessageTime,
 					gameAccountInfo.isOnline, gameAccountID, accountInfo.bnetAccountID, gameAccountInfo.isGameAFK, gameAccountInfo.isGameBusy,
 					playerGuid, wowProjectID, gameAccountInfo.isWowMobile
@@ -389,6 +389,7 @@ do --this can save some main file locals
 		z['Arieva-Cenarius']			= itsSimpy -- Hunter
 		z['Buddercup-Cenarius']			= itsSimpy -- Rogue
 		z['Cutepally-Cenarius']			= itsSimpy -- Paladin
+		z['Cuddle-Cenarius']			= itsSimpy -- Mage
 		z['Ezek-Cenarius']				= itsSimpy -- DK
 		z['Glice-Cenarius']				= itsSimpy -- Warrior
 		z['Kalline-Cenarius']			= itsSimpy -- Shaman
@@ -1283,10 +1284,8 @@ function CH:SnappingChanged(chat)
 end
 
 function CH:ResnapDock(event, arg1, arg2)
-	if event == 'PLAYER_SPECIALIZATION_CHANGED' then
-		if arg1 ~= 'player' then return end -- only update on player
-	elseif event == 'PLAYER_ENTERING_WORLD' then
-		if arg1 or arg2 then return end -- initLogin or isReload
+	if event == 'PLAYER_ENTERING_WORLD' and (arg1 or arg2) then
+		return -- initLogin or isReload
 	end
 
 	CH:SnappingChanged(_G.GeneralDockManager.primary)
@@ -1731,7 +1730,7 @@ local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, ar
 		end
 	end
 
-	return ""
+	return ''
 end
 
 -- copied from ChatFrame.lua
@@ -3576,7 +3575,6 @@ function CH:Initialize()
 	CH:SecureHook('UIDropDownMenu_AddButton')
 	CH:SecureHook('GetPlayerInfoByGUID')
 
-	CH:RegisterEvent('PLAYER_ENTERING_WORLD', 'ResnapDock')
 	CH:RegisterEvent('UPDATE_CHAT_WINDOWS', 'SetupChat')
 	CH:RegisterEvent('UPDATE_FLOATING_CHAT_WINDOWS', 'SetupChat')
 	CH:RegisterEvent('GROUP_ROSTER_UPDATE', 'CheckLFGRoles')
@@ -3586,8 +3584,7 @@ function CH:Initialize()
 
 	if E.Retail then
 		CH:RegisterEvent('SOCIAL_QUEUE_UPDATE', 'SocialQueueEvent')
-		CH:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED', 'ResnapDock')
-		CH:SecureHook(_G.GeneralDockManager.primary, 'OnEditModeExit', 'ResnapDock')
+		CH:SecureHook(_G.EditModeManagerFrame, 'UpdateLayoutInfo', 'ResnapDock')
 
 		if E.private.general.voiceOverlay then
 			CH:RegisterEvent('VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED', 'VoiceOverlay')
@@ -3599,6 +3596,8 @@ function CH:Initialize()
 			CH:RegisterEvent('VOICE_CHAT_CHANNEL_DEACTIVATED', 'VoiceOverlay')
 			_G.VoiceActivityManager:UnregisterAllEvents()
 		end
+	else
+		CH:RegisterEvent('PLAYER_ENTERING_WORLD', 'ResnapDock')
 	end
 
 	if _G.WIM then

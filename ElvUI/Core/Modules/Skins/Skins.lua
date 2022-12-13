@@ -104,21 +104,23 @@ function S:HandleButtonHighlight(frame, r, g, b)
 		frame:SetHighlightTexture(E.ClearTexture)
 	end
 
+	if not frame.highlightGradient then
+		local width, h = frame:GetSize()
+		local height = h * 0.95
+
+		local gradient = frame:CreateTexture(nil, 'HIGHLIGHT')
+		gradient:SetTexture(E.Media.Textures.Highlight)
+		gradient:Point('LEFT', frame)
+		gradient:Size(width, height)
+
+		frame.highlightGradient = gradient
+	end
+
 	if not r then r = 0.9 end
 	if not g then g = 0.9 end
 	if not b then b = 0.9 end
 
-	local leftGrad = frame:CreateTexture(nil, 'HIGHLIGHT')
-	leftGrad:Size(frame:GetWidth() * 0.5, frame:GetHeight() * 0.95)
-	leftGrad:Point('LEFT', frame, 'CENTER')
-	leftGrad:SetTexture(E.media.blankTex)
-	leftGrad:SetGradientAlpha('Horizontal', r, g, b, 0.35, r, g, b, 0)
-
-	local rightGrad = frame:CreateTexture(nil, 'HIGHLIGHT')
-	rightGrad:Size(frame:GetWidth() * 0.5, frame:GetHeight() * 0.95)
-	rightGrad:Point('RIGHT', frame, 'CENTER')
-	rightGrad:SetTexture(E.media.blankTex)
-	rightGrad:SetGradientAlpha('Horizontal', r, g, b, 0, r, g, b, 0.35)
+	frame.highlightGradient:SetVertexColor(r, g, b, 0.3)
 end
 
 function S:HandlePointXY(frame, x, y)
@@ -393,8 +395,6 @@ do
 		local color = iconColors[atlas]
 		if not color then return end
 
-		border:StripTextures()
-
 		if border.customFunc then
 			local br, bg, bb = unpack(E.media.bordercolor)
 			border.customFunc(border, color.r, color.g, color.b, 1, br, bg, bb)
@@ -404,8 +404,6 @@ do
 	end
 
 	local function colorVertex(border, r, g, b, a)
-		border:StripTextures()
-
 		if border.customFunc then
 			local br, bg, bb = unpack(E.media.bordercolor)
 			border.customFunc(border, r, g, b, a, br, bg, bb)
@@ -414,7 +412,9 @@ do
 		end
 	end
 
-	local function borderHide(border)
+	local function borderHide(border, value)
+		if value == 0 then return end -- hiding blizz border
+
 		local br, bg, bb = unpack(E.media.bordercolor)
 		if border.customFunc then
 			local r, g, b, a = border:GetVertexColor()
@@ -424,8 +424,14 @@ do
 		end
 	end
 
+	local function borderShow(border)
+		border:Hide(0)
+	end
+
 	local function borderShown(border, show)
-		if not show then
+		if show then
+			border:Hide(0)
+		else
 			borderHide(border)
 		end
 	end
@@ -434,19 +440,6 @@ do
 		if not backdrop then
 			local parent = border:GetParent()
 			backdrop = parent.backdrop or parent
-		end
-
-		border.customBackdrop = backdrop
-
-		if not border.IconBorderHooked then
-			border:StripTextures()
-
-			hooksecurefunc(border, 'SetAtlas', colorAtlas)
-			hooksecurefunc(border, 'SetVertexColor', colorVertex)
-			hooksecurefunc(border, 'SetShown', borderShown)
-			hooksecurefunc(border, 'Hide', borderHide)
-
-			border.IconBorderHooked = true
 		end
 
 		local r, g, b, a = border:GetVertexColor()
@@ -462,6 +455,21 @@ do
 		else
 			local br, bg, bb = unpack(E.media.bordercolor)
 			backdrop:SetBackdropBorderColor(br, bg, bb)
+		end
+
+		if border.customBackdrop ~= backdrop then
+			border.customBackdrop = backdrop
+		end
+
+		if not border.IconBorderHooked then
+			border.IconBorderHooked = true
+			border:Hide()
+
+			hooksecurefunc(border, 'SetAtlas', colorAtlas)
+			hooksecurefunc(border, 'SetVertexColor', colorVertex)
+			hooksecurefunc(border, 'SetShown', borderShown)
+			hooksecurefunc(border, 'Show', borderShow)
+			hooksecurefunc(border, 'Hide', borderHide)
 		end
 	end
 end

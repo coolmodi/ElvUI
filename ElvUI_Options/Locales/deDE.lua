@@ -1,5 +1,5 @@
 -- German localization file for deDE.
-local L = ElvUI[1].Libs.ACL:NewLocale("ElvUI", "deDE")
+local L = ElvUI[1].Libs.ACL:NewLocale('ElvUI', 'deDE')
 
 L["POWER_TYPE_ESSENCE"] = "Essenz"
 L["BAG_FILTER_JUNK"] = "Plunder"
@@ -927,7 +927,7 @@ L["Left Buttons"] = "Tasten Links"
 L["Left Control"] = "Linksklick + STRG"
 L["Left Only"] = "Nur Links"
 L["Left Panel Height"] = "Linke Fensterhöhe"
-L["Left Panel Width"] = "Rechte Fensterbreite"
+L["Left Panel Width"] = "Linke Fensterbreite"
 L["Left Position"] = "Linke Position"
 L["Left Shift"] = "Linksklick + UMSCHALT"
 L["Left to Right"] = "Links nach Rechts"
