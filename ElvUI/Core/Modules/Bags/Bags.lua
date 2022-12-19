@@ -180,11 +180,11 @@ B.numTrackedTokens = 0
 B.QuestSlots = {}
 B.ItemLevelSlots = {}
 B.BAG_FILTER_ICONS = {
-	[FILTER_FLAG_EQUIPMENT] = E.Media.Textures.ChestPlate,
-	[FILTER_FLAG_CONSUMABLES] = E.Media.Textures.GreenPotion,
-	[FILTER_FLAG_TRADE_GOODS] = E.Media.Textures.FabricSilk,
-	[FILTER_FLAG_JUNK] = E.Media.Textures.GoldCoins,
-	[FILTER_FLAG_QUEST] = E.Media.Textures.Scroll
+	[FILTER_FLAG_EQUIPMENT] = E.Media.Textures.ChestPlate,		-- Interface/ICONS/INV_Chest_Plate10
+	[FILTER_FLAG_CONSUMABLES] = E.Media.Textures.GreenPotion,	-- Interface/ICONS/INV_Potion_93
+	[FILTER_FLAG_TRADE_GOODS] = E.Media.Textures.FabricSilk,	-- Interface/ICONS/INV_Fabric_Silk_02
+	[FILTER_FLAG_JUNK] = E.Media.Textures.GoldCoins,			-- Interface/ICONS/INV_Misc_Coin_01
+	[FILTER_FLAG_QUEST] = E.Media.Textures.Scroll				-- Interface/ICONS/INV_Scroll_03
 }
 
 local itemSpellID = {
@@ -237,7 +237,8 @@ if E.Wrath then
 	B.IsEquipmentSlot.INVTYPE_RELIC = true
 end
 
-local bagIDs, bankIDs, bankOffset, maxBankSlots = {0, 1, 2, 3, 4}, { -1 }, E.Retail and 5 or 4, E.Retail and 12 or 11
+local bagIDs, bankIDs = {0, 1, 2, 3, 4}, { -1 }
+local bankOffset, maxBankSlots = E.Retail and 5 or 4, E.Retail and 12 or 11
 local bankEvents = {'BAG_UPDATE_DELAYED', 'BAG_UPDATE', 'BAG_CLOSED', 'BANK_BAG_SLOT_FLAGS_UPDATED', 'PLAYERBANKBAGSLOTS_CHANGED', 'PLAYERBANKSLOTS_CHANGED'}
 local bagEvents = {'BAG_UPDATE_DELAYED', 'BAG_UPDATE', 'BAG_CLOSED', 'ITEM_LOCK_CHANGED', 'BAG_SLOT_FLAGS_UPDATED', 'QUEST_ACCEPTED', 'QUEST_REMOVED'}
 local presistentEvents = {
@@ -250,7 +251,7 @@ local presistentEvents = {
 }
 
 for bankID = bankOffset + 1, maxBankSlots do
-	if bankID ~= 11 or bankID == 11 and not E.Classic then
+	if bankID ~= 11 or not E.Classic then
 		tinsert(bankIDs, bankID)
 	end
 end
@@ -1456,6 +1457,10 @@ function B:UpdateContainerIcon(holder, bagID)
 	holder.icon:SetTexture(GetInventoryItemTexture('player', holder:GetID()) or 136511)
 end
 
+function B:UnregisterBagEvents(bagFrame)
+	bagFrame:UnregisterAllEvents() -- Unregister to prevent unnecessary updates during sorting
+end
+
 function B:ConstructContainerFrame(name, isBank)
 	local strata = B.db.strata or 'HIGH'
 
@@ -1779,7 +1784,8 @@ function B:ConstructContainerFrame(name, isBank)
 				if E.Retail and B.db.useBlizzardCleanup then
 					SortBankBags()
 				else
-					f:UnregisterAllEvents() --Unregister to prevent unnecessary updates
+					B:UnregisterBagEvents(f)
+
 					if not f.sortingSlots then B:SortingFadeBags(f, true) end
 					B:CommandDecorator(B.SortBags, 'bank')()
 				end
@@ -1828,7 +1834,8 @@ function B:ConstructContainerFrame(name, isBank)
 		f.stackButton.ttText2desc = L["Stack Items To Bank"]
 		f.stackButton:Point('BOTTOMRIGHT', f.holderFrame, 'TOPRIGHT', 0, 3)
 		f.stackButton:SetScript('OnClick', function()
-			f:UnregisterAllEvents() --Unregister to prevent unnecessary updates
+			B:UnregisterBagEvents(f)
+
 			if not f.sortingSlots then f.sortingSlots = true end
 			if IsShiftKeyDown() then
 				B:CommandDecorator(B.Stack, 'bags bank')()
@@ -1842,7 +1849,8 @@ function B:ConstructContainerFrame(name, isBank)
 			if E.Retail and B.db.useBlizzardCleanup then
 				SortBags()
 			else
-				f:UnregisterAllEvents() --Unregister to prevent unnecessary updates
+				B:UnregisterBagEvents(f)
+
 				if not f.sortingSlots then B:SortingFadeBags(f, true) end
 				B:CommandDecorator(B.SortBags, 'bags')()
 			end
@@ -2090,12 +2098,7 @@ end
 
 function B:ToggleSortButtonState(isBank)
 	local button = (isBank and B.BankFrame.sortButton) or B.BagFrame.sortButton
-
-	if (isBank and B.db.disableBankSort) or (not isBank and B.db.disableBagSort) then
-		button:Disable()
-	else
-		button:Enable()
-	end
+	button:SetEnabled(not B.db[isBank and 'disableBankSort' or 'disableBagSort'])
 end
 
 function B:ContainerOnShow()

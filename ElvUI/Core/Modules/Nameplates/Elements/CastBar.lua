@@ -6,6 +6,7 @@ local LSM = E.Libs.LSM
 
 local _G = _G
 local abs = abs
+local next = next
 local unpack = unpack
 local strjoin = strjoin
 local strmatch = strmatch
@@ -115,6 +116,12 @@ end
 
 function NP:Castbar_PostCastStop() end
 
+function NP:BuildPip(stage)
+	local pip = UF.CreatePip(self, stage)
+	pip.texture:SetTexture(LSM:Fetch('statusbar', NP.db.statusbar))
+	return pip
+end
+
 function NP:Construct_Castbar(nameplate)
 	local castbar = CreateFrame('StatusBar', nameplate:GetName()..'Castbar', nameplate)
 	castbar:SetFrameStrata(nameplate:GetFrameStrata())
@@ -123,6 +130,7 @@ function NP:Construct_Castbar(nameplate)
 	castbar:SetStatusBarTexture(LSM:Fetch('statusbar', NP.db.statusbar))
 
 	NP.StatusBars[castbar] = true
+	castbar.ModuleStatusBars = NP.StatusBars -- not oUF
 
 	castbar.Button = CreateFrame('Frame', nil, castbar)
 	castbar.Button:SetTemplate(nil, nil, nil, nil, nil, true, true)
@@ -151,8 +159,7 @@ function NP:Construct_Castbar(nameplate)
 	castbar.PostCastStop = NP.Castbar_PostCastStop
 	castbar.UpdatePipStep = UF.UpdatePipStep
 	castbar.PostUpdatePip = UF.PostUpdatePip
-	castbar.CreatePip = UF.CreatePip
-	castbar.ModuleStatusBars = NP.StatusBars -- not oUF
+	castbar.CreatePip = NP.BuildPip
 
 	if nameplate == _G.ElvNP_Test then
 		castbar.Hide = castbar.Show
