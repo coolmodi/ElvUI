@@ -748,6 +748,12 @@ function NP:NamePlateCallBack(nameplate, event, unit)
 		NP:UpdatePlateType(nameplate)
 		NP:UpdatePlateSize(nameplate)
 
+		nameplate.softTargetFrame = nameplate.blizzPlate and nameplate.blizzPlate.SoftTargetFrame
+		if nameplate.softTargetFrame then
+			nameplate.softTargetFrame:SetParent(nameplate)
+			nameplate.softTargetFrame:SetIgnoreParentAlpha(true)
+		end
+
 		if nameplate.widgetsOnly then
 			NP:DisablePlate(nameplate)
 
@@ -755,7 +761,7 @@ function NP:NamePlateCallBack(nameplate, event, unit)
 				nameplate.RaisedElement:Hide()
 			end
 
-			nameplate.widgetContainer = nameplate.blizzPlate.WidgetContainer
+			nameplate.widgetContainer = nameplate.blizzPlate and nameplate.blizzPlate.WidgetContainer
 			if nameplate.widgetContainer then
 				nameplate.widgetContainer:SetParent(nameplate)
 				nameplate.widgetContainer:ClearAllPoints()
@@ -794,6 +800,11 @@ function NP:NamePlateCallBack(nameplate, event, unit)
 			NP:UpdatePlateGUID(nameplate)
 		end
 
+		if nameplate.softTargetFrame then
+			nameplate.softTargetFrame:SetParent(nameplate.blizzPlate)
+			nameplate.softTargetFrame:SetIgnoreParentAlpha(false)
+		end
+
 		if not nameplate.widgetsOnly then
 			NP:BossMods_UpdateIcon(nameplate, true)
 
@@ -803,6 +814,13 @@ function NP:NamePlateCallBack(nameplate, event, unit)
 			nameplate.widgetContainer:SetParent(nameplate.blizzPlate)
 			nameplate.widgetContainer:ClearAllPoints()
 			nameplate.widgetContainer:SetPoint('TOP', nameplate.blizzPlate.castBar, 'BOTTOM')
+		end
+
+		-- these can appear on SoftTarget nameplates and they aren't
+		-- from NAME_PLATE_UNIT_ADDED which means, they will still be shown
+		-- in some cases when the plate previously had the element
+		if nameplate.QuestIcons then
+			nameplate.QuestIcons:Hide()
 		end
 
 		-- vars that we need to keep in a nonstale state
