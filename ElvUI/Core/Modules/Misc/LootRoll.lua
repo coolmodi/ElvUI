@@ -80,11 +80,20 @@ local function LootClick(button)
 end
 
 local function StatusUpdate(button, elapsed)
-	if not button.parent.rollID then return end
+	local bar = button.parent
+	if not bar.rollID then
+		bar:Hide()
+		return
+	end
 
 	if button.elapsed and button.elapsed > 0.1 then
-		button:SetValue(GetLootRollTimeLeft(button.parent.rollID))
-		button.elapsed = 0
+		local timeLeft = GetLootRollTimeLeft(bar.rollID)
+		if timeLeft <= 0 then -- workaround for other addons auto-passing loot
+			M.CANCEL_LOOT_ROLL(bar, 'OnUpdate', bar.rollID)
+		else
+			button:SetValue(timeLeft)
+			button.elapsed = 0
+		end
 	else
 		button.elapsed = (button.elapsed or 0) + elapsed
 	end
@@ -163,6 +172,7 @@ end
 function M:LootRoll_Create(index)
 	local bar = CreateFrame('Frame', 'ElvUI_LootRollFrame'..index, E.UIParent)
 	bar:SetScript('OnEvent', M.CANCEL_LOOT_ROLL)
+	bar:RegisterEvent('CANCEL_LOOT_ROLL')
 	bar:Hide()
 
 	local status = CreateFrame('StatusBar', nil, bar)
@@ -188,6 +198,7 @@ function M:LootRoll_Create(index)
 	button:SetScript('OnEnter', SetItemTip)
 	button:SetScript('OnLeave', GameTooltip_Hide)
 	button:SetScript('OnClick', LootClick)
+	button:RegisterEvent('MODIFIER_STATE_CHANGED')
 	bar.button = button
 
 	button.icon = button:CreateTexture(nil, 'OVERLAY')
@@ -241,35 +252,41 @@ function M:LootFrame_GetFrame(i)
 	end
 end
 
-function M:CANCEL_LOOT_ROLL(event, rollID)
+function M:CANCEL_LOOT_ROLL(_, rollID)
 	if self.rollID == rollID then
 		self.rollID = nil
 		self.time = nil
-		self:Hide()
-		self:UnregisterEvent(event)
-		self.button:UnregisterEvent('MODIFIER_STATE_CHANGED')
 	end
 end
 
-function M:START_LOOT_ROLL(_, rollID, rollTime)
-	local bar = M:LootFrame_GetFrame()
-	if not bar then return end -- need more info on this, how does it happen?
+function M:START_LOOT_ROLL(event, rollID, rollTime)
+	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(rollID)
+	if not name then -- also done in GroupLootFrame_OnShow
+		for _, rollBar in next, M.RollBars do
+			if rollBar.rollID == rollID then
+				M.CANCEL_LOOT_ROLL(rollBar, event, rollID)
+			end
+		end
 
-	wipe(bar.rolls)
+		return
+	end
+
+	local bar = M:LootFrame_GetFrame()
+	if not bar then return end -- well this shouldn't happen
 
 	local itemLink = GetLootRollItemLink(rollID)
-	local texture, name, count, quality, bop, canNeed, canGreed, canDisenchant = GetLootRollItemInfo(rollID)
 	local _, _, _, itemLevel, _, _, _, _, itemEquipLoc, _, _, itemClassID, itemSubClassID, bindType = GetItemInfo(itemLink)
 	local db, color = E.db.general.lootRoll, ITEM_QUALITY_COLORS[quality]
 
 	if not bop then bop = bindType == 1 end -- recheck sometimes, we need this from bindType
+
+	wipe(bar.rolls)
 
 	bar.rollID = rollID
 	bar.time = rollTime
 
 	bar.button.link = itemLink
 	bar.button.rollID = rollID
-	bar.button:RegisterEvent('MODIFIER_STATE_CHANGED')
 	bar.button.icon:SetTexture(texture)
 	bar.button.stack:SetShown(count > 1)
 	bar.button.stack:SetText(count)
@@ -327,7 +344,6 @@ function M:START_LOOT_ROLL(_, rollID, rollTime)
 	bar.status:SetValue(rollTime)
 
 	bar:Show()
-	bar:RegisterEvent('CANCEL_LOOT_ROLL')
 
 	_G.AlertFrame:UpdateAnchors()
 
