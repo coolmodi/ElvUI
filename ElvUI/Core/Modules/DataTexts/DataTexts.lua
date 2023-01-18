@@ -223,7 +223,7 @@ function DT:BuildPanelFunctions(name, obj)
 		end
 	end
 
-	local function OnCallback(Hex)
+	local function UpdateColor(_, Hex)
 		if name and obj then
 			hex = Hex
 			LDB.callbacks:Fire('LibDataBroker_AttributeChanged_'..name..'_text', name, nil, obj.text, obj)
@@ -234,17 +234,17 @@ function DT:BuildPanelFunctions(name, obj)
 		text = dt.text
 		LDB:RegisterCallback('LibDataBroker_AttributeChanged_'..name..'_text', UpdateText)
 		LDB:RegisterCallback('LibDataBroker_AttributeChanged_'..name..'_value', UpdateText)
-		OnCallback(hex)
+		UpdateColor(dt, hex)
 	end
 
-	return OnEnter, OnLeave, OnClick, OnCallback, OnEvent, UpdateText
+	return OnEvent, OnClick, OnEnter, OnLeave, UpdateColor, UpdateText
 end
 
 function DT:SetupObjectLDB(name, obj)
 	if DT.RegisteredDataTexts['LDB_'..name] then return end
 
-	local onEnter, onLeave, onClick, onCallback, onEvent = DT:BuildPanelFunctions(name, obj)
-	local data = DT:RegisterDatatext('LDB_'..name, 'Data Broker', nil, onEvent, nil, onClick, onEnter, onLeave, 'LDB: '..name, nil, onCallback)
+	local onEvent, onClick, onEnter, onLeave, updateColor = DT:BuildPanelFunctions(name, obj)
+	local data = DT:RegisterDatatext('LDB_'..name, 'Data Broker', nil, onEvent, nil, onClick, onEnter, onLeave, 'LDB: '..name, nil, updateColor)
 	data.isLibDataBroker = true
 
 	if self ~= DT then -- This checks to see if we are calling it or the callback.
@@ -267,8 +267,8 @@ function DT:GetDataPanelPoint(panel, i, numPoints, vertical)
 			point, relativePoint, xOffset, yOffset = 'TOP', i == 1 and 'TOP' or 'BOTTOM', 0, -4
 		end
 
-		local lastPanel = (i == 1 and panel) or panel.dataPanels[i - 1]
-		return point, lastPanel, relativePoint, xOffset, yOffset
+		local previous = (i == 1 and panel) or panel.dataPanels[i - 1]
+		return point, previous, relativePoint, xOffset, yOffset
 	end
 end
 
@@ -345,6 +345,10 @@ function DT:AssignPanelToDataText(dt, data, event, ...)
 		end
 	end
 
+	if data.colorUpdate then -- has to be before event function
+		data.colorUpdate(dt, E.media.hexvaluecolor)
+	end
+
 	local ev = event or 'ELVUI_FORCE_UPDATE'
 	if data.eventFunc then
 		if not data.objectEvent then
@@ -366,10 +370,6 @@ function DT:AssignPanelToDataText(dt, data, event, ...)
 		end)
 	end
 
-	if data.colorUpdate then
-		data.colorUpdate(E.media.hexvaluecolor)
-	end
-
 	if data.onEnter then
 		tinsert(dt.MouseEnters, data.onEnter)
 	end
@@ -383,7 +383,7 @@ function DT:ForceUpdate_DataText(name)
 	for dtSlot, dtInfo in pairs(DT.AssignedDatatexts) do
 		if dtInfo.name == name then
 			if dtInfo.colorUpdate then
-				dtInfo.colorUpdate(hex, r, g, b)
+				dtInfo.colorUpdate(dtSlot, hex, r, g, b)
 			end
 			if dtInfo.eventFunc then
 				dtInfo.eventFunc(dtSlot, 'ELVUI_FORCE_UPDATE')
@@ -392,14 +392,14 @@ function DT:ForceUpdate_DataText(name)
 	end
 end
 
-function DT:UpdateHexColors()
-	for _, dtInfo in pairs(DT.AssignedDatatexts) do
+function DT:UpdateHexColors(hex, r, g, b)
+	for dtSlot, dtInfo in pairs(DT.AssignedDatatexts) do
 		if dtInfo.colorUpdate then
-			dtInfo.colorUpdate(E.media.hexvaluecolor)
+			dtInfo.colorUpdate(dtSlot, hex, r, g, b)
 		end
 	end
 end
-E.valueColorUpdateFuncs[DT.UpdateHexColors] = true
+E.valueColorUpdateFuncs.DataTexts = DT.UpdateHexColors
 
 function DT:GetTextAttributes(panel, db)
 	local panelWidth, panelHeight = panel:GetSize()
