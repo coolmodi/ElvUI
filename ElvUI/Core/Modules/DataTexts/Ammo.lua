@@ -1,13 +1,13 @@
 local E, L, V, P, G = unpack(ElvUI)
 local DT = E:GetModule('DataTexts')
 
-local _G = _G
 local select, wipe = select, wipe
 local format, strjoin = format, strjoin
 
+local _G = _G
 local GetItemInfo = GetItemInfo
-local GetItemInfoInstant = GetItemInfoInstant
 local GetItemCount = GetItemCount
+local GetItemInfoInstant = GetItemInfoInstant
 local GetContainerItemID = GetContainerItemID
 local GetInventoryItemCount = GetInventoryItemCount
 local GetInventoryItemID = GetInventoryItemID
@@ -15,6 +15,7 @@ local ContainerIDToInventoryID = ContainerIDToInventoryID
 local GetContainerNumSlots = GetContainerNumSlots
 local GetContainerNumFreeSlots = GetContainerNumFreeSlots
 local GetItemQualityColor = GetItemQualityColor
+
 local NUM_BAG_SLOTS = NUM_BAG_SLOTS
 local NUM_BAG_FRAMES = NUM_BAG_FRAMES
 local INVTYPE_AMMO = INVTYPE_AMMO
