@@ -778,6 +778,7 @@ P.nameplates = {
 	},
 	visibility = {
 		showAll = true,
+		showOnlyNames = false,
 		enemy = {
 			guardians = false,
 			minions = false,
@@ -1131,6 +1132,7 @@ P.datatexts = {
 	panels = {
 		LeftChatDataPanel = {
 			enable = true,
+			battleground = true,
 			backdrop = true,
 			border = true,
 			panelTransparency = false,
@@ -1140,6 +1142,7 @@ P.datatexts = {
 		},
 		RightChatDataPanel = {
 			enable = true,
+			battleground = true,
 			backdrop = true,
 			border = true,
 			panelTransparency = false,
@@ -1149,6 +1152,7 @@ P.datatexts = {
 		},
 		MinimapPanel = {
 			enable = true,
+			battleground = false,
 			backdrop = true,
 			border = true,
 			panelTransparency = false,
@@ -1157,7 +1161,19 @@ P.datatexts = {
 			'Friends'
 		}
 	},
-	battleground = true,
+	battlePanel = {
+		LeftChatDataPanel = {
+			'PvP: Kills',
+			'PvP: Honorable Kills',
+			'PvP: Deaths',
+		},
+		RightChatDataPanel = {
+			'PvP: Damage Done',
+			'PvP: Heals',
+			'PvP: Honor Gained',
+		},
+		MinimapPanel = {}
+	},
 	noCombatClick = false,
 	noCombatHover = false,
 }
