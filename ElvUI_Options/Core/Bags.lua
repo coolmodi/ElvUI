@@ -3,8 +3,9 @@ local C, L = unpack(E.Config)
 local B = E:GetModule('Bags')
 local ACH = E.Libs.ACH
 
-local gsub, next = gsub, next
+local gsub, next, pairs = gsub, next, pairs
 local format, strmatch = format, strmatch
+local tonumber = tonumber
 
 local SetCVar = SetCVar
 local GetCVarBool = GetCVarBool
@@ -221,11 +222,7 @@ local function getIgnoreList(list)
 
 	for key, value in pairs(list) do
 		local itemID = tonumber(value)
-		local name
-
-		if itemID then
-			name = GetItemInfo(itemID)
-		end
+		local name = itemID and GetItemInfo(itemID)
 
 		data[key] = itemID and format('%s [%s]', name or '', itemID) or value
 	end
