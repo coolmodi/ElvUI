@@ -556,11 +556,22 @@ local function GetOptionsTable_Fader(updateFunc, groupName, numUnits)
 	config.args.power = ACH:Toggle(L["Power"], nil, 9, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable or E.db.unitframe.units[groupName].fader.range end)
 	config.args.vehicle = ACH:Toggle(L["Vehicle"], nil, 10, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable or E.db.unitframe.units[groupName].fader.range end)
 	config.args.casting = ACH:Toggle(L["Casting"], nil, 11, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable or E.db.unitframe.units[groupName].fader.range end)
-	config.args.spacer = ACH:Spacer(12, 'full')
+
+	config.args.spacer1 = ACH:Spacer(12, 'full')
 	config.args.delay = ACH:Range(L["Fade Out Delay"], nil, 13, { min = 0, max = 3, step = 0.01 }, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable or E.db.unitframe.units[groupName].fader.range end)
 	config.args.smooth = ACH:Range(L["Smooth"], nil, 14, { min = 0, max = 1, step = 0.01 }, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable end)
 	config.args.minAlpha = ACH:Range(L["Min Alpha"], nil, 15, { min = 0, max = 1, step = 0.01 }, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable end)
 	config.args.maxAlpha = ACH:Range(L["Max Alpha"], nil, 16, { min = 0, max = 1, step = 0.01 }, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable end)
+
+	config.args.instanceDifficulties = ACH:Group(L["Instance Difficulties"], nil, 30, nil, function(info) return E.db.unitframe.units[groupName].fader.instanceDifficulties[info[#info]] end, function(info, value) E.db.unitframe.units[groupName].fader.instanceDifficulties[info[#info]] = value updateFunc(UF, groupName, numUnits) end)
+	config.args.instanceDifficulties.args.dungeonNormal = ACH:Toggle(L["Dungeon (normal)"], nil, 1, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable end)
+	config.args.instanceDifficulties.args.dungeonHeroic = ACH:Toggle(L["Dungeon (heroic)"], nil, 2, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable end)
+	config.args.instanceDifficulties.args.dungeonMythic = ACH:Toggle(L["Dungeon (mythic)"], nil, 3, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable end)
+	config.args.instanceDifficulties.args.raidNormal = ACH:Toggle(L["Raid (normal)"], nil, 4, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable end)
+	config.args.instanceDifficulties.args.raidHeroic = ACH:Toggle(L["Raid (heroic)"], nil, 5, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable end)
+	config.args.instanceDifficulties.args.raidMythic = ACH:Toggle(L["Raid (mythic)"], nil, 6, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable end)
+	config.args.instanceDifficulties.args.dungeonMythicKeystone = ACH:Toggle(L["Mythic Keystone"], nil, 7, nil, nil, nil, nil, nil, function() return not E.db.unitframe.units[groupName].fader.enable end)
+	config.args.instanceDifficulties.inline = true
 
 	return config
 end
@@ -1417,7 +1428,7 @@ Player.RestIcon.args.defaultColor = ACH:Toggle(L["Default Color"], nil, 7)
 Player.RestIcon.args.color = ACH:Color(L["COLOR"], nil, 8, true, nil, function() local c, d = E.db.unitframe.units.player.RestIcon.color, P.unitframe.units.player.RestIcon.color return c.r, c.g, c.b, c.a, d.r, d.g, d.b, d.a end, function(_, r, g, b, a) local c = E.db.unitframe.units.player.RestIcon.color c.r, c.g, c.b, c.a = r, g, b, a UF:CreateAndUpdateUF('player') UF:TestingDisplay_RestingIndicator(UF.player) end, nil, function() return E.db.unitframe.units.player.RestIcon.defaultColor end)
 Player.RestIcon.args.texture = ACH:Select(L["Texture"], nil, 9, { CUSTOM = L["CUSTOM"], DEFAULT = L["DEFAULT"] })
 Player.RestIcon.args.texture.sortByValue = true
-Player.RestIcon.args.customTexture = ACH:Input(L["Custom Texture"], nil, 10, nil, 250, nil, function(_, value) E.db.unitframe.units.player.RestIcon.customTexture = (value and (not value:match('^%s-$')) and value) or nil UF:CreateAndUpdateUF('player') UF:TestingDisplay_RestingIndicator(UF.player) end)
+Player.RestIcon.args.customTexture = ACH:Input(L["Custom Texture"], nil, 10, nil, 250, nil, function(_, value) E.db.unitframe.units.player.RestIcon.customTexture = (value and (not value:match('^%s-$')) and value) or nil UF:CreateAndUpdateUF('player') UF:TestingDisplay_RestingIndicator(UF.player) end, nil, function() return E.db.unitframe.units.player.RestIcon.texture ~= 'CUSTOM' end)
 
 for key, icon in pairs(E.Media.RestIcons) do
 	Player.RestIcon.args.texture.values[key] = E:TextureString(icon, ':14:14')
