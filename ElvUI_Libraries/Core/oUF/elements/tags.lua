@@ -780,7 +780,7 @@ if not oUF.isRetail then
 		HealComm_GUIDDisappeared = true
 	}
 	local function HealCommCallback(event, ...)
-		local strings = events[event]
+		local strings = eventFontStrings[event]
 		if(strings) then
 			local unitGUID
 			for i = 1, select('#', ...) do
@@ -795,21 +795,21 @@ if not oUF.isRetail then
 	end
 
 	registerEvent = function(fontstr, event)
-		if(not events[event]) then events[event] = {} end
+		if(not eventFontStrings[event]) then eventFontStrings[event] = {} end
 
 		if HealComm_EVENTS[event] then
 			HealComm.RegisterCallback(eventFrame, event, HealCommCallback)
-			tinsert(events[event], fontstr)
+			tinsert(eventFontStrings[event], fontstr)
 		else
 			local isOK = xpcall(eventFrame.RegisterEvent, eventFrame, event)
 			if(isOK) then
-				tinsert(events[event], fontstr)
+				tinsert(eventFontStrings[event], fontstr)
 			end
 		end
 	end
 
 	unregisterEvents = function(fontstr)
-		for event, data in next, events do
+		for event, data in next, eventFontStrings do
 			local index = 1
 			local tagfsstr = data[index]
 			while tagfsstr do
