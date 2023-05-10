@@ -140,12 +140,6 @@ P.general = {
 				xOffset = 3,
 				yOffset = 4,
 			},
-			lfgEye = {
-				scale = E.Retail and 0.6 or 1,
-				position = 'BOTTOMRIGHT',
-				xOffset = 3,
-				yOffset = -3
-			},
 			queueStatus = {
 				enable = true,
 				position = 'BOTTOMRIGHT',
@@ -202,6 +196,7 @@ P.general = {
 	},
 	addonCompartment = {
 		size = 18,
+		hide = false,
 		font = 'Expressway',
 		fontSize = 13,
 		fontOutline = 'NONE',
@@ -229,7 +224,19 @@ P.general = {
 			offsetX = 0,
 			offsetY = 0
 		}
-	}
+	},
+	queueStatus = {
+		enable = true,
+		scale = 0.5,
+		position = 'BOTTOMRIGHT',
+		xOffset = -2,
+		yOffset = 2,
+		font = 'Expressway',
+		fontSize = 11,
+		fontOutline = 'OUTLINE',
+		frameStrata = 'MEDIUM',
+		frameLevel = 20
+	},
 }
 
 P.databars = {
@@ -699,7 +706,6 @@ P.nameplates = {
 		ElvUI_Boss = {triggers = {enable = false}},
 		ElvUI_Target = {triggers = {enable = true}},
 		ElvUI_NonTarget = {triggers = {enable = true}},
-		ElvUI_Explosives = {triggers = {enable = true}},
 	},
 	colors = {
 		auraByType = true,
@@ -2624,7 +2630,7 @@ elseif E.Wrath then
 	P.actionbar.barPet.visibility = '[novehicleui,pet,nooverridebar,nopossessbar] show; hide'
 	P.actionbar.stanceBar.visibility = '[vehicleui] hide; show'
 else
-	P.actionbar.barPet.visibility = '[nooverridebar,nopossessbar] show; hide'
+	P.actionbar.barPet.visibility = '[pet,nooverridebar,nopossessbar] show; hide'
 	P.actionbar.stanceBar.visibility = 'show'
 end
 

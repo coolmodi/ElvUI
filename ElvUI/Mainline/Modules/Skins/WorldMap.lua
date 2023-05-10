@@ -87,9 +87,11 @@ function S:WorldMapFrame()
 	end
 
 	SkinHeaders(QuestScrollFrame.Contents.StoryHeader)
-	S:HandleTrimScrollBar(QuestScrollFrameScrollBar, true)
-	QuestScrollFrameScrollBar:Point('TOPLEFT', QuestScrollFrame.DetailFrame, 'TOPRIGHT', 1, -15)
-	QuestScrollFrameScrollBar:Point('BOTTOMLEFT', QuestScrollFrame.DetailFrame, 'BOTTOMRIGHT', 6, 10)
+	S:HandleTrimScrollBar(QuestScrollFrameScrollBar)
+	QuestScrollFrameScrollBar:Point('TOPLEFT', QuestScrollFrame.DetailFrame, 'TOPRIGHT', 4, -15)
+	QuestScrollFrameScrollBar:Point('BOTTOMLEFT', QuestScrollFrame.DetailFrame, 'BOTTOMRIGHT', 9, 10)
+
+	QuestScrollFrame.Edge:SetAlpha(0)
 
 	S:HandleButton(QuestMapFrame.DetailsFrame.BackButton, true)
 	QuestMapFrame.DetailsFrame.BackButton:SetFrameLevel(5)
@@ -110,7 +112,7 @@ function S:WorldMapFrame()
 		TT:SetStyle(QuestMapFrame.QuestsFrame.StoryTooltip)
 	end
 
-	S:HandleTrimScrollBar(_G.QuestMapDetailsScrollFrame.ScrollBar, true)
+	S:HandleTrimScrollBar(_G.QuestMapDetailsScrollFrame.ScrollBar)
 
 	QuestMapFrame.DetailsFrame.CompleteQuestFrame:StripTextures()
 
