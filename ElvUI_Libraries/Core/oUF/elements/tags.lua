@@ -785,7 +785,7 @@ if not oUF.isRetail then
 			local unitGUID
 			for i = 1, select('#', ...) do
 				unitGUID = select(i, ...)
-				for _, fs in next, strings do
+				for fs in next, strings do
 					if(fs:IsVisible() and UnitGUID(fs.parent.unit) == unitGUID) then
 						fs:UpdateTag()
 					end
@@ -794,42 +794,32 @@ if not oUF.isRetail then
 		end
 	end
 
-	registerEvent = function(fontstr, event)
-		if(not eventFontStrings[event]) then eventFontStrings[event] = {} end
+	registerEvent = function(event, fs)
+        if(not eventFontStrings[event]) then
+            eventFontStrings[event] = {}
+        end
 
-		if HealComm_EVENTS[event] then
-			HealComm.RegisterCallback(eventFrame, event, HealCommCallback)
-			tinsert(eventFontStrings[event], fontstr)
-		else
-			local isOK = xpcall(eventFrame.RegisterEvent, eventFrame, event)
-			if(isOK) then
-				tinsert(eventFontStrings[event], fontstr)
-			end
-		end
+        if HealComm_EVENTS[event] then
+            eventFontStrings[event][fs] = true
+            HealComm.RegisterCallback(eventFrame, event, HealCommCallback)
+        elseif(validateEvent(event)) then
+            eventFontStrings[event][fs] = true
+            eventFrame:RegisterEvent(event)
+        end
 	end
 
-	unregisterEvents = function(fontstr)
-		for event, data in next, eventFontStrings do
-			local index = 1
-			local tagfsstr = data[index]
-			while tagfsstr do
-				if(tagfsstr == fontstr) then
-					if(#data == 1) then
-						if HealComm_EVENTS[event] then
-							HealComm.UnregisterCallback(eventFrame, event)
-						else
-							eventFrame:UnregisterEvent(event)
-						end
-					end
-
-					tremove(data, index)
-				else
-					index = index + 1
-				end
-
-				tagfsstr = data[index]
-			end
-		end
+	unregisterEvents = function(fs)
+		for event, strings in next, eventFontStrings do
+            strings[fs] = nil
+  
+            if(not next(strings)) then
+                if HealComm_EVENTS[event] then
+                    HealComm.UnregisterCallback(eventFrame, event)
+                else
+                    eventFrame:UnregisterEvent(event)
+                end
+            end
+        end
 	end
 end
 
