@@ -5,7 +5,7 @@
 ]]
 
 local _G, next, strfind = _G, next, strfind
-local wipe, gsub, tinsert, type = wipe, gsub, tinsert, type
+local gsub, tinsert, type = gsub, tinsert, type
 
 local GetAddOnEnableState = GetAddOnEnableState
 local GetBuildInfo = GetBuildInfo
@@ -16,9 +16,8 @@ local DisableAddOn = DisableAddOn
 local IsAddOnLoaded = IsAddOnLoaded
 local ReloadUI = ReloadUI
 
-local RegisterCVar = C_CVar.RegisterCVar
 local UIDropDownMenu_SetAnchor = UIDropDownMenu_SetAnchor
-
+local IsHardcoreActive = C_GameRules and C_GameRules.IsHardcoreActive
 local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
 
 -- GLOBALS: ElvCharacterDB, ElvPrivateDB, ElvDB, ElvCharacterData, ElvPrivateData, ElvData
@@ -76,6 +75,7 @@ E.twoPixelsPlease = false -- changing this option is not supported! :P
 -- Expansions
 E.Retail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 E.Classic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+E.ClassicHC = E.Classic and IsHardcoreActive()
 E.TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC -- not used
 E.Wrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 
@@ -233,7 +233,6 @@ do
 		'ElvUI_VisualAuraTimers',
 		'ElvUI_SecondsToBuff',
 		'ElvUI_BuffHighlight',
-		'WunderUI',
 	}
 
 	if not IsAddOnLoaded('ShadowedUnitFrames') then
@@ -321,10 +320,6 @@ function E:OnInitialize()
 
 	if E.private.general.minimap.enable then
 		E.Minimap:SetGetMinimapShape() -- This is just to support for other mods, keep below UIMult
-	end
-
-	if E.Classic then
-		RegisterCVar('fstack_showhighlight', '1')
 	end
 
 	if GetAddOnEnableState(E.myname, 'Tukui') == 2 then

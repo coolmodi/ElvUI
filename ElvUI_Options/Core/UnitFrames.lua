@@ -141,7 +141,7 @@ local function GetOptionsTable_AuraBars(updateFunc, groupName)
 	config.args.yOffset = ACH:Range(L["Y-Offset"], nil, 15, { min = 0, max = 100, step = 1 }, nil, nil, nil, nil, function() return E.db.unitframe.units[groupName].aurabar.attachTo == 'DETACHED' end)
 	config.args.spacing = ACH:Range(L["Spacing"], nil, 16, { min = 0, softMax = 20, step = 1 })
 
-	config.args.filtersGroup = ACH:Group(L["FILTERS"], nil, 30)
+	config.args.filtersGroup = ACH:Group(L["Filters"], nil, 30)
 	config.args.filtersGroup.inline = true
 	config.args.filtersGroup.args.minDuration = ACH:Range(L["Minimum Duration"], L["Don't display auras that are shorter than this duration (in seconds). Set to zero to disable."], 1, { min = 0, max = 10800, step = 1 })
 	config.args.filtersGroup.args.maxDuration = ACH:Range(L["Maximum Duration"], L["Don't display auras that are longer than this duration (in seconds). Set to zero to disable."], 1, { min = 0, max = 10800, step = 1 })
@@ -220,9 +220,9 @@ local function GetOptionsTable_Auras(auraType, updateFunc, groupName, numUnits)
 	config.args.duration = ACH:Group(L["Duration"], nil, 25, nil, function(info) return E.db.unitframe.units[groupName][auraType][info[#info]] end, function(info, value) E.db.unitframe.units[groupName][auraType][info[#info]] = value updateFunc(UF, groupName, numUnits) end)
 	config.args.duration.inline = true
 	config.args.duration.args.cooldownShortcut = ACH:Execute(L["Cooldowns"], nil, 1, function() ACD:SelectGroup('ElvUI', 'cooldown', 'unitframe') end)
-	config.args.duration.args.durationPosition = ACH:Select(L["Position"], nil, 2, C.Values.Anchors)
+	config.args.duration.args.durationPosition = ACH:Select(L["Position"], nil, 2, C.Values.AllPoints)
 
-	config.args.filtersGroup = ACH:Group(L["FILTERS"], nil, 30)
+	config.args.filtersGroup = ACH:Group(L["Filters"], nil, 30)
 	config.args.filtersGroup.inline = true
 	config.args.filtersGroup.args.minDuration = ACH:Range(L["Minimum Duration"], L["Don't display auras that are shorter than this duration (in seconds). Set to zero to disable."], 1, { min = 0, max = 10800, step = 1 })
 	config.args.filtersGroup.args.maxDuration = ACH:Range(L["Maximum Duration"], L["Don't display auras that are longer than this duration (in seconds). Set to zero to disable."], 1, { min = 0, max = 10800, step = 1 })
@@ -502,7 +502,7 @@ local function CreateCustomTextGroup(unit, objectName)
 	config.args.delete = ACH:Execute(L["Delete"], nil, 1, function() E.Options.args.unitframe.args[group].args[unit].args.customTexts.args.tags.args[objectName] = nil E.db.unitframe.units[unit].customTexts[objectName] = nil UpdateCustomTextGroup(unit) end)
 	config.args.enable = ACH:Toggle(L["Enable"], nil, 2)
 	config.args.font = ACH:SharedMediaFont(L["Font"], nil, 3)
-	config.args.size = ACH:Range(L["Font Size"], nil, 4, C.Values.FontSize)
+	config.args.size = ACH:Range(L["Font Size"], nil, 4, { min = 8, max = 128, step = 1 }) -- custom for people that use icons
 	config.args.fontOutline = ACH:FontFlags(L["Font Outline"], L["Set the font outline."], 5)
 	config.args.justifyH = ACH:Select(L["JustifyH"], L["Sets the font instance's horizontal text alignment style."], 6, { CENTER = L["Center"], LEFT = L["Left"], RIGHT = L["Right"] })
 	config.args.xOffset = ACH:Range(L["X-Offset"], nil, 7, { min = -400, max = 400, step = 1 })
@@ -1403,7 +1403,8 @@ local unitSettingsFunc = {
 local function GetUnitSettings(unitType, updateFunc, numUnits)
 	local config = { enable = ACH:Toggle(L["Enable"], nil, 1) }
 
-	for element in pairs(P.unitframe.units[unitType]) do
+	local defaults = P.unitframe.units[unitType]
+	for element in pairs(defaults) do
 		local isIndividual = individual[unitType]
 		if element == 'health' then
 			config[element] = GetOptionsTable_Health(not isIndividual, updateFunc, unitType, numUnits)
@@ -1421,7 +1422,7 @@ local function GetUnitSettings(unitType, updateFunc, numUnits)
 			group.args.yOffset = ACH:Range(L["Y-Offset"], nil, 7, { min = -500, max = 500, step = 1 })
 			group.args.threatStyle = ACH:Select(L["Threat Display Mode"], nil, 8, threatValues)
 
-			for subElement in pairs(P.unitframe.units[unitType][element]) do
+			for subElement in pairs(defaults[element]) do
 				if subElement == 'colorPetByUnitClass' then
 					group.args.colorPetByUnitClass = ACH:Toggle(L["Color by Unit Class"], nil, 2)
 				else
