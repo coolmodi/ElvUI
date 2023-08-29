@@ -812,12 +812,14 @@ function B.SortBags(...)
 	for i=1, select('#', ...) do
 		local bags = select(i, ...)
 		for _, slotNum in ipairs(bags) do
-			local bagType = B:IsSpecialtyBag(slotNum)
-			if not bagCache[bagType] then
-				bagCache[bagType] = {}
-			end
+            if not E.db.bags.ignoredBags[slotNum] then
+                local bagType = B:IsSpecialtyBag(slotNum)
+                if not bagCache[bagType] then
+                    bagCache[bagType] = {}
+                end
 
-			tinsert(bagCache[bagType], slotNum)
+                tinsert(bagCache[bagType], slotNum)
+            end
 		end
 
 		local normalBags = bagCache.Normal

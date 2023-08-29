@@ -229,3 +229,12 @@ end
 
 Bags.args.bagSortingGroup.args.ignoredEntriesProfile = ACH:MultiSelect(L["Ignored Items and Search Syntax (Profile)"], nil, 4, function() return getIgnoreList(E.db.bags.ignoredItems) end, nil, nil, function(_, value) return E.db.bags.ignoredItems[value] end, function(_, value) E.db.bags.ignoredItems[value] = nil GameTooltip:Hide() end, nil, function() return not next(E.db.bags.ignoredItems) end)
 Bags.args.bagSortingGroup.args.ignoredEntriesGlobal = ACH:MultiSelect(L["Ignored Items and Search Syntax (Global)"], nil, 5, function() return getIgnoreList(E.global.bags.ignoredItems) end, nil, nil, function(_, value) return E.global.bags.ignoredItems[value] end, function(_, value) E.global.bags.ignoredItems[value] = nil GameTooltip:Hide() end, nil, function() return not next(E.global.bags.ignoredItems) end)
+if not E.Retail then
+	Bags.args.bagSortingGroup.args.sortIgnoreGroup = ACH:MultiSelect(L["Ignore Bags for Sorting"], nil, 6, nil, nil, nil, function(_, key) return E.db.bags.ignoredBags[key] end, function(_, key, state) E.db.bags.ignoredBags[key] = state end)
+    Bags.args.bagSortingGroup.args.sortIgnoreGroup.values = {
+        [1] = L["Bag 1"],
+        [2] = L["Bag 2"],
+        [3] = L["Bag 3"],
+        [4] = L["Bag 4"],
+    }
+end

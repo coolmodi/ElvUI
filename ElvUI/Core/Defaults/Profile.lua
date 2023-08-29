@@ -339,6 +339,7 @@ P.bags = {
 	upgradeIcon = true,
 	newItemGlow = true,
 	ignoredItems = {},
+    ignoredBags = {},
 	itemLevel = true,
 	itemLevelThreshold = 1,
 	itemLevelFont = 'Homespun',
