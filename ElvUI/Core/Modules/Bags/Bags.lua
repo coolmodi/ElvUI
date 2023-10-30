@@ -1,7 +1,7 @@
 local E, L, V, P, G = unpack(ElvUI)
 local B = E:GetModule('Bags')
+local S = E:GetModule('Skins')
 local TT = E:GetModule('Tooltip')
-local Skins = E:GetModule('Skins')
 local AB = E:GetModule('ActionBars')
 local NP = E:GetModule('NamePlates')
 local LSM = E.Libs.LSM
@@ -556,12 +556,16 @@ function B:GetItemQuestInfo(itemLink, bindType, itemClassID)
 		E.ScanTooltip:Show()
 
 		local isQuestItem, isStarterItem
-		for i = BIND_START, BIND_END do
-			local line = _G['ElvUI_ScanTooltipTextLeft'..i]:GetText()
+		local info = E.ScanTooltip:GetTooltipData()
+		if info then
+			for i = BIND_START, BIND_END do
+				local line = info.lines[i]
+				local text = line and line.leftText
 
-			if not line or line == '' then break end
-			if not isQuestItem and line == _G.ITEM_BIND_QUEST then isQuestItem = true end
-			if not isStarterItem and line == _G.ITEM_STARTS_QUEST then isStarterItem = true end
+				if not text or text == '' then break end
+				if not isQuestItem and text == _G.ITEM_BIND_QUEST then isQuestItem = true end
+				if not isStarterItem and text == _G.ITEM_STARTS_QUEST then isStarterItem = true end
+			end
 		end
 
 		E.ScanTooltip:Hide()
@@ -780,7 +784,7 @@ function B:Holder_OnEnter()
 		GameTooltip:AddLine(' ')
 		GameTooltip:AddLine(L["Shift + Left Click to Toggle Bag"], .8, .8, .8)
 
-		if E.Retail or (self.BagID ~= BANK_CONTAINER and self.BagID ~= BACKPACK_CONTAINER and self.BagID ~= KEYRING_CONTAINER) then
+		if E.Retail or (not E.Classic and self.BagID ~= BANK_CONTAINER and self.BagID ~= BACKPACK_CONTAINER and self.BagID ~= KEYRING_CONTAINER) then
 			GameTooltip:AddLine(L["Right Click to Open Menu"], .8, .8, .8)
 		end
 
@@ -845,7 +849,7 @@ end
 function B:AssignBagFlagMenu()
 	local holder = B.AssignBagDropdown.holder
 	local bagID = holder and holder.BagID
-	if bagID and bagID ~= BANK_CONTAINER and not IsInventoryItemProfessionBag('player', holder:GetID()) then
+	if bagID and bagID ~= BANK_CONTAINER and not E.Classic and not IsInventoryItemProfessionBag('player', holder:GetID()) then
 		E:SetEasyMenuAnchor(E.EasyMenu, holder)
 		EasyMenu((bagID == BACKPACK_CONTAINER or bagID == REAGENT_CONTAINER) and B.AssignMain or B.AssignMenu, E.EasyMenu, nil, nil, nil, 'MENU')
 	end
@@ -1299,6 +1303,18 @@ function B:UpdateTokens()
 		button.currencyID = info.currencyTypesID
 		button:Show()
 
+		if button.currencyID and E.Wrath then
+			local tokens = _G.TokenFrameContainer.buttons
+			if tokens then
+				for _, token in next, tokens do
+					if token.itemID == button.currencyID then
+						button.index = token.index
+						break
+					end
+				end
+			end
+		end
+
 		local icon = button.icon or button.Icon
 		icon:SetTexture(info.iconFileID)
 
@@ -1565,7 +1581,7 @@ function B:ConstructContainerFrame(name, isBank)
 		GameTooltip:Show()
 	end)
 
-	Skins:HandleCloseButton(f.closeButton)
+	S:HandleCloseButton(f.closeButton)
 
 	f.holderFrame = CreateFrame('Frame', nil, f)
 	f.holderFrame:Point('TOP', f, 'TOP', 0, -f.topOffset)
@@ -1766,7 +1782,7 @@ function B:ConstructContainerFrame(name, isBank)
 			f.reagentFrame.cover.purchaseButton:Height(20)
 			f.reagentFrame.cover.purchaseButton:Width(150)
 			f.reagentFrame.cover.purchaseButton:Point('CENTER', f.reagentFrame.cover, 'CENTER')
-			Skins:HandleButton(f.reagentFrame.cover.purchaseButton)
+			S:HandleButton(f.reagentFrame.cover.purchaseButton)
 			f.reagentFrame.cover.purchaseButton:SetFrameLevel(16)
 			f.reagentFrame.cover.purchaseButton.text = f.reagentFrame.cover.purchaseButton:CreateFontString(nil, 'OVERLAY')
 			f.reagentFrame.cover.purchaseButton.text:FontTemplate()

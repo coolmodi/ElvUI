@@ -1,7 +1,7 @@
 local E, L, V, P, G = unpack(ElvUI)
 local CH = E:GetModule('Chat')
 local LO = E:GetModule('Layout')
-local Skins = E:GetModule('Skins')
+local S = E:GetModule('Skins')
 local LSM = E.Libs.LSM
 
 local _G = _G
@@ -92,6 +92,7 @@ CH.Keywords = {}
 CH.PluginMessageFilters = {}
 CH.Smileys = {}
 CH.TalkingList = {}
+CH.FontHeights = { 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32 }
 CH.RoleIcons = {
 	TANK = E:TextureString(E.Media.Textures.Tank, ':15:15:0:0:64:64:2:56:2:56'),
 	HEALER = E:TextureString(E.Media.Textures.Healer, ':15:15:0:0:64:64:2:56:2:56'),
@@ -336,20 +337,17 @@ do --this can save some main file locals
 		z['Player-4373-011657A7']		= itsSimpy -- Paladin:		Cutepally
 		z['Player-4373-032FFEE2']		= itsSimpy -- Shaman:		Kalline
 		z['Player-4373-03351BC7']		= itsSimpy -- [Horde] DK:	Imsojelly
-		-- Luckyone (4440: Everlook, 4476: Gehennas, 4811: Giantstalker)
-		z['Player-4476-03BF41C9']		= ElvBlue -- [Horde] Hunter: Luckyone
-		z['Player-4476-049F4831']		= ElvBlue -- [Horde] DK: Luckygrip
-		z['Player-4440-037C7E29']		= ElvBlue -- [Alliance] DK: Luckydk
-		z['Player-4440-03ADE2DF']		= ElvBlue -- [Alliance] Shaman: Luckykek
-		z['Player-4811-038DA128']		= ElvBlue -- [Alliance] Paladin: Luckyone
-		z['Luckyone-Everlook']			= ElvBlue -- [Alliance] Druid
-		z['Luckypriest-Everlook']		= ElvBlue -- [Alliance] Priest
-		z['Luckyrogue-Everlook']		= ElvBlue -- [Alliance] Rogue
-		z['Luckyhunter-Everlook']		= ElvBlue -- [Alliance] Hunter
-		z['Luckydruid-Earthshaker']		= ElvBlue -- [Alliance] Druid
-		z['Luckypriest-Earthshaker']	= ElvBlue -- [Alliance] Priest
+		-- Luckyone (4476: Gehennas, 4440: Everlook)
 		z['Luckydruid-Firemaw']			= ElvBlue -- [Alliance] Druid
 		z['Unluckyone-Firemaw']			= ElvBlue -- [Alliance] Priest
+		z['Luckygrip-Firemaw']			= ElvBlue -- [Alliance] DK
+		z['Luckywl-Firemaw']			= ElvBlue -- [Alliance] Warlock
+		z['Luckym-Firemaw']				= ElvBlue -- [Alliance] Mage
+		z['Luckyw-Firemaw']				= ElvBlue -- [Alliance] Warrior
+		z['Luckyp-Firemaw']				= ElvBlue -- [Alliance] Paladin
+		z['Player-4476-03BF41C9']		= ElvBlue -- [Horde] Hunter: Luckyone
+		z['Player-4440-03AD654A']		= ElvBlue -- [Alliance] Rogue: Luckyrogue
+		z['Player-4440-03ADE2DF']		= ElvBlue -- [Alliance] Shaman: Luckykek
 		-- Repooc
 		z['Poocsdk-Mankrik']		= ElvBlue -- [Horde] DK
 		z['Repooc-Mankrik']			= ElvBlue
@@ -768,11 +766,11 @@ function CH:UpdateEditboxFont(chatFrame)
 	local _, fontSize = _G.FCF_GetChatWindowInfo(id)
 
 	local editbox = _G.ChatEdit_ChooseBoxForSend(chatFrame)
-	editbox:FontTemplate(font, fontSize, 'NONE')
-	editbox.header:FontTemplate(font, fontSize, 'NONE')
+	editbox:FontTemplate(font, fontSize, 'SHADOW')
+	editbox.header:FontTemplate(font, fontSize, 'SHADOW')
 
 	if editbox.characterCount then
-		editbox.characterCount:FontTemplate(font, fontSize, 'NONE')
+		editbox.characterCount:FontTemplate(font, fontSize, 'SHADOW')
 	end
 
 	-- the header and text will not update the placement without focus
@@ -2377,7 +2375,7 @@ do
 	function CH:StyleOverflowButton()
 		local btn = _G.GeneralDockManagerOverflowButton
 		local wasSkinned = btn.isSkinned -- keep this before HandleNextPrev
-		Skins:HandleNextPrevButton(btn, 'down', overflowColor, true)
+		S:HandleNextPrevButton(btn, 'down', overflowColor, true)
 		btn:SetHighlightTexture(E.Media.Textures.ArrowUpGlow)
 
 		if not wasSkinned then
@@ -2390,7 +2388,7 @@ do
 
 		local hl = btn:GetHighlightTexture()
 		hl:SetVertexColor(unpack(E.media.rgbvaluecolor))
-		hl:SetRotation(Skins.ArrowRotation.down)
+		hl:SetRotation(S.ArrowRotation.down)
 
 		btn.list:SetTemplate('Transparent')
 	end
@@ -3121,7 +3119,7 @@ function CH:HandleChatVoiceIcons()
 		end
 	elseif CH.db.pinVoiceButtons then
 		for index, button in ipairs(channelButtons) do
-			Skins:HandleButton(button, nil, nil, true)
+			S:HandleButton(button, nil, nil, true)
 			button.Icon:SetDesaturated(CH.db.desaturateVoiceIcons)
 			button:ClearAllPoints()
 
@@ -3179,7 +3177,7 @@ function CH:CreateChatVoicePanel()
 	channelButtons[1]:Point('TOP', Holder, 'TOP', 0, -2)
 
 	for _, button in ipairs(channelButtons) do
-		Skins:HandleButton(button, nil, nil, true)
+		S:HandleButton(button, nil, nil, true)
 		button.Icon:SetParent(button)
 		button.Icon:SetDesaturated(CH.db.desaturateVoiceIcons)
 		button:SetParent(Holder)
@@ -3279,7 +3277,7 @@ function CH:BuildCopyChatFrame()
 	local scrollArea = CreateFrame('ScrollFrame', 'CopyChatScrollFrame', frame, 'UIPanelScrollFrameTemplate')
 	scrollArea:Point('TOPLEFT', frame, 'TOPLEFT', 8, -30)
 	scrollArea:Point('BOTTOMRIGHT', frame, 'BOTTOMRIGHT', -30, 8)
-	Skins:HandleScrollBar(_G.CopyChatScrollFrameScrollBar)
+	S:HandleScrollBar(_G.CopyChatScrollFrameScrollBar)
 	scrollArea:SetScript('OnSizeChanged', function(scroll)
 		_G.CopyChatFrameEditBox:Width(scroll:GetWidth())
 		_G.CopyChatFrameEditBox:Height(scroll:GetHeight())
@@ -3310,7 +3308,7 @@ function CH:BuildCopyChatFrame()
 	close:Point('TOPRIGHT')
 	close:SetFrameLevel(close:GetFrameLevel() + 1)
 	close:EnableMouse(true)
-	Skins:HandleCloseButton(close)
+	S:HandleCloseButton(close)
 end
 
 CH.TabStyles = {
@@ -3616,6 +3614,7 @@ function CH:Initialize()
 	if not ElvCharacterDB.ChatEditHistory then ElvCharacterDB.ChatEditHistory = {} end
 	if not ElvCharacterDB.ChatHistoryLog or not CH.db.chatHistory then ElvCharacterDB.ChatHistoryLog = {} end
 
+	_G.CHAT_FONT_HEIGHTS = CH.FontHeights
 	_G.ChatFrameMenuButton:Kill()
 
 	CH:SetupChat()
