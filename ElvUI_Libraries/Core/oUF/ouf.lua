@@ -1,5 +1,5 @@
 local parent, ns = ...
-local GetAddOnMetadata = C_AddOns and C_AddOns.GetAddOnMetadata or GetAddOnMetadata
+local GetAddOnMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
 local global = GetAddOnMetadata(parent, 'X-oUF')
 local _VERSION = '@project-version@'
 if(_VERSION:find('project%-version')) then
@@ -29,11 +29,6 @@ local select, pairs, ipairs = select, pairs, ipairs
 local strupper, strsplit = strupper, strsplit
 local hooksecurefunc = hooksecurefunc
 
-local SecureButton_GetUnit = SecureButton_GetUnit
-local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
-local GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
-
-local PingableType_UnitFrameMixin = PingableType_UnitFrameMixin
 local SecureHandlerSetFrameRef = SecureHandlerSetFrameRef
 local RegisterAttributeDriver = RegisterAttributeDriver
 local UnregisterUnitWatch = UnregisterUnitWatch
@@ -41,8 +36,14 @@ local RegisterUnitWatch = RegisterUnitWatch
 local CreateFrame = CreateFrame
 local IsLoggedIn = IsLoggedIn
 local UnitGUID = UnitGUID
-local SetCVar = SetCVar
 local Mixin = Mixin
+
+local SecureButton_GetUnit = SecureButton_GetUnit
+local SecureButton_GetModifiedUnit = SecureButton_GetModifiedUnit
+local PingableType_UnitFrameMixin = PingableType_UnitFrameMixin
+
+local GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
+local SetCVar = C_CVar.SetCVar
 -- end
 
 local UFParent = CreateFrame('Frame', (global or parent) .. 'Parent', UIParent, 'SecureHandlerStateTemplate')
@@ -820,7 +821,9 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 	eventHandler:RegisterEvent('NAME_PLATE_UNIT_ADDED')
 	eventHandler:RegisterEvent('NAME_PLATE_UNIT_REMOVED')
 	eventHandler:RegisterEvent('PLAYER_TARGET_CHANGED')
+	eventHandler:RegisterEvent('UNIT_MAXHEALTH')
 	eventHandler:RegisterEvent('UNIT_FACTION')
+	eventHandler:RegisterEvent('UNIT_HEALTH')
 
 	if(IsLoggedIn()) then
 		if(nameplateCVars) then
@@ -852,7 +855,7 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 			if unitFrame and unitFrame.UpdateAllElements then
 				nameplate.unitFrame:UpdateAllElements(event)
 			end
-		elseif(event == 'UNIT_FACTION' and unit) then
+		elseif((event == 'UNIT_FACTION' or event == 'UNIT_HEALTH' or event == 'UNIT_MAXHEALTH') and unit) then
 			local nameplate = GetNamePlateForUnit(unit)
 			if(not nameplate) then return end
 

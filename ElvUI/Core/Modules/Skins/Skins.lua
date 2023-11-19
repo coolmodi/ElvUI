@@ -3,12 +3,13 @@ local S = E:GetModule('Skins')
 local LibStub = _G.LibStub
 
 local _G = _G
+local hooksecurefunc = hooksecurefunc
 local tinsert, xpcall, next, ipairs, pairs = tinsert, xpcall, next, ipairs, pairs
 local unpack, assert, type, strfind = unpack, assert, type, strfind
 
-local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
-local IsAddOnLoaded = IsAddOnLoaded
+
+local IsAddOnLoaded = (C_AddOns and C_AddOns.IsAddOnLoaded) or IsAddOnLoaded
 
 local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
 
@@ -570,6 +571,52 @@ do
 			hooksecurefunc(border, 'SetShown', borderShown)
 			hooksecurefunc(border, 'Show', borderShow)
 			hooksecurefunc(border, 'Hide', borderHide)
+		end
+	end
+end
+
+do
+	local keys = {
+		'zoomInButton',
+		'zoomOutButton',
+		'rotateLeftButton',
+		'rotateRightButton',
+		'resetButton',
+	}
+
+	local function UpdateLayout(frame)
+		local last
+		for _, name in next, keys do
+			local button = frame[name]
+			if button then
+				if not button.isSkinned then
+					S:HandleButton(button)
+					button:Size(22)
+
+					if button.Icon then
+						button.Icon:SetInside(nil, 2, 2)
+					end
+				end
+
+				if button:IsShown() then
+					button:ClearAllPoints()
+
+					if last then
+						button:Point('LEFT', last, 'RIGHT', 1, 0)
+					else
+						button:Point('LEFT', 6, 0)
+					end
+
+					last = button
+				end
+			end
+		end
+	end
+
+	function S:HandleModelSceneControlButtons(frame)
+		if not frame.isSkinned then
+			frame.isSkinned = true
+			hooksecurefunc(frame, 'UpdateLayout', UpdateLayout)
 		end
 	end
 end

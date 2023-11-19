@@ -59,6 +59,21 @@ P.general = {
 		height = 22,
 		width = 0
 	},
+	fonts = {
+		cooldown = { enable = true, font = 'Expressway', size = 20, outline = 'SHADOWOUTLINE' },
+		errortext = { enable = true, font = 'Expressway', size = 18, outline = 'SHADOW' },
+		worldzone = { enable = false, font = 'Expressway', size = 26, outline = 'OUTLINE' },
+		worldsubzone = { enable = false, font = 'Expressway', size = 24, outline = 'OUTLINE' },
+		pvpzone = { enable = false, font = 'Expressway', size = 26, outline = 'OUTLINE' },
+		pvpsubzone = { enable = false, font = 'Expressway', size = 24, outline = 'OUTLINE' },
+		objective = { enable = false, font = 'Expressway', size = 14, outline = 'SHADOW' },
+		mailbody = { enable = false, font = 'Expressway', size = 14, outline = 'SHADOW' },
+		questtitle = { enable = false, font = 'Expressway', size = 18, outline = 'NONE' },
+		questtext = { enable = false, font = 'Expressway', size = 14, outline = 'NONE' },
+		questsmall = { enable = false, font = 'Expressway', size = 13, outline = 'NONE' },
+		talkingtitle = { enable = false, font = 'Expressway', size = 20, outline = 'SHADOW' },
+		talkingtext = { enable = false, font = 'Expressway', size = 18, outline = 'SHADOW' }
+	},
 	debuffColors = { -- handle colors of LibDispel
 		none = { r = 0.8, g = 0, b = 0 },
 		Magic = { r = 0.2, g = 0.6, b = 1 },
@@ -579,7 +594,8 @@ local NP_PvPClassificationIndicator = {
 local NP_Portrait = {
 	enable = false,
 	position = 'RIGHT',
-	classicon = true,
+	specicon = E.Retail,
+	keepSizeRatio = true,
 	height = 28,
 	width = 28,
 	xOffset = 3,
@@ -671,12 +687,15 @@ local NP_QuestIcon = {
 	enable = true,
 	hideIcon = false,
 	position = 'RIGHT',
-	textPosition = 'BOTTOMRIGHT',
 	size = 20,
 	xOffset = 0,
 	yOffset = 0,
+	spacing = 5,
 	font = 'PT Sans Narrow',
 	fontOutline = 'OUTLINE',
+	textPosition = 'BOTTOMRIGHT',
+	textXOffset = 2,
+	textYOffset = 2,
 	fontSize = 12
 }
 
@@ -1459,6 +1478,7 @@ local UF_Fader = {
 	smooth = 0.33,
 	unittarget = false,
 	vehicle = false,
+	dynamicflight = false,
 	instanceDifficulties = {
 		none = false,
 		dungeonNormal = false,
@@ -2563,6 +2583,7 @@ P.actionbar = {
 	desaturateOnCooldown = false,
 	equippedItem = false,
 	equippedItemColor = { r = 0.4, g = 1.0, b = 0.4 },
+	targetReticleColor = { r = 0.2, g = 1.0, b = 0.2 },
 	flashAnimation = false,
 	flyoutSize = 32, -- match buttonsize default, blizz default is 28
 	font = 'Homespun',
@@ -2707,6 +2728,7 @@ local AB_Bar = {
 	alpha = 1,
 	inheritGlobalFade = false,
 	showGrid = true,
+	targetReticle = true,
 	flyoutDirection = 'AUTOMATIC',
 	paging = {},
 	countColor = { r = 1, g = 1, b = 1 },
@@ -2800,7 +2822,7 @@ P.actionbar.bar1.paging.ROGUE = '[bonusbar:1] 7;'..(E.Wrath and ' [bonusbar:2] 8
 P.actionbar.bar1.paging.WARLOCK = E.Wrath and '[form:1] 7;' or nil
 P.actionbar.bar1.paging.DRUID = '[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 10; [bonusbar:3] 9; [bonusbar:4] 10;'
 P.actionbar.bar1.paging.EVOKER = '[bonusbar:1] 7;'
-P.actionbar.bar1.paging.PRIEST = '[bonusbar:1] 7;'
+P.actionbar.bar1.paging.PRIEST = '[bonusbar:1] 7;'..(E.Classic and ' [possessbar] 16;' or '')
 P.actionbar.bar1.paging.WARRIOR = '[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9;'
 
 P.actionbar.bar3.enabled = true
