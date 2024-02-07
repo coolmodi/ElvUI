@@ -1481,6 +1481,7 @@ local UF_Fader = {
 	dynamicflight = false,
 	instanceDifficulties = {
 		none = false,
+		timewalking = false,
 		dungeonNormal = false,
 		dungeonHeroic = false,
 		dungeonMythic = false,

@@ -156,9 +156,9 @@ G.unitframe.aurafilters.CCDebuffs = {
 		[132169]	= List(4), -- Storm Bolt
 		[132168]	= List(4), -- Shockwave
 		[199085]	= List(4), -- Warpath
-		[105771]	= List(1), -- Charge
 		[199042]	= List(1), -- Thunderstruck
 		[236077]	= List(2), -- Disarm
+		[105771]	= List(2), -- Charge
 	-- Racial
 		[20549]		= List(4), -- War Stomp
 		[107079]	= List(4), -- Quaking Palm
@@ -1749,6 +1749,8 @@ G.unitframe.ChannelTicks = {
 	-- Hunter
 	[120360]	= 15, -- Barrage
 	[257044]	= 7, -- Rapid Fire
+	-- Monk
+	[113656]	= 5, -- Fists of Fury
 }
 
 -- Spells that chain, second step
