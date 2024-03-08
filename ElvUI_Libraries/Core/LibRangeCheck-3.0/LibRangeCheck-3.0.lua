@@ -40,7 +40,7 @@ License: MIT
 -- @class file
 -- @name LibRangeCheck-3.0
 local MAJOR_VERSION = "LibRangeCheck-3.0"
-local MINOR_VERSION = 12
+local MINOR_VERSION = 13
 
 -- GLOBALS: LibStub, CreateFrame
 
@@ -63,6 +63,7 @@ local ipairs = ipairs
 local tinsert = tinsert
 local tremove = tremove
 local tostring = tostring
+local strsplit = strsplit
 local setmetatable = setmetatable
 local BOOKTYPE_SPELL = BOOKTYPE_SPELL
 local GetSpellInfo = GetSpellInfo
@@ -87,9 +88,8 @@ local GetTime = GetTime
 local HandSlotId = GetInventorySlotInfo("HANDSSLOT")
 local math_floor = math.floor
 local UnitIsVisible = UnitIsVisible
+local C_Timer = C_Timer
 local Item = Item
-
-local C_Timer_NewTicker = C_Timer.NewTicker
 
 local InCombatLockdownRestriction
 if isRetail or isEra then
@@ -548,7 +548,7 @@ local checkers_Spell = setmetatable({}, {
     return func
   end,
 })
-local checkers_SpellWithMin = {} -- see getCheckerForSpellWithMinRange()
+
 local checkers_Item = setmetatable({}, {
   __index = function(t, item)
     local func = function(unit, skipInCombatCheck)
@@ -562,6 +562,7 @@ local checkers_Item = setmetatable({}, {
     return func
   end,
 })
+
 local checkers_Interact = setmetatable({}, {
   __index = function(t, index)
     local func = function(unit, skipInCombatCheck)
@@ -573,6 +574,42 @@ local checkers_Interact = setmetatable({}, {
     end
     t[index] = func
     return func
+  end,
+})
+
+local checkers_SpellWithMin = setmetatable({}, {
+  __index = function(t, key, value)
+    if key == 'MinInteractList' then
+      return value
+    else
+      local which, id = strsplit(':', key)
+      local isInteract = which == 'interact'
+
+      local func = function(unit, skipInCombatCheck)
+        if isInteract then
+          local interactCheck = checkers_Interact[id]
+          if interactCheck and interactCheck(unit, skipInCombatCheck) then
+            return true
+          end
+        else
+          local spellCheck = checkers_Spell[id]
+          if spellCheck and spellCheck(unit) then
+            return true
+          elseif t.MinInteractList then -- fallback to try interact when a spell failed
+            for index in pairs(t.MinInteractList) do
+              local interactCheck = checkers_Interact[index]
+              if interactCheck and interactCheck(unit, skipInCombatCheck) then
+                return true
+              end
+            end
+          end
+        end
+      end
+
+      t[id] = func
+
+      return func
+    end
   end,
 })
 
@@ -629,35 +666,6 @@ local function getSpellData(sid)
   return name, fixRange(minRange), fixRange(range), findSpellIdx(name)
 end
 
-local function findMinRangeChecker(origMinRange, origRange, spellList)
-  for i = 1, #spellList do
-    local sid = spellList[i]
-    local name, minRange, range, spellIdx = getSpellData(sid)
-    if range and spellIdx and origMinRange <= range and range <= origRange and minRange == 0 then
-      return checkers_Spell[findSpellIdx(name)]
-    end
-  end
-end
-
-local function getCheckerForSpellWithMinRange(spellIdx, minRange, range, spellList)
-  local checker = checkers_SpellWithMin[spellIdx]
-  if checker then
-    return checker
-  end
-  local minRangeChecker = findMinRangeChecker(minRange, range, spellList)
-  if minRangeChecker then
-    checker = function(unit)
-      if IsSpellInRange(spellIdx, BOOKTYPE_SPELL, unit) == 1 then
-        return true
-      elseif minRangeChecker(unit) then
-        return true, true
-      end
-    end
-    checkers_SpellWithMin[spellIdx] = checker
-    return checker
-  end
-end
-
 -- minRange should be nil if there's no minRange, not 0
 local function addChecker(t, range, minRange, checker, info)
   local rc = { ["range"] = range, ["minRange"] = minRange, ["checker"] = checker, ["info"] = info }
@@ -688,6 +696,7 @@ local function createCheckerList(spellList, itemList, interactList)
     end
   end
 
+  local minInteract
   if spellList then
     for i = 1, #spellList do
       local sid = spellList[i]
@@ -704,11 +713,14 @@ local function createCheckerList(spellList, itemList, interactList)
         end
 
         if minRange then
-          local checker = getCheckerForSpellWithMinRange(spellIdx, minRange, range, spellList)
-          if checker then
-            addChecker(res, range, minRange, checker, "spell:" .. sid .. ":" .. tostring(name))
-            addChecker(resInCombat, range, minRange, checker, "spell:" .. sid .. ":" .. tostring(name))
+          if not checkers_SpellWithMin.MinInteractList then
+            checkers_SpellWithMin.MinInteractList = interactList
           end
+
+          addChecker(res, range, minRange, checkers_SpellWithMin["spell:"..spellIdx], "spell:" .. sid .. ":" .. tostring(name))
+          addChecker(resInCombat, range, minRange, checkers_SpellWithMin["spell:"..spellIdx], "spell:" .. sid .. ":" .. tostring(name))
+
+          minInteract = true
         else
           addChecker(res, range, minRange, checkers_Spell[spellIdx], "spell:" .. sid .. ":" .. tostring(name))
           addChecker(resInCombat, range, minRange, checkers_Spell[spellIdx], "spell:" .. sid .. ":" .. tostring(name))
@@ -717,9 +729,16 @@ local function createCheckerList(spellList, itemList, interactList)
     end
   end
 
-  if interactList and not next(res) then
+  if interactList and (minInteract or not next(res)) then
+    local _, playerClass = UnitClass("player")
     for index, range in pairs(interactList) do
-      addChecker(res, range, nil, checkers_Interact[index], "interact:" .. index)
+      if minInteract then -- spells have min range, step to use interact as a fallback when close
+        if not (playerClass == "WARRIOR" and index == 4) then -- warrior: skip Follow 28, so it will use Charge 25
+          addChecker(res, range, nil, checkers_SpellWithMin["interact:"..index], "interact:" .. index)
+        end
+      else
+        addChecker(res, range, nil, checkers_Interact[index], "interact:" .. index)
+      end
     end
   end
 
@@ -1221,6 +1240,12 @@ function lib:SPELLS_CHANGED()
   self:scheduleInit()
 end
 
+function lib:CVAR_UPDATE(_, cvar)
+  if cvar == "ShowAllSpellRanks" then
+    self:scheduleInit()
+  end
+end
+
 function lib:UNIT_INVENTORY_CHANGED(event, unit)
   if self.initialized and unit == "player" and self.handSlotItem ~= GetInventoryItemLink("player", HandSlotId) then
     self:scheduleInit()
@@ -1335,7 +1360,7 @@ end
 -- << load-time initialization
 
 local function invalidateRangeFive()
-    invalidateRangeCache(5)
+  invalidateRangeCache(5)
 end
 
 function lib:activate()
@@ -1346,6 +1371,10 @@ function lib:activate()
     frame:RegisterEvent("LEARNED_SPELL_IN_TAB")
     frame:RegisterEvent("CHARACTER_POINTS_CHANGED")
     frame:RegisterEvent("SPELLS_CHANGED")
+
+    if isEra or isWrath then
+      frame:RegisterEvent("CVAR_UPDATE")
+    end
 
     if isRetail or isWrath then
       frame:RegisterEvent("PLAYER_TALENT_UPDATE")
@@ -1359,7 +1388,7 @@ function lib:activate()
   end
 
   if not self.cacheResetTimer then
-    self.cacheResetTimer = C_Timer_NewTicker(5, invalidateRangeFive)
+    self.cacheResetTimer = C_Timer.NewTicker(5, invalidateRangeFive)
   end
 
   initItemRequests()
