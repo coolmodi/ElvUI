@@ -39,8 +39,8 @@ License: MIT
 --
 -- @class file
 -- @name LibRangeCheck-3.0
-local MAJOR_VERSION = "LibRangeCheck-3.0"
-local MINOR_VERSION = 13
+local MAJOR_VERSION = "LibRangeCheck-3.0-ElvUI"
+local MINOR_VERSION = 15 -- real minor version: 13
 
 -- GLOBALS: LibStub, CreateFrame
 
@@ -50,46 +50,52 @@ if not lib then
   return
 end
 
+local next = next
+local type = type
+local wipe = wipe
+local floor = floor
+local pairs = pairs
+local print = print
+local ipairs = ipairs
+local tinsert = tinsert
+local tremove = tremove
+local strsplit = strsplit
+local tostring = tostring
+local setmetatable = setmetatable
+
+local CheckInteractDistance = CheckInteractDistance
+local GetInventoryItemLink = GetInventoryItemLink
+local GetItemInfo = GetItemInfo
+local GetNumSpellTabs = GetNumSpellTabs
+local GetSpellBookItemInfo = GetSpellBookItemInfo
+local GetSpellInfo = GetSpellInfo
+local GetSpellTabInfo = GetSpellTabInfo
+local GetTime = GetTime
+local InCombatLockdown = InCombatLockdown
+local IsItemInRange = IsItemInRange
+local IsSpellInRange = IsSpellInRange
+local UnitCanAssist = UnitCanAssist
+local UnitCanAttack = UnitCanAttack
+local UnitClass = UnitClass
+local UnitExists = UnitExists
+local UnitGUID = UnitGUID
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitIsUnit = UnitIsUnit
+local UnitIsVisible = UnitIsVisible
+local UnitRace = UnitRace
+
+local C_Timer = C_Timer
+local Item = Item
+
+local BOOKTYPE_SPELL = BOOKTYPE_SPELL
+local HandSlotId = GetInventorySlotInfo("HANDSSLOT")
+
 local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 local isWrath = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 local isEra = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
-local next = next
-local type = type
-local wipe = wipe
-local print = print
-local pairs = pairs
-local ipairs = ipairs
-local tinsert = tinsert
-local tremove = tremove
-local tostring = tostring
-local strsplit = strsplit
-local setmetatable = setmetatable
-local BOOKTYPE_SPELL = BOOKTYPE_SPELL
-local GetSpellInfo = GetSpellInfo
-local GetSpellBookItemName = GetSpellBookItemName
-local GetNumSpellTabs = GetNumSpellTabs
-local GetSpellTabInfo = GetSpellTabInfo
-local GetItemInfo = GetItemInfo
-local UnitCanAttack = UnitCanAttack
-local UnitCanAssist = UnitCanAssist
-local UnitExists = UnitExists
-local UnitIsUnit = UnitIsUnit
-local UnitGUID = UnitGUID
-local InCombatLockdown = InCombatLockdown
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local CheckInteractDistance = CheckInteractDistance
-local IsSpellInRange = IsSpellInRange
-local IsItemInRange = IsItemInRange
-local UnitClass = UnitClass
-local UnitRace = UnitRace
-local GetInventoryItemLink = GetInventoryItemLink
-local GetTime = GetTime
-local HandSlotId = GetInventorySlotInfo("HANDSSLOT")
-local math_floor = math.floor
-local UnitIsVisible = UnitIsVisible
-local C_Timer = C_Timer
-local Item = Item
+local IsEngravingEnabled = C_Engraving and C_Engraving.IsEngravingEnabled
+local isEraSOD = IsEngravingEnabled and IsEngravingEnabled()
 
 local InCombatLockdownRestriction
 if isRetail or isEra then
@@ -187,6 +193,11 @@ tinsert(FriendSpells.MAGE, 475) -- Remove Curse (40 yards, level 28)
 
 if not isRetail then
   tinsert(FriendSpells.MAGE, 130) -- Slow Fall (40 yards, level 12)
+end
+
+if isEraSOD then
+  tinsert(FriendSpells.MAGE, 401417) -- Regeneration (40 yards)
+  tinsert(FriendSpells.MAGE, 412510) -- Mass Regeneration (40 yards)
 end
 
 tinsert(HarmSpells.MAGE, 44614) -- Flurry (40 yards)
@@ -642,28 +653,31 @@ local function getNumSpells()
 end
 
 -- return the spellIndex of the given spell by scanning the spellbook
-local function findSpellIdx(spellName)
+local allowSpellType = { SPELL = true, FUTURESPELL = true }
+local function findSpellIdx(spellName, sid)
   if not spellName or spellName == "" then
     return nil
   end
+
   for i = 1, getNumSpells() do
-    local spell = GetSpellBookItemName(i, BOOKTYPE_SPELL)
-    if spell == spellName then
+    local spellType, id = GetSpellBookItemInfo(i, BOOKTYPE_SPELL)
+    if sid == id and allowSpellType[spellType] then
       return i
     end
   end
+
   return nil
 end
 
 local function fixRange(range)
   if range then
-    return math_floor(range + 0.5)
+    return floor(range + 0.5)
   end
 end
 
 local function getSpellData(sid)
   local name, _, _, _, minRange, range = GetSpellInfo(sid)
-  return name, fixRange(minRange), fixRange(range), findSpellIdx(name)
+  return name, fixRange(minRange), fixRange(range), findSpellIdx(name, sid)
 end
 
 -- minRange should be nil if there's no minRange, not 0
@@ -765,7 +779,7 @@ end
 local function getRangeWithCheckerList(unit, checkerList)
   local lo, hi = 1, #checkerList
   while lo <= hi do
-    local mid = math_floor((lo + hi) / 2)
+    local mid = floor((lo + hi) / 2)
     local rc = checkerList[mid]
     if rc.checker(unit, true) then
       lo = mid + 1
@@ -978,10 +992,8 @@ lib.CHECKERS_CHANGED = "CHECKERS_CHANGED"
 lib.MeleeRange = MeleeRange
 
 function lib:findSpellIndex(spell)
-  if type(spell) == "number" then
-    spell = GetSpellInfo(spell)
-  end
-  return findSpellIdx(spell)
+  local name, _, _, _, _, _, sid = GetSpellInfo(spell)
+  return findSpellIdx(name, sid)
 end
 
 -- returns the range estimate as a string

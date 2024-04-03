@@ -5,7 +5,45 @@ This repository incorporates material as listed below or described in the code.
 
 ## Ace3
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/Ace3](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/Ace3)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/Ace3](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/Ace3)
+
+### License
+
+```
+Copyright (c) 2007, Ace3 Development Team 
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without 
+modification, are permitted provided that the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, 
+      this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, 
+      this list of conditions and the following disclaimer in the documentation 
+      and/or other materials provided with the distribution.
+    * Redistribution of a stand alone version is strictly prohibited without 
+      prior written authorization from the Lead of the Ace3 Development Team. 
+    * Neither the name of the Ace3 Development Team nor the names of its contributors 
+      may be used to endorse or promote products derived from this software without 
+      specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+## Ace3-ElvUI
+
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/Ace3-ElvUI](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/Ace3-ElvUI)
 
 ### License
 
@@ -43,7 +81,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## AceGUI-3.0-SharedMediaWidgets
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/AceGUI-3.0-SharedMediaWidgets](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/AceGUI-3.0-SharedMediaWidgets)
+**Path**: ElvUI_Libraries/Core/AceGUI-3.0-SharedMediaWidgets
 
 ### License
 
@@ -53,7 +91,7 @@ All rights reserved to the owner.
 
 ## CallbackHandler-1.0
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/CallbackHandler-1.0](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/CallbackHandler-1.0)
+**Path**: ElvUI_Libraries/Core/CallbackHandler-1.0
 
 ### License
 
@@ -85,7 +123,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## LibAceConfigHelper
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibAceConfigHelper](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibAceConfigHelper)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibAceConfigHelper](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibAceConfigHelper)
 
 ### License
 
@@ -95,7 +133,7 @@ All rights reserved to the owner.
 
 ## LibActionButton-1.0
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibActionButton-1.0](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibActionButton-1.0)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibActionButton-1.0](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibActionButton-1.0)
 
 ### License
 
@@ -131,7 +169,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## LibAnim
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibAnim](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibAnim)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibAnim](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibAnim)
 
 ### License
 
@@ -141,7 +179,7 @@ All rights reserved to the owner.
 
 ## LibCustomGlow-1.0
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibCustomGlow-1.0](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibCustomGlow-1.0)
+**Path**: ElvUI_Libraries/Core/LibCustomGlow-1.0
 
 ### License
 
@@ -171,7 +209,7 @@ SOFTWARE.
 
 ## LibDataBroker
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibDataBroker](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibDataBroker)
+**Path**: ElvUI_Libraries/Core/LibDataBroker
 
 ### License
 
@@ -181,7 +219,7 @@ All rights reserved to the owner.
 
 ## LibDeflate
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibDeflate](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibDeflate)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibDeflate](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibDeflate)
 
 ### License
 
@@ -209,17 +247,37 @@ freely, subject to the following restrictions:
 
 ## LibDispel
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibDispel](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibDispel)
+**Path**: ElvUI_Libraries/Core/LibDispel
 
 ### License
 
 ```
-All rights reserved to the owner.
+MIT License
+
+Copyright (c) 2024 Tukui.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
 
 ## LibDualSpec-1.0
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibDualSpec-1.0](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibDualSpec-1.0)
+**Path**: ElvUI_Libraries/Core/LibDualSpec-1.0
 
 ### License
 
@@ -257,7 +315,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## LibElvUIPlugin-1.0
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibElvUIPlugin-1.0](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibElvUIPlugin-1.0)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibElvUIPlugin-1.0](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibElvUIPlugin-1.0)
 
 ### License
 
@@ -267,7 +325,7 @@ All rights reserved to the owner.
 
 ## LibRangeCheck-3.0
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibRangeCheck-3.0](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibRangeCheck-3.0)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibRangeCheck-3.0](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibRangeCheck-3.0)
 
 ### License
 
@@ -297,7 +355,7 @@ SOFTWARE.
 
 ## LibSharedMedia-3.0
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibSharedMedia-3.0](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibSharedMedia-3.0)
+**Path**: ElvUI_Libraries/Core/LibSharedMedia-3.0
 
 ### License
 
@@ -764,7 +822,7 @@ DAMAGES.
 
 ## LibSimpleSticky
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibSimpleSticky](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibSimpleSticky)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibSimpleSticky](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/LibSimpleSticky)
 
 ### License
 
@@ -774,7 +832,7 @@ All rights reserved to the owner.
 
 ## LibStub
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibStub](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibStub)
+**Path**: ElvUI_Libraries/Core/LibStub
 
 ### License
 
@@ -784,7 +842,7 @@ This work is dedicated to the public domain.
 
 ## LibTranslit-1.0
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibTranslit-1.0](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/LibTranslit-1.0)
+**Path**: ElvUI_Libraries/Core/LibTranslit-1.0
 
 ### License
 
@@ -958,7 +1016,7 @@ Library.
 
 ## oUF
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/oUF](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/oUF)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/oUF](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/oUF)
 
 ### License
 
@@ -992,7 +1050,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ## oUF_Plugins
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/oUF_Plugins](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/oUF_Plugins)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/oUF_Plugins](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Core/oUF_Plugins)
 
 ### License
 
@@ -1000,9 +1058,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 All rights reserved to the owner.
 ```
 
-## Taintless
+## TaintLess
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/Taintless](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/Taintless)
+**Path**: ElvUI_Libraries/Core/TaintLess
 
 ### License
 
@@ -1012,7 +1070,7 @@ All rights reserved to the owner.
 
 ## UTF8
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/UTF8](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Core/UTF8)
+**Path**: ElvUI_Libraries/Core/UTF8
 
 ### License
 
@@ -1046,7 +1104,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## LibClassicSpecs
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Classic/LibClassicSpecs](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Classic/LibClassicSpecs)
+**Path**: [https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Classic/LibClassicSpecs](https://github.com/tukui-org/ElvUI/tree/main/ElvUI_Libraries/Classic/LibClassicSpecs)
 
 ### License
 
@@ -1056,7 +1114,7 @@ All rights reserved to the owner.
 
 ## LibQuestXP
 
-**Path**: [https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Classic/LibQuestXP](https://github.com/tukui-org/ElvUI/tree/development/ElvUI_Libraries/Classic/LibQuestXP)
+**Path**: ElvUI_Libraries/Classic/LibQuestXP
 
 ### License
 

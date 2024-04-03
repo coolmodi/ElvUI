@@ -327,7 +327,7 @@ do --this can save some main file locals
 	if E.Classic then
 		-- Simpy (5099: Myzrael)
 		z['Player-5099-01947A77']	= itsSimpy -- Warlock: Simpy
-		-- Luckyone Seasonal (5826: Lone Wolf EU)
+		-- Luckyone Seasonal (5826: Lone Wolf EU, 5827: Living Flame EU)
 		z['Player-5826-0202765F']	= ElvBlue -- [Alliance] Hunter
 		z['Player-5826-020F7F10']	= ElvBlue -- [Alliance] Paladin
 		z['Player-5826-02172E79']	= ElvBlue -- [Alliance] Warlock
@@ -336,6 +336,7 @@ do --this can save some main file locals
 		z['Player-5826-023424EF']	= ElvBlue -- [Alliance] Druid
 		z['Player-5826-02342520']	= ElvBlue -- [Alliance] Rogue
 		z['Player-5826-02342556']	= ElvBlue -- [Alliance] Warrior
+		z['Player-5827-02331C4B']	= ElvBlue -- [Horde] Shaman
 		-- Luckyone Hardcore
 		z["Lucky-Nek'Rosh"]			= ElvBlue -- [Horde] Rogue
 		z["Luckyone-Nek'Rosh"]		= ElvBlue -- [Horde] Hunter
@@ -383,7 +384,7 @@ do --this can save some main file locals
 		z['Player-1401-0421EB9F']	= ElvBlue	-- [Alliance] Warrior:	Brìtt
 		z['Player-1401-0421F909']	= ElvRed	-- [Alliance] Paladin:	Damará
 		z['Player-1401-0421EC36']	= ElvBlue	-- [Alliance] Priest:	Jazira
-		z['Player-1401-041CD0A6']	= ElvYellow	-- [Alliance] Rogue:	Jústice
+		z['Player-1401-0A9B0131']	= ElvYellow	-- [Alliance] Rogue:	Anonia
 		z['Player-1401-041E4D64']	= ElvGreen	-- [Alliance] Monk:		Maithilis
 		z['Player-1401-0648F4AD']	= ElvPurple	-- [Alliance] DH:		Mattdemôn
 		z['Player-1401-0421F27B']	= ElvBlue	-- [Alliance] Mage:		Melisendra
@@ -1763,25 +1764,18 @@ function CH:ChatFrame_ReplaceIconAndGroupExpressions(message, noIconReplacement,
 end
 
 -- copied from ChatFrame.lua
-local function GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
-	-- Renaming for clarity:
-	local specialFlag = arg6
-	local zoneChannelID = arg7
-	--local localChannelID = arg8
-
+local function GetPFlag(specialFlag, zoneChannelID, localChannelID)
 	if specialFlag ~= '' then
 		if specialFlag == 'GM' or specialFlag == 'DEV' then
 			-- Add Blizzard Icon if this was sent by a GM/DEV
 			return [[|TInterface\ChatFrame\UI-ChatIcon-Blizz:12:20:0:0:32:16:4:28:0:16|t ]]
-		elseif E.Retail then
-			if specialFlag == 'GUIDE' then
-				if _G.ChatFrame_GetMentorChannelStatus(CHATCHANNELRULESET_MENTOR, GetChannelRulesetForChannelID(zoneChannelID)) == CHATCHANNELRULESET_MENTOR then
-					return NPEV2_CHAT_USER_TAG_GUIDE
-				end
-			elseif specialFlag == 'NEWCOMER' then
-				if _G.ChatFrame_GetMentorChannelStatus(PLAYERMENTORSHIPSTATUS_NEWCOMER, GetChannelRulesetForChannelID(zoneChannelID)) == PLAYERMENTORSHIPSTATUS_NEWCOMER then
-					return _G.NPEV2_CHAT_USER_TAG_NEWCOMER
-				end
+		elseif specialFlag == 'GUIDE' and E.Retail then
+			if _G.ChatFrame_GetMentorChannelStatus(CHATCHANNELRULESET_MENTOR, GetChannelRulesetForChannelID(zoneChannelID)) == CHATCHANNELRULESET_MENTOR then
+				return NPEV2_CHAT_USER_TAG_GUIDE
+			end
+		elseif specialFlag == 'NEWCOMER' and E.Retail then
+			if _G.ChatFrame_GetMentorChannelStatus(PLAYERMENTORSHIPSTATUS_NEWCOMER, GetChannelRulesetForChannelID(zoneChannelID)) == PLAYERMENTORSHIPSTATUS_NEWCOMER then
+				return _G.NPEV2_CHAT_USER_TAG_NEWCOMER
 			end
 		else
 			return _G['CHAT_FLAG_'..specialFlag]
@@ -1920,7 +1914,7 @@ function CH:MessageFormatter(frame, info, chatType, chatGroup, chatTarget, chann
 	end
 
 	-- Player Flags
-	local pflag = GetPFlag(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17)
+	local pflag = GetPFlag(arg6, arg7, arg8)
 	if not bossMonster then
 		local chatIcon, pluginChatIcon = specialChatIcons[arg12] or specialChatIcons[playerName], CH:GetPluginIcon(arg12, playerName)
 		if type(chatIcon) == 'function' then
@@ -3123,11 +3117,11 @@ function CH:RepositionOverflowButton()
 	end
 
 	-- handle buttons placement on the voice panel
-	local button1 = channelButtons[1] -- text to speech
-	local button2 = channelButtons[2] -- main voice button
-	local ttsEnabled = GetCVarBool('textToSpeech')
-
 	if not CH.db.hideVoiceButtons then
+		local button1 = channelButtons[1] -- text to speech
+		local button2 = channelButtons[2] -- main voice button
+		local ttsEnabled = GetCVarBool('textToSpeech')
+
 		if CH.db.pinVoiceButtons then
 			button1:ClearAllPoints()
 			button2:ClearAllPoints()
@@ -3156,7 +3150,7 @@ function CH:RepositionOverflowButton()
 	local ChatAlertFrame = _G.ChatAlertFrame
 	if ChatAlertFrame then
 		ChatAlertFrame:ClearAllPoints()
-		ChatAlertFrame:Point('BOTTOM', (ttsEnabled and button1) or button2, 'TOP', 1, 3)
+		ChatAlertFrame:Point('BOTTOMRIGHT', _G.GeneralDockManager, 'TOPRIGHT', 3, 3)
 	end
 end
 

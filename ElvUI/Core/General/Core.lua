@@ -62,7 +62,7 @@ local LSM = E.Libs.LSM
 E.noop = function() end
 E.title = format('%s%s|r', E.InfoColor, 'ElvUI')
 E.toc = tonumber(GetAddOnMetadata('ElvUI', 'X-Interface'))
-E.version = tonumber(GetAddOnMetadata('ElvUI', 'Version'))
+E.version, E.versionString, E.versionDev, E.versionGit = E:ParseVersionString('ElvUI')
 E.myfaction, E.myLocalizedFaction = UnitFactionGroup('player')
 E.myLocalizedClass, E.myclass, E.myClassID = UnitClass('player')
 E.myLocalizedRace, E.myrace, E.myRaceID = UnitRace('player')
@@ -955,10 +955,10 @@ do
 	_G.C_ChatInfo.RegisterAddonMessagePrefix('ELVUI_VERSIONCHK')
 
 	local f = CreateFrame('Frame')
+	f:SetScript('OnEvent', SendRecieve)
 	f:RegisterEvent('CHAT_MSG_ADDON')
 	f:RegisterEvent('GROUP_ROSTER_UPDATE')
 	f:RegisterEvent('PLAYER_ENTERING_WORLD')
-	f:SetScript('OnEvent', SendRecieve)
 end
 
 function E:UpdateStart(skipCallback, skipUpdateDB)
@@ -1993,7 +1993,7 @@ function E:Initialize()
 		E:Tutorials()
 	end
 
-	if E.Retail or E.Wrath then
+	if E.Retail or E.Wrath or E.ClassicSOD then
 		E.Libs.DualSpec:EnhanceDatabase(E.data, 'ElvUI')
 	end
 
@@ -2021,14 +2021,14 @@ function E:Initialize()
 	end
 
 	if E.db.general.loginmessage then
-		local msg = format(L["LOGIN_MSG"], E.version)
+		local msg = format(L["LOGIN_MSG"], E.versionString)
 		if Chat.Initialized then msg = select(2, Chat:FindURL('CHAT_MSG_DUMMY', msg)) end
 		print(msg)
 		print(L["LOGIN_MSG_HELP"])
 	end
 
 	if E.wowtoc > E.toc then
-		local msg = format(L["LOGIN_PTR"], 'https://github.com/tukui-org/ElvUI/archive/refs/heads/ptr.zip')
+		local msg = format(L["LOGIN_PTR"], 'https://api.tukui.org/v1/download/dev/elvui/ptr')
 		if Chat.Initialized then msg = select(2, Chat:FindURL('CHAT_MSG_DUMMY', msg)) end
 		print(msg)
 	end
